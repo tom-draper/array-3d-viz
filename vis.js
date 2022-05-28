@@ -1,13 +1,8 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
 
-let camera, radius, controls;
+let camera, controls;
 let mouseDown = false;
-let startMouseX, startMouseY, mouseX, mouseY = [0, 0, 0, 0];
-let startTheta = 180;
-let theta = startTheta;
-let startPhi = 74;
-let phi = startPhi;
 let sceneMain;
 let renderer;
 
@@ -53,15 +48,15 @@ function graphLine(x1, y1, z1, x2, y2, z2, colour) {
 }
 
 function graph1DArray(x, y, z, arr) {
-  graphLine(x, y, z, x+arr.length, y, z);
-  graphLine(x, y+1, z, x+arr.length, y+1, z);
-  graphLine(x, y+1, z-1, x+arr.length, y+1, z-1);
-  graphLine(x, y, z-1, x+arr.length, y, z-1);
-  for (let i = 0; i < arr.length+1; i++) {
-    graphLine(x+i, y, z, x+i, y+1, z);
-    graphLine(x+i, y, z-1, x+i, y+1, z-1);
-    graphLine(x+i, y+1, z, x+i, y+1, z-1);
-    graphLine(x+i, y, z, x+i, y, z-1);
+  graphLine(x, y, z, x + arr.length, y, z);
+  graphLine(x, y + 1, z, x + arr.length, y + 1, z);
+  graphLine(x, y + 1, z - 1, x + arr.length, y + 1, z - 1);
+  graphLine(x, y, z - 1, x + arr.length, y, z - 1);
+  for (let i = 0; i < arr.length + 1; i++) {
+    graphLine(x + i, y, z, x + i, y + 1, z);
+    graphLine(x + i, y, z - 1, x + i, y + 1, z - 1);
+    graphLine(x + i, y + 1, z, x + i, y + 1, z - 1);
+    graphLine(x + i, y, z, x + i, y, z - 1);
   }
 }
 
@@ -87,12 +82,11 @@ function init() {
 
   // controls.update();
 
-  graphLine(-100, 0, 0, 100, 0, 0, 0xFF0000);
-  graphLine(0, -100, 0, 0, 100, 0, 0x00FF00);
-  graphLine(0, 0, -100, 0, 0, 100, 0x0000FF);
+  graphLine(-100, 0, 0, 100, 0, 0, 0xff0000);
+  graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
+  graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
 
   graph1DArray(0, 0, 0, [1, 2, 3, 4, 5]);
-
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -104,7 +98,6 @@ function init() {
   let ambientLight = new THREE.AmbientLight();
   ambientLight.intensity = 0.2;
   sceneMain.add(ambientLight);
-
 
   // Handle resizing of the browser window.
   window.addEventListener("resize", handleResize, false);
@@ -120,7 +113,6 @@ function animate() {
   renderer.render(sceneMain, camera);
 }
 
-
 /* Handle resizing of the browser window. */
 function handleResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -133,19 +125,26 @@ function handleResize() {
 /* Handle keyboard presses */
 function handleKeyDown(event) {
   switch (event.keyCode) {
+    case 32:
+      camera.position.y += 0.1;
+      break;
+    case 16:
+      camera.position.y -= 0.1;
+      break;
     case 37: // Left arrow
-      // moveLeftRight("left");
+      camera.translateX(-0.1);
       break;
-    case 39: // Right arrow
-      // moveLeftRight("right");
+      case 39: // Right arrow
+      camera.translateX(0.1);
       break;
-    case 40: // Down arrow
-      // moveDown();
+      case 40: // Down arrow
+      camera.translateZ(0.1);
       break;
-    case 82: // R
-      // rotateBlock();
+      case 82: // R
+      camera.translateZ(-0.1);
       break;
   }
+  controls.update();
 }
 
 /* Control camera orbit */
