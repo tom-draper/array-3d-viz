@@ -8,31 +8,6 @@ let renderer;
 init();
 animate();
 
-// Listen for keyboard events, to react to them.
-document.addEventListener("keydown", handleKeyDown);
-document.body.addEventListener(
-  "mousedown",
-  function (event) {
-    event.preventDefault();
-    mouseDown = true;
-    startMouseX = event.clientX;
-    startMouseY = event.clientY;
-    startTheta = theta;
-    startPhi = phi;
-  },
-  false
-);
-document.addEventListener(
-  "mouseup",
-  function (event) {
-    event.preventDefault();
-    mouseDown = false;
-    startMouseX = event.clientX - startMouseX;
-    startMouseY = event.clientY - startMouseY;
-  },
-  false
-);
-
 function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   if (colour == undefined) {
     colour = 0xff0000;
@@ -102,7 +77,7 @@ function graphArrayElement(loc, value, opacity) {
   // Cube edges
   let wireframe = new THREE.LineSegments(
     new THREE.EdgesGeometry(geometry),
-    new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 })
+    new THREE.LineBasicMaterial({ color: 0x00FF00})
   );
   wireframe.position.x = x + 0.5;
   wireframe.position.y = y + 0.5;
