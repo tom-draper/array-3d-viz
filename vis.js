@@ -2,7 +2,6 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.m
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
 
 let camera, controls;
-let mouseDown = false;
 let scene;
 let renderer;
 
@@ -11,7 +10,6 @@ animate();
 
 // Listen for keyboard events, to react to them.
 document.addEventListener("keydown", handleKeyDown);
-// document.addEventListener("mousemove", handleMouseMove);
 document.body.addEventListener(
   "mousedown",
   function (event) {
@@ -79,15 +77,6 @@ function arrayShape(arr) {
 
   return dim && [arr.length].concat(dim);
 }
-
-// function arrayShape(arr){
-//     let rowCount = arr.length;
-//     let rowSizes = [];
-//     for (let i = 0; i < rowCount; i++){
-//         rowSizes.push(arr[i].length);
-//     }
-//     return [rowCount, Math.min.apply(null, rowSizes)];
-// }
 
 function setArrayShape(arr) {
   let shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
@@ -212,12 +201,6 @@ function graph3DArray(loc, arr) {
     for (let j = 0; j < arr[0].length; j++) {
       for (let k = 0; k < arr[0][0].length; k++) {
         let opacity = ((arr[i][j][k] - min) / (max - min)) * 0.8;
-        // graphArrayElement([x-k, y+arr.length-j, z-i], arr[i][j][k], opacity);
-        // graphArrayElement(
-        //   [x + arr.length - i - 1, y + arr.length - j, z - k],
-        //   arr[i][j][k],
-        //   opacity
-        // );
         graphArrayElement(
           [x + i, y + arr.length - j, z - k],
           arr[i][j][k],
@@ -335,26 +318,3 @@ function handleKeyDown(event) {
   }
   controls.update();
 }
-
-/* Control camera orbit */
-// function handleMouseMove(event) {
-//   if (mouseDown) {
-//     // theta = -((event.clientX - startMouseX) * 0.5) + startTheta;
-//     // phi = Math.min(
-//     //   180,
-//     //   Math.max(0, (event.clientY - startMouseY) * 0.5 + startPhi)
-//     // );
-
-//     // camera.position.x =
-//     //   radius *
-//     //   Math.sin((theta * Math.PI) / 360) *
-//     //   Math.cos((phi * Math.PI) / 360);
-//     // camera.position.y = radius * Math.sin((phi * Math.PI) / 360);
-//     // camera.position.z =
-//     //   radius *
-//     //   Math.cos((theta * Math.PI) / 360) *
-//     //   Math.cos((phi * Math.PI) / 360);
-//     // camera.lookAt(new THREE.Vector3(0, gameHeight / 2, 0));
-//     camera.updateMatrix();
-//   }
-// }
