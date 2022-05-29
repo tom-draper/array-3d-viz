@@ -306,16 +306,62 @@ function isNumeric(str) {
   );
 }
 
-let input = document.getElementById("equalityQuery");
-let inputValue = document.getElementById("equalityQuery").value;
+let equalityInput = document.getElementById("equalityQuery");
+let equalityInputValue = equalityInput.value;
 
-input.addEventListener("keyup", function () {
-  inputValue = document.getElementById("equalityQuery").value;
-  if (isNumeric(inputValue)) {
-    highlightValue(parseFloat(inputValue));
-  } else if (inputValue == '') {
+equalityInput.addEventListener("keyup", function () {
+  equalityInputValue = document.getElementById("equalityQuery").value;
+  if (isNumeric(equalityInputValue)) {
+    highlightValue(parseFloat(equalityInputValue));
+  } else if (equalityInputValue == '') {
     resetScale();
   }
+  lessThanInput.value = '';
+  greaterThanInput.value = '';
+});
+
+function highlightInequality(low, high) {
+  for (let i = 0; i < cubes.length; i++) {
+    if (low < cubes[i].value && cubes[i].value < high) {
+      cubes[i].material.opacity = 0.8;
+    } else {
+      cubes[i].material.opacity = 0;
+    }
+  }
+}
+
+let lessThanInput = document.getElementById("lessThanQuery");
+let lessThanInputValue = lessThanInput.value;
+
+lessThanInput.addEventListener("keyup", function() {
+  lessThanInputValue = document.getElementById("lessThanQuery").value;
+  if (isNumeric(lessThanInputValue)) {
+    let high = Number.POSITIVE_INFINITY;
+    if (isNumeric(greaterThanInputValue)) {
+      high = parseFloat(greaterThanInputValue);
+    }
+    highlightInequality(parseFloat(lessThanInputValue), high);
+  } else if (lessThanInputValue == '') {
+    resetScale();
+  }
+  equalityInput.value = '';
+});
+
+let greaterThanInput = document.getElementById("greaterThanQuery");
+let greaterThanInputValue = greaterThanInput.value;
+
+greaterThanInput.addEventListener("keyup", function() {
+  greaterThanInputValue = document.getElementById("greaterThanQuery").value;
+  if (isNumeric(greaterThanInputValue)) {
+    let low = Number.NEGATIVE_INFINITY;
+    if (isNumeric(lessThanInputValue)) {
+      low = parseFloat(lessThanInputValue);
+    }
+    highlightInequality(low, parseFloat(greaterThanInputValue));
+  } else if (greaterThanInputValue == '') {
+    resetScale();
+  }
+  equalityInput.value = '';
 });
 
 // ------------Button controls-------------
