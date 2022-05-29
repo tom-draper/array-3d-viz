@@ -27,8 +27,8 @@
         bottom: 10px;
         right: 10px;
         background: rgba(255, 255, 255, 0.16);
-        border-radius: 3px;
-        width: 150px;
+        border-radius: 4px;
+        width: 200px;
         /* height: 50px; */
         padding: 10px 20px;
         color: white;
@@ -45,6 +45,26 @@
         margin: 5px 0 5px 0;
         width: 100%;
       }
+      .inequality-container {
+        display: flex;
+      }
+      #greaterThanQuery,
+      #lessThanQuery {
+        width: 100%;
+        margin: 5px 0;
+        flex: 1;
+      }
+      .x-inequality {
+        margin: auto 5px auto 7px;
+        font-family: Arial, Helvetica, sans-serif;
+        letter-spacing: 3px;
+      }
+      input {
+        color: white;
+        background: rgba(0, 0, 0, 0.7);
+        border: none;
+        border-radius: 4px;
+      }
     </style>
   </head>
 
@@ -56,6 +76,11 @@
       <div class="equality-container">
         <div class="x-equals">x=</div>
         <input id="equalityQuery" type="text">
+      </div>
+      <div class="inequality-container">
+        <input id="lessThanQuery" type="text">
+        <div class="x-inequality">&lt;x&lt;</div>
+        <input id="greaterThanQuery" type="text">
       </div>
     </div>
   </body>
