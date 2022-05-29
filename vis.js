@@ -89,7 +89,7 @@ function graphArrayElement(loc, value, opacity) {
   scene.add(wireframe);
 
   // Display element value
-  var loader = new THREE.FontLoader();
+  let loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
     let nDigits = value.toString().includes('.') ? 6 : 5;
     let textsShapes = font.generateShapes(value.toString().slice(0, nDigits+1), 0.15);
@@ -99,6 +99,7 @@ function graphArrayElement(loc, value, opacity) {
     let text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x + 0.05, y + 0.05, z+0.01);
     scene.add(text);
+
     let textReverse = new THREE.Mesh(textsGeometry, textsMaterial);
     textReverse.position.set(x + 0.95, y + 0.05, z-1.01);
     textReverse.rotateY(Math.PI);

@@ -148,11 +148,11 @@ let array3D = [
 
 function gen() {
   let array = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
     array.push([]);
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < 5; j++) {
       array[i].push([]);
-      for (let k = 0; k < 10; k++) {
+      for (let k = 0; k < 30; k++) {
         array[i][j].push(Math.random());
       }
     }
