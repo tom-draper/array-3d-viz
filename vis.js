@@ -4,6 +4,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/exampl
 let camera, controls;
 let scene;
 let renderer;
+var cubes = [];
 
 init();
 animate();
@@ -58,6 +59,7 @@ function setArrayShape(arr) {
   document.getElementById("arrayShape").textContent = shape;
 }
 
+
 function graphArrayElement(loc, value, opacity) {
   let [x, y, z] = loc;
 
@@ -73,11 +75,13 @@ function graphArrayElement(loc, value, opacity) {
   cube.position.y = y + 0.5;
   cube.position.z = z - 0.5;
   scene.add(cube);
+  cube.value = value;
+  cubes.push(cube);
 
   // Cube edges
   let wireframe = new THREE.LineSegments(
     new THREE.EdgesGeometry(geometry),
-    new THREE.LineBasicMaterial({ color: 0x00FF00})
+    new THREE.LineBasicMaterial({ color: 0x00ff00 })
   );
   wireframe.position.x = x + 0.5;
   wireframe.position.y = y + 0.5;
@@ -265,6 +269,54 @@ function handleResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+function highlightValue(value) {
+  for (let i = 0; i < cubes.length; i++) {
+    if (cubes[i].value == value) {
+      cubes[i].material.opacity = 0.8;
+    } else {
+      cubes[i].material.opacity = 0;
+    }
+  }
+}
+
+function resetScale() {
+  let max = cubes[0].value;
+  let min = cubes[0].value;
+  for (let i = 1; i < cubes.length; i++) {
+    if (cubes[i].value > max) {
+      max = cubes[i].value;
+    }
+    if (cubes[i].value < min) {
+      min = cubes[i].value;
+    }
+  }
+
+  for (let i = 0; i < cubes.length; i++) {
+    let opacity = ((cubes[i].value - min) / (max - min)) * 0.8;
+    cubes[i].material.opacity = opacity;
+  }
+}
+
+function isNumeric(str) {
+  if (typeof str != "string") return false;
+  return (
+    !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+    !isNaN(parseFloat(str))
+  );
+}
+
+let input = document.getElementById("equalityQuery");
+let inputValue = document.getElementById("equalityQuery").value;
+
+input.addEventListener("keyup", function () {
+  inputValue = document.getElementById("equalityQuery").value;
+  if (isNumeric(inputValue)) {
+    highlightValue(parseFloat(inputValue));
+  } else if (inputValue == '') {
+    resetScale();
+  }
+});
 
 // ------------Button controls-------------
 
