@@ -3,7 +3,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/exampl
 
 let camera, controls;
 let mouseDown = false;
-let sceneMain;
+let scene;
 let renderer;
 
 init();
@@ -11,7 +11,7 @@ animate();
 
 // Listen for keyboard events, to react to them.
 document.addEventListener("keydown", handleKeyDown);
-document.addEventListener("mousemove", handleMouseMove);
+// document.addEventListener("mousemove", handleMouseMove);
 document.body.addEventListener(
   "mousedown",
   function (event) {
@@ -44,10 +44,10 @@ function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   geometry.vertices.push(new THREE.Vector3(x1, y1, z1));
   geometry.vertices.push(new THREE.Vector3(x2, y2, z2));
   let line = new THREE.Line(geometry, lineMaterial);
-  sceneMain.add(line);
+  scene.add(line);
 }
 
-function graph1DArray(x, y, z, arr) {
+function graph1DArray2(x, y, z, arr) {
   graphLine(x, y, z, x + arr.length, y, z);
   graphLine(x, y + 1, z, x + arr.length, y + 1, z);
   graphLine(x, y + 1, z - 1, x + arr.length, y + 1, z - 1);
@@ -60,6 +60,46 @@ function graph1DArray(x, y, z, arr) {
   }
 }
 
+function graphArrayElement(loc, value, opacity) {
+  let [x, y, z] = loc;
+
+  let geometry = new THREE.BoxGeometry();
+  let material = new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: opacity, transparent: true});
+  let cube = new THREE.Mesh(geometry, material);
+  cube.position.x = x + 0.5;
+  cube.position.y = y + 0.5;
+  cube.position.z = z - 0.5;
+  scene.add(cube);
+
+  let wireframe = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), new THREE.LineBasicMaterial({color: 0x00ff00, linewidth: 2}));
+  wireframe.position.x = x + 0.5;
+  wireframe.position.y = y + 0.5;
+  wireframe.position.z = z - 0.5;
+  scene.add(wireframe);
+}
+
+function graph1DArray(loc, arr) {
+  let [x, y, z] = loc;
+  let max = Math.max(...arr.flat());
+  let min = Math.min(...arr.flat());
+  for (let i = 0; i < arr.length; i++) {
+    let opacity = (arr[i]-min)/(max-min) * 0.8;
+    graphArrayElement([x+i, y, z], arr[i], opacity);
+  }
+}
+
+function graph2DArray(loc, arr) {
+  let [x, y, z] = loc;
+  let max = Math.max(...arr.flat());
+  let min = Math.min(...arr.flat());
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[0].length; j++) {
+      let opacity = (arr[i][j]-min)/(max-min) * 0.8;
+      graphArrayElement([x+j, y+arr.length-1-i, z], arr[i][j], opacity);
+    }
+  }
+}
+
 function init() {
   // Set up the Web GL renderer.
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -68,7 +108,7 @@ function init() {
   renderer.autoClear = false;
   document.body.appendChild(renderer.domElement);
 
-  sceneMain = new THREE.Scene();
+  scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
     100,
     window.innerWidth / window.innerHeight,
@@ -86,7 +126,8 @@ function init() {
   graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
 
-  graph1DArray(0, 0, 0, [1, 2, 3, 4, 5]);
+  // graph1DArray([0, 0, 0], [1, 2, 3]);
+  graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -94,10 +135,10 @@ function init() {
   directionalLight.position.y = 10;
   directionalLight.position.z = 0;
   directionalLight.intensity = 1.5;
-  sceneMain.add(directionalLight);
+  scene.add(directionalLight);
   let ambientLight = new THREE.AmbientLight();
   ambientLight.intensity = 0.2;
-  sceneMain.add(ambientLight);
+  scene.add(ambientLight);
 
   // Handle resizing of the browser window.
   window.addEventListener("resize", handleResize, false);
@@ -110,7 +151,7 @@ function animate() {
 
   // Render the current scene to the screen.
   // controls.update();
-  renderer.render(sceneMain, camera);
+  renderer.render(scene, camera);
 }
 
 /* Handle resizing of the browser window. */
@@ -134,13 +175,13 @@ function handleKeyDown(event) {
     case 37: // Left arrow
       camera.translateX(-0.1);
       break;
-      case 39: // Right arrow
+    case 39: // Right arrow
       camera.translateX(0.1);
       break;
-      case 40: // Down arrow
+    case 40: // Down arrow
       camera.translateZ(0.1);
       break;
-      case 82: // R
+    case 82: // R
       camera.translateZ(-0.1);
       break;
   }
@@ -148,24 +189,24 @@ function handleKeyDown(event) {
 }
 
 /* Control camera orbit */
-function handleMouseMove(event) {
-  if (mouseDown) {
-    // theta = -((event.clientX - startMouseX) * 0.5) + startTheta;
-    // phi = Math.min(
-    //   180,
-    //   Math.max(0, (event.clientY - startMouseY) * 0.5 + startPhi)
-    // );
+// function handleMouseMove(event) {
+//   if (mouseDown) {
+//     // theta = -((event.clientX - startMouseX) * 0.5) + startTheta;
+//     // phi = Math.min(
+//     //   180,
+//     //   Math.max(0, (event.clientY - startMouseY) * 0.5 + startPhi)
+//     // );
 
-    // camera.position.x =
-    //   radius *
-    //   Math.sin((theta * Math.PI) / 360) *
-    //   Math.cos((phi * Math.PI) / 360);
-    // camera.position.y = radius * Math.sin((phi * Math.PI) / 360);
-    // camera.position.z =
-    //   radius *
-    //   Math.cos((theta * Math.PI) / 360) *
-    //   Math.cos((phi * Math.PI) / 360);
-    // camera.lookAt(new THREE.Vector3(0, gameHeight / 2, 0));
-    camera.updateMatrix();
-  }
-}
+//     // camera.position.x =
+//     //   radius *
+//     //   Math.sin((theta * Math.PI) / 360) *
+//     //   Math.cos((phi * Math.PI) / 360);
+//     // camera.position.y = radius * Math.sin((phi * Math.PI) / 360);
+//     // camera.position.z =
+//     //   radius *
+//     //   Math.cos((theta * Math.PI) / 360) *
+//     //   Math.cos((phi * Math.PI) / 360);
+//     // camera.lookAt(new THREE.Vector3(0, gameHeight / 2, 0));
+//     camera.updateMatrix();
+//   }
+// }
