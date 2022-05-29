@@ -4,7 +4,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/exampl
 let camera, controls;
 let scene;
 let renderer;
-var cubes = [];
+let cubes = [];
 
 init();
 animate();
@@ -91,16 +91,18 @@ function graphArrayElement(loc, value, opacity) {
   // Display element value
   var loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
-    var textsShapes = font.generateShapes(value.toString(), 0.2);
-    var textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    var textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    let nDigits = value.toString().includes('.') ? 6 : 5;
+    let textsShapes = font.generateShapes(value.toString().slice(0, nDigits+1), 0.15);
+    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-    var text = new THREE.Mesh(textsGeometry, textsMaterial);
-    text.position.set(x + 0.1, y + 0.1, z);
-    // text.rotateY(Math.PI/2);
-    text.name = "text";
-
+    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    text.position.set(x + 0.05, y + 0.05, z+0.01);
     scene.add(text);
+    let textReverse = new THREE.Mesh(textsGeometry, textsMaterial);
+    textReverse.position.set(x + 0.95, y + 0.05, z-1.01);
+    textReverse.rotateY(Math.PI);
+    scene.add(textReverse);
   });
 }
 
@@ -163,7 +165,7 @@ function axisCoordinates(loc, arr) {
         let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x - 0.25, y + i + 0.1, z);
+        text.position.set(x - 0.25, y + i + 0.05, z);
 
         scene.add(text);
       }
@@ -180,7 +182,6 @@ function axisCoordinates(loc, arr) {
         text.position.set(x - 0.3, y, z - i - 0.95);
         text.rotateX((3 * Math.PI) / 2);
         text.rotateZ((3 * Math.PI) / 2);
-
         scene.add(text);
       }
     }
@@ -235,7 +236,7 @@ function init() {
 
   // graph1DArray([0, 0, 0], [1, 2, 3]);
   // graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-  array3D[12][0][3] = 1;
+  // array3D[12][0][3] = 1000;
   graph3DArray([0, 0, 0], array3D);
 
   // Add directional lighting to scene.
@@ -251,12 +252,42 @@ function init() {
 
   // Handle resizing of the browser window.
   window.addEventListener("resize", handleResize, false);
-  // initialiseGame();
 }
+
+
+function updateValues(direction) {
+  let x_ = Math.abs(direction.x);
+  let y_ = Math.abs(direction.y);
+  let z_ = Math.abs(direction.z);
+  if (x_ > y_ && x_ > z_) {
+    if (direction.x >= 0) {
+      console.log("Positive x");
+    } else {
+      console.log("Negative x");
+    }
+  } else if (y_ > x_ && y_ > z_) {
+    if (direction.y >= 0) {
+      console.log("Positive y");
+    } else {
+      console.log("Negative y");
+    }
+  } else {
+    if (direction.z >= 0) {
+      console.log("Positive z");
+    } else {
+      console.log("Negative z");
+    }
+  }
+}
+
+
+// var vector = new THREE.Vector3(); // create once and reuse it!
 
 /* Loops to animate the scene */
 function animate() {
   requestAnimationFrame(animate);
+
+  // updateValues(camera.getWorldDirection(vector));
 
   // Render the current scene to the screen.
   // controls.update();

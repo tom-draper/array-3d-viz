@@ -144,3 +144,21 @@ let array3D = [
       [0, 0, 0, 0],
     ],
   ];
+
+
+function gen() {
+  let array = [];
+  for (let i = 0; i < 10; i++) {
+    array.push([]);
+    for (let j = 0; j < 10; j++) {
+      array[i].push([]);
+      for (let k = 0; k < 10; k++) {
+        array[i][j].push(Math.random());
+      }
+    }
+  }
+  return array;
+}
+
+array3D = gen();
+console.log(array3D);
