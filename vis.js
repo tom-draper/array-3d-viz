@@ -133,6 +133,7 @@ function graph1DArray(loc, arr) {
     let opacity = ((arr[i] - min) / (max - min)) * 0.8;
     graphArrayElement([x + i, y, z], arr[i], opacity);
   }
+  axisCoordinates(loc, arr);
   setArrayShape(arr);
 }
 
@@ -146,49 +147,60 @@ function graph2DArray(loc, arr) {
       graphArrayElement([x + j, y + arr.length - 1 - i, z], arr[i][j], opacity);
     }
   }
+  axisCoordinates(loc, arr);
   setArrayShape(arr);
 }
 
-function axis3DCoordinates(loc, arr) {
+function axisCoordinates(loc, arr) {
   let [x, y, z] = loc;
 
-  // x axis coords on floor
+  let shape = arrayShape(arr);
+
   var loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
-    for (let i = 0; i < arr.length; i++) {
-      let textsShapes = font.generateShapes(i.toString(), 0.2);
-      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
-
-      let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x+i+0.1, y, z+0.35);
-      text.rotateX(3*Math.PI/2);
-      
-      scene.add(text);
+    if (shape.length > 0) {
+      // x axis coords on floor
+      for (let i = 0; i < arr.length; i++) {
+        let textsShapes = font.generateShapes(i.toString(), 0.2);
+        let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+  
+        let text = new THREE.Mesh(textsGeometry, textsMaterial);
+        text.position.set(x+i+0.1, y, z+0.35);
+        text.rotateX(3*Math.PI/2);
+        
+        scene.add(text);
+      }
     }
     
-    for (let i = 0; i < arr[0].length; i++) {
-      let textsShapes = font.generateShapes((arr[0].length-1-i).toString(), 0.2);
-      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
-
-      let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x-0.25, y+i+0.15, z);
-
-      scene.add(text);
+    if (shape.length > 1) {
+      // y axis coords top to bottom
+      for (let i = 0; i < arr[0].length; i++) {
+        let textsShapes = font.generateShapes((arr[0].length-1-i).toString(), 0.2);
+        let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
+  
+        let text = new THREE.Mesh(textsGeometry, textsMaterial);
+        text.position.set(x-0.25, y+i+0.15, z);
+  
+        scene.add(text);
+      }
     }
-
-    for (let i = 0; i < arr[0][0].length; i++) {
-      let textsShapes = font.generateShapes(i.toString(), 0.2);
-      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
-      
-      let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x-0.3, y, z-i-0.95);
-      text.rotateX(3*Math.PI/2);
-      text.rotateZ(3*Math.PI/2);
-
-      scene.add(text);
+    
+    if (shape.length > 2) {
+      // z axis coords on floor
+      for (let i = 0; i < arr[0][0].length; i++) {
+        let textsShapes = font.generateShapes(i.toString(), 0.2);
+        let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
+        
+        let text = new THREE.Mesh(textsGeometry, textsMaterial);
+        text.position.set(x-0.3, y, z-i-0.95);
+        text.rotateX(3*Math.PI/2);
+        text.rotateZ(3*Math.PI/2);
+  
+        scene.add(text);
+      }
     }
   });
 }
@@ -209,7 +221,7 @@ function graph3DArray(loc, arr) {
       }
     }
   }
-  axis3DCoordinates(loc, arr);
+  axisCoordinates(loc, arr);
   setArrayShape(arr);
 }
 
@@ -239,7 +251,7 @@ function init() {
   graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
 
-  // graph1DArray([0, 0, 0], [1, 2, 3]);
+  graph1DArray([0, 0, 0], [1, 2, 3]);
   // graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
   // graph3DArray(
   //   [0, 0, 0],
@@ -256,9 +268,9 @@ function init() {
   //     ],
   //   ]
   // );
-  let array = [[[0, 0], [0, 0], [0, 0]],[[0, 0], [0, 0], [0, 0]]];
-  array[0][0][1] = 1;
-  graph3DArray([0, 0, 0], array);
+  // let array = [[[0, 0], [0, 0], [0, 0]],[[0, 0], [0, 0], [0, 0]]];
+  // array[0][0][1] = 1;
+  // graph3DArray([0, 0, 0], array);
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
