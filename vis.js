@@ -114,11 +114,11 @@ function graphArrayElement(loc, value, opacity) {
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
     var textsShapes = font.generateShapes(value.toString(), 0.2);
     var textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    var textsMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+    var textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
     var text = new THREE.Mesh(textsGeometry, textsMaterial);
-    text.position.set(x+1, y, z);
-    text.rotateY(Math.PI/2);
+    text.position.set(x + 0.1, y + 0.1, z);
+    // text.rotateY(Math.PI/2);
     text.name = "text";
 
     scene.add(text);
@@ -163,42 +163,45 @@ function axisCoordinates(loc, arr) {
       for (let i = 0; i < arr.length; i++) {
         let textsShapes = font.generateShapes(i.toString(), 0.2);
         let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
-  
+        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x+i+0.1, y, z+0.35);
-        text.rotateX(3*Math.PI/2);
-        
+        text.position.set(x + i + 0.1, y, z + 0.35);
+        text.rotateX((3 * Math.PI) / 2);
+
         scene.add(text);
       }
     }
-    
+
     if (shape.length > 1) {
       // y axis coords top to bottom
       for (let i = 0; i < arr[0].length; i++) {
-        let textsShapes = font.generateShapes((arr[0].length-1-i).toString(), 0.2);
+        let textsShapes = font.generateShapes(
+          (arr[0].length - 1 - i).toString(),
+          0.2
+        );
         let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
-  
+        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x-0.25, y+i+0.15, z);
-  
+        text.position.set(x - 0.25, y + i + 0.1, z);
+
         scene.add(text);
       }
     }
-    
+
     if (shape.length > 2) {
       // z axis coords on floor
       for (let i = 0; i < arr[0][0].length; i++) {
         let textsShapes = font.generateShapes(i.toString(), 0.2);
         let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000FF });
-        
+        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x-0.3, y, z-i-0.95);
-        text.rotateX(3*Math.PI/2);
-        text.rotateZ(3*Math.PI/2);
-  
+        text.position.set(x - 0.3, y, z - i - 0.95);
+        text.rotateX((3 * Math.PI) / 2);
+        text.rotateZ((3 * Math.PI) / 2);
+
         scene.add(text);
       }
     }
@@ -214,7 +217,7 @@ function graph3DArray(loc, arr) {
       for (let k = 0; k < arr[0][0].length; k++) {
         let opacity = ((arr[i][j][k] - min) / (max - min)) * 0.8;
         graphArrayElement(
-          [x + i, y + arr.length - j, z - k],
+          [x + i, y + arr[0].length - 1 - j, z - k],
           arr[i][j][k],
           opacity
         );
@@ -251,26 +254,10 @@ function init() {
   graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
 
-  graph1DArray([0, 0, 0], [1, 2, 3]);
+  // graph1DArray([0, 0, 0], [1, 2, 3]);
   // graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-  // graph3DArray(
-  //   [0, 0, 0],
-  //   [
-  //     [
-  //       [1, 2, 3, 4],
-  //       [4, 5, 6, 4],
-  //       [7, 8, 9, 4],
-  //     ],
-  //     [
-  //       [10, 11, 12, 4],
-  //       [13, 14, 15, 4],
-  //       [16, 17, 18, 4],
-  //     ],
-  //   ]
-  // );
-  // let array = [[[0, 0], [0, 0], [0, 0]],[[0, 0], [0, 0], [0, 0]]];
-  // array[0][0][1] = 1;
-  // graph3DArray([0, 0, 0], array);
+  array3D[12][0][3] = 1;
+  graph3DArray([0, 0, 0], array3D);
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
