@@ -60,6 +60,37 @@ function graph1DArray2(x, y, z, arr) {
   }
 }
 
+function arrayEquals(a, b) {
+  return a.length === b.length && a.every(function(value, index) {
+    return value === b[index];
+  });
+}
+
+function arrayShape(arr) {
+  if (!(arr instanceof Array) || !arr.length) {
+    return [];
+  }
+  var dim = arr.reduce(function(result, current) {
+    return arrayEquals(result, arrayShape(current)) ? result : false;
+  }, arrayShape(arr[0]));
+
+  return dim && [arr.length].concat(dim);
+}
+
+// function arrayShape(arr){
+//     let rowCount = arr.length;
+//     let rowSizes = [];
+//     for (let i = 0; i < rowCount; i++){
+//         rowSizes.push(arr[i].length);
+//     }
+//     return [rowCount, Math.min.apply(null, rowSizes)];
+// }
+
+function setArrayShape(arr) {
+  let shape = '(' + arrayShape(arr).toString().replaceAll(',', ', ') + ')';
+  document.getElementById('arrayShape').textContent = shape;
+}
+
 function graphArrayElement(loc, value, opacity) {
   let [x, y, z] = loc;
 
@@ -86,6 +117,7 @@ function graph1DArray(loc, arr) {
     let opacity = (arr[i]-min)/(max-min) * 0.8;
     graphArrayElement([x+i, y, z], arr[i], opacity);
   }
+  setArrayShape(arr);
 }
 
 function graph2DArray(loc, arr) {
@@ -98,6 +130,22 @@ function graph2DArray(loc, arr) {
       graphArrayElement([x+j, y+arr.length-1-i, z], arr[i][j], opacity);
     }
   }
+  setArrayShape(arr);
+}
+
+function graph3DArray(loc, arr) {
+  let [x, y, z] = loc;
+  let max = Math.max(...(arr.flat()).flat());
+  let min = Math.min(...(arr.flat()).flat());
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[0].length; j++) {
+      for (let k = 0; k < arr[0][0].length; k++) {
+        let opacity = (arr[i][j][k]-min)/(max-min) * 0.8;
+        graphArrayElement([x+k, y+arr.length-j, z-i], arr[i][j][k], opacity);
+      } 
+    }
+  }
+  setArrayShape(arr);
 }
 
 function init() {
@@ -127,7 +175,8 @@ function init() {
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
 
   // graph1DArray([0, 0, 0], [1, 2, 3]);
-  graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+  // graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+  graph3DArray([0, 0, 0], [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[10, 11, 12], [13, 14, 15], [16, 17, 18]]]);
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
