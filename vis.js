@@ -90,8 +90,8 @@ function graphArrayElement(loc, value, opacity) {
 
   // Display element value
   let loader = new THREE.FontLoader();
-  loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
-    let nDigits = value.toString().includes('.') ? 6 : 5;
+  loader.load("fonts/helvetiker_regular.typeface.json", function (font) {
+    let nDigits = value.toString().includes('.') ? 7 : 5;
     let textsShapes = font.generateShapes(value.toString().slice(0, nDigits+1), 0.15);
     let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
     let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -137,53 +137,95 @@ function axisCoordinates(loc, arr) {
   let [x, y, z] = loc;
 
   let shape = arrayShape(arr);
+  let doubleAxisSize = 10;
 
   var loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
     if (shape.length > 0) {
       // x axis coords on floor
       for (let i = 0; i < arr.length; i++) {
-        let textsShapes = font.generateShapes(i.toString(), 0.2);
+        let textsShapes = font.generateShapes(i.toString(), 0.3);
         let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
         let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x + i + 0.1, y, z + 0.35);
-        text.rotateX((3 * Math.PI) / 2);
-
+        text.position.set(x + i + 0.1, y-0.4, z);
         scene.add(text);
+        if (shape.length > 1 && arr[0].length > doubleAxisSize) {
+          let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+          textAbove.position.set(x + i + 0.1, y+arr[0].length+0.1, z);
+          scene.add(textAbove);
+        }
+        if (shape.length > 2) {
+          let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+          textBehind.position.set(x + i + 0.9, y-0.4, z-arr[0][0].length);
+          textBehind.rotateY(Math.PI);
+          scene.add(textBehind);
+          if (arr[0].length > doubleAxisSize) {
+            let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+            textBehindAbove.position.set(x + i + 0.9, y+arr[0].length+0.1, z-arr[0][0].length);
+            textBehindAbove.rotateY(Math.PI);
+            scene.add(textBehindAbove);
+          }
+        }
       }
     }
 
     if (shape.length > 1) {
       // y axis coords top to bottom
       for (let i = 0; i < arr[0].length; i++) {
-        let textsShapes = font.generateShapes(
-          (arr[0].length - 1 - i).toString(),
-          0.2
-        );
+        let textsShapes = font.generateShapes((arr[0].length - 1 - i).toString(),0.3);
         let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
         let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x - 0.25, y + i + 0.05, z);
-
+        text.position.set(x - 0.35, y + i + 0.1, z);
         scene.add(text);
+        if (arr.length > doubleAxisSize) {
+          let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
+          textRight.position.set(x + arr.length+0.15, y + i + 0.1, z);
+          scene.add(textRight);
+        }
+        if (shape.length > 2) {
+          let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
+          textBehindRight.position.set(x + arr.length+0.4, y + i + 0.1, z - arr[0][0].length);
+          textBehindRight.rotateY(Math.PI);
+          scene.add(textBehindRight);
+          if (arr.length > doubleAxisSize) {
+            let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+            textBehind.position.set(x - 0.15, y + i + 0.1, z-arr[0][0].length);
+            textBehind.rotateY(Math.PI);
+            scene.add(textBehind);
+          }
+        }
       }
     }
 
     if (shape.length > 2) {
       // z axis coords on floor
       for (let i = 0; i < arr[0][0].length; i++) {
-        let textsShapes = font.generateShapes(i.toString(), 0.2);
+        let textsShapes = font.generateShapes(i.toString(), 0.3);
         let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
         let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 
         let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x - 0.3, y, z - i - 0.95);
-        text.rotateX((3 * Math.PI) / 2);
-        text.rotateZ((3 * Math.PI) / 2);
+        text.position.set(x, y-0.4, z - i - 0.95);
+        text.rotateY(-Math.PI/2);
         scene.add(text);
+        let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehind.position.set(x+arr.length, y-0.4, z - i - 0.1);
+        textBehind.rotateY(Math.PI/2);
+        scene.add(textBehind);
+        if (arr[0].length > doubleAxisSize) {
+          let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+          textAbove.position.set(x, y+0.1+arr[0].length, z - i - 0.95);
+          textAbove.rotateY(-Math.PI/2);
+          scene.add(textAbove);
+          let textAboveBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+          textAboveBehind.position.set(x+arr.length, y+0.1+arr[0].length, z - i - 0.1);
+          textAboveBehind.rotateY(Math.PI/2);
+          scene.add(textAboveBehind);
+        }
       }
     }
   });
@@ -219,15 +261,19 @@ function init() {
 
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
-    100,
+    60,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
   );
   controls = new OrbitControls(camera, renderer.domElement);
+  camera.position.set(10, 10, 10);
 
-  camera.position.set(3, 3, 3);
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
+  let center = arrayShape(array).map(x => Math.ceil(x/2));
+  center[2] *= -1;
+  console.log(center);
+  camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
+  controls.target.set(center[0], center[1], center[2]);
 
   // controls.update();
 
@@ -238,7 +284,7 @@ function init() {
   // graph1DArray([0, 0, 0], [1, 2, 3]);
   // graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
   // array3D[12][0][3] = 1000;
-  graph3DArray([0, 0, 0], array3D);
+  graph3DArray([0, 0, 0], array);
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -373,7 +419,10 @@ lessThanInput.addEventListener("keyup", function() {
       high = parseFloat(greaterThanInputValue);
     }
     highlightInequality(parseFloat(lessThanInputValue), high);
-  } else if (lessThanInputValue == '') {
+  } else if (isNumeric(greaterThanInputValue)) {
+    // If just erased less than input, but greater than input available
+    highlightInequality(Number.NEGATIVE_INFINITY, parseFloat(greaterThanInputValue));
+  } else if (lessThanInputValue == '' && greaterThanInput == '') {
     resetScale();
   }
   equalityInput.value = '';
@@ -390,6 +439,9 @@ greaterThanInput.addEventListener("keyup", function() {
       low = parseFloat(lessThanInputValue);
     }
     highlightInequality(low, parseFloat(greaterThanInputValue));
+  } else if (isNumeric(lessThanInputValue)) {
+    // If just erased greater than input, but less than input still available
+    highlightInequality(parseFloat(lessThanInputValue), Number.POSITIVE_INFINITY);
   } else if (greaterThanInputValue == '') {
     resetScale();
   }
