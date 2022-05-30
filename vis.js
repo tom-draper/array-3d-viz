@@ -237,9 +237,7 @@ function zAxisLabels(loc, arr, font, doubleAxisSize) {
 }
 
 function axisCoordinates(loc, arr) {
-  let shape = arrayShape(arr);
   let doubleAxisSize = 10;
-
   var loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
     xAxisLabels(loc, arr, font, doubleAxisSize);
@@ -269,6 +267,9 @@ function graph3DArray(loc, arr) {
 }
 
 function init() {
+  // array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+  // array = [1, 2, 3, 4, 5, 50, 100, 200, 300, 350];
+
   // Set up the Web GL renderer.
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -285,9 +286,11 @@ function init() {
   );
   controls = new OrbitControls(camera, renderer.domElement);
   let shape = arrayShape(array);
-  camera.position.set(...shape);
+  let shapePadded = (shape.concat(Array(3 - shape.length).fill(0)));
+  shapePadded[2] = Math.max(Math.max(...shapePadded), 3);
+  camera.position.set(shapePadded[0], shapePadded[1], shapePadded[2]);
 
-  let center = shape.map(x => Math.ceil(x/2));
+  let center = shape.concat(Array(3 - shape.length).fill(0)).map(x => Math.floor(x/2));
   center[2] *= -1;
   console.log(center);
   camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
@@ -298,11 +301,14 @@ function init() {
   graphLine(-100, 0, 0, 100, 0, 0, 0xff0000);
   graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
-
-  // graph1DArray([0, 0, 0], [1, 2, 3]);
-  // graph2DArray([0, 0, 0], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-  // array3D[12][0][3] = 1000;
-  graph3DArray([0, 0, 0], array);
+  
+  if (shape.length == 1) {
+    graph1DArray([0, 0, 0], array);
+  } else if (shape.length == 2) {
+    graph2DArray([0, 0, 0], array);
+  } else if (shape.length == 3) {
+    graph3DArray([0, 0, 0], array);
+  }
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
