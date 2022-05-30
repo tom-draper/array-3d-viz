@@ -133,101 +133,118 @@ function graph2DArray(loc, arr) {
   setArrayShape(arr);
 }
 
-function axisCoordinates(loc, arr) {
+function xAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
+  let shape = arrayShape(arr);
 
+  if (shape.length > 0) {
+    // x axis coords on floor
+    for (let i = 0; i < arr.length; i++) {
+      let textsShapes = font.generateShapes(i.toString(), 0.3);
+      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+      let text = new THREE.Mesh(textsGeometry, textsMaterial);
+      text.position.set(x + i + 0.1, y-0.4, z);
+      scene.add(text);
+      if (shape.length > 1 && arr[0].length > doubleAxisSize) {
+        let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+        textAbove.position.set(x + i + 0.1, y+arr[0].length+0.1, z);
+        scene.add(textAbove);
+      }
+      if (shape.length > 2) {
+        let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehind.position.set(x + i + 0.9, y-0.4, z-arr[0][0].length);
+        textBehind.rotateY(Math.PI);
+        scene.add(textBehind);
+        if (arr[0].length > doubleAxisSize) {
+          let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+          textBehindAbove.position.set(x + i + 0.9, y+arr[0].length+0.1, z-arr[0][0].length);
+          textBehindAbove.rotateY(Math.PI);
+          scene.add(textBehindAbove);
+        }
+      }
+    }
+  }
+}
+
+function yAxisLabels(loc, arr, font, doubleAxisSize) {
+  let [x, y, z] = loc;
+  let shape = arrayShape(arr);
+
+  if (shape.length > 1) {
+    // y axis coords top to bottom
+    for (let i = 0; i < arr[0].length; i++) {
+      let textsShapes = font.generateShapes((arr[0].length - 1 - i).toString(),0.3);
+      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  
+      let text = new THREE.Mesh(textsGeometry, textsMaterial);
+      text.position.set(x - 0.35, y + i + 0.1, z);
+      scene.add(text);
+      if (arr.length > doubleAxisSize) {
+        let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
+        textRight.position.set(x + arr.length+0.15, y + i + 0.1, z);
+        scene.add(textRight);
+      }
+      if (shape.length > 2) {
+        let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehindRight.position.set(x + arr.length+0.4, y + i + 0.1, z - arr[0][0].length);
+        textBehindRight.rotateY(Math.PI);
+        scene.add(textBehindRight);
+        if (arr.length > doubleAxisSize) {
+          let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+          textBehind.position.set(x - 0.15, y + i + 0.1, z-arr[0][0].length);
+          textBehind.rotateY(Math.PI);
+          scene.add(textBehind);
+        }
+      }
+    }
+  }
+}
+
+function zAxisLabels(loc, arr, font, doubleAxisSize) {
+  let [x, y, z] = loc;
+  let shape = arrayShape(arr);
+
+  if (shape.length > 2) {
+    // z axis coords on floor
+    for (let i = 0; i < arr[0][0].length; i++) {
+      let textsShapes = font.generateShapes(i.toString(), 0.3);
+      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+
+      let text = new THREE.Mesh(textsGeometry, textsMaterial);
+      text.position.set(x, y-0.4, z - i - 0.95);
+      text.rotateY(-Math.PI/2);
+      scene.add(text);
+      let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      textBehind.position.set(x+arr.length, y-0.4, z - i - 0.1);
+      textBehind.rotateY(Math.PI/2);
+      scene.add(textBehind);
+      if (arr[0].length > doubleAxisSize) {
+        let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+        textAbove.position.set(x, y+0.1+arr[0].length, z - i - 0.95);
+        textAbove.rotateY(-Math.PI/2);
+        scene.add(textAbove);
+        let textAboveBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+        textAboveBehind.position.set(x+arr.length, y+0.1+arr[0].length, z - i - 0.1);
+        textAboveBehind.rotateY(Math.PI/2);
+        scene.add(textAboveBehind);
+      }
+    }
+  }
+}
+
+function axisCoordinates(loc, arr) {
   let shape = arrayShape(arr);
   let doubleAxisSize = 10;
 
   var loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
-    if (shape.length > 0) {
-      // x axis coords on floor
-      for (let i = 0; i < arr.length; i++) {
-        let textsShapes = font.generateShapes(i.toString(), 0.3);
-        let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-        let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x + i + 0.1, y-0.4, z);
-        scene.add(text);
-        if (shape.length > 1 && arr[0].length > doubleAxisSize) {
-          let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-          textAbove.position.set(x + i + 0.1, y+arr[0].length+0.1, z);
-          scene.add(textAbove);
-        }
-        if (shape.length > 2) {
-          let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-          textBehind.position.set(x + i + 0.9, y-0.4, z-arr[0][0].length);
-          textBehind.rotateY(Math.PI);
-          scene.add(textBehind);
-          if (arr[0].length > doubleAxisSize) {
-            let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-            textBehindAbove.position.set(x + i + 0.9, y+arr[0].length+0.1, z-arr[0][0].length);
-            textBehindAbove.rotateY(Math.PI);
-            scene.add(textBehindAbove);
-          }
-        }
-      }
-    }
-
-    if (shape.length > 1) {
-      // y axis coords top to bottom
-      for (let i = 0; i < arr[0].length; i++) {
-        let textsShapes = font.generateShapes((arr[0].length - 1 - i).toString(),0.3);
-        let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-
-        let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x - 0.35, y + i + 0.1, z);
-        scene.add(text);
-        if (arr.length > doubleAxisSize) {
-          let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
-          textRight.position.set(x + arr.length+0.15, y + i + 0.1, z);
-          scene.add(textRight);
-        }
-        if (shape.length > 2) {
-          let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
-          textBehindRight.position.set(x + arr.length+0.4, y + i + 0.1, z - arr[0][0].length);
-          textBehindRight.rotateY(Math.PI);
-          scene.add(textBehindRight);
-          if (arr.length > doubleAxisSize) {
-            let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-            textBehind.position.set(x - 0.15, y + i + 0.1, z-arr[0][0].length);
-            textBehind.rotateY(Math.PI);
-            scene.add(textBehind);
-          }
-        }
-      }
-    }
-
-    if (shape.length > 2) {
-      // z axis coords on floor
-      for (let i = 0; i < arr[0][0].length; i++) {
-        let textsShapes = font.generateShapes(i.toString(), 0.3);
-        let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-        let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-
-        let text = new THREE.Mesh(textsGeometry, textsMaterial);
-        text.position.set(x, y-0.4, z - i - 0.95);
-        text.rotateY(-Math.PI/2);
-        scene.add(text);
-        let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-        textBehind.position.set(x+arr.length, y-0.4, z - i - 0.1);
-        textBehind.rotateY(Math.PI/2);
-        scene.add(textBehind);
-        if (arr[0].length > doubleAxisSize) {
-          let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-          textAbove.position.set(x, y+0.1+arr[0].length, z - i - 0.95);
-          textAbove.rotateY(-Math.PI/2);
-          scene.add(textAbove);
-          let textAboveBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-          textAboveBehind.position.set(x+arr.length, y+0.1+arr[0].length, z - i - 0.1);
-          textAboveBehind.rotateY(Math.PI/2);
-          scene.add(textAboveBehind);
-        }
-      }
-    }
+    xAxisLabels(loc, arr, font, doubleAxisSize);
+    yAxisLabels(loc, arr, font, doubleAxisSize);
+    zAxisLabels(loc, arr, font, doubleAxisSize);
   });
 }
 
@@ -267,9 +284,10 @@ function init() {
     1000
   );
   controls = new OrbitControls(camera, renderer.domElement);
-  camera.position.set(10, 10, 10);
+  let shape = arrayShape(array);
+  camera.position.set(...shape);
 
-  let center = arrayShape(array).map(x => Math.ceil(x/2));
+  let center = shape.map(x => Math.ceil(x/2));
   center[2] *= -1;
   console.log(center);
   camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
