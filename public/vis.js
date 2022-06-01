@@ -146,7 +146,7 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
 
   if (shape.length > 0) {
     // x axis coords on floor
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr[0].length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -185,8 +185,8 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
 
   if (shape.length > 1) {
     // y axis coords top to bottom
-    for (let i = 0; i < arr[0].length; i++) {
-      let textsShapes = font.generateShapes((arr[0].length - 1 - i).toString(),0.3);
+    for (let i = 0; i < arr.length; i++) {
+      let textsShapes = font.generateShapes((arr.length - 1 - i).toString(),0.3);
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   
@@ -269,11 +269,9 @@ function graph3DArray(loc, arr) {
     for (let j = 0; j < arr[0].length; j++) {
       for (let k = 0; k < arr[0][0].length; k++) {
         let opacity = ((arr[i][j][k] - min) / (max - min)) * 0.8;
-        graphArrayElement(
-          [x + i, y + arr[0].length - 1 - j, z - k],
-          arr[i][j][k],
-          opacity
-        );
+        // graphArrayElement([x + i, y + arr[0].length - 1 - j, z - k], arr[i][j][k], opacity);
+        // graphArrayElement([x + j, y + arr.length - 1 - i, z], arr[i][j], opacity);
+        graphArrayElement([x + k, y + arr[0].length - 1 - j, z - i], arr[i][j][k], opacity);
       }
     }
   }
