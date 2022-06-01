@@ -148,11 +148,11 @@ let array3D = [
 
 function gen() {
   let array = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     array.push([]);
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < 2; j++) {
       array[i].push([]);
-      for (let k = 0; k < 10; k++) {
+      for (let k = 0; k < 4; k++) {
         array[i][j].push(Math.floor(Math.random() * 300) * i - 5*k);
       }
     }
@@ -160,4 +160,23 @@ function gen() {
   return array;
 }
 
-let array = gen();
+function gen2() {
+  let array = [];
+  for (let i = 0; i < 5; i++) {
+    array.push([]);
+    for (let j = 0; j < 5; j++) {
+      array[i].push(i*5+j);
+    }
+  }
+  return array;
+}
+
+function gen3() {
+  let array = [0, 1];
+  for (let i = 2; i < 15; i++) {
+    array.push(array[i-1] + array[i-2]);
+  }
+  return array;
+}
+
+// let array = gen3();

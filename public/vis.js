@@ -5,9 +5,16 @@ let camera, controls;
 let scene;
 let renderer;
 let cubes = [];
+let array;
 
-init();
-animate();
+$.get( "/data", function( data ) {
+  $( ".result" ).html( data );
+  array = JSON.parse(data);
+  console.log(array);
+  init();
+  animate();
+});
+
 
 function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   if (colour == undefined) {
@@ -147,16 +154,20 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
       text.position.set(x + i + 0.1, y-0.4, z);
       scene.add(text);
+
       if (shape.length > 1 && arr[0].length > doubleAxisSize) {
         let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
         textAbove.position.set(x + i + 0.1, y+arr[0].length+0.1, z);
         scene.add(textAbove);
       }
+
+      let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      let depth = shape.length > 2 ? arr[0][0].length : 1;
+      textBehind.position.set(x + i + 0.9, y-0.4, z-depth);
+      textBehind.rotateY(Math.PI);
+      scene.add(textBehind);
+
       if (shape.length > 2) {
-        let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-        textBehind.position.set(x + i + 0.9, y-0.4, z-arr[0][0].length);
-        textBehind.rotateY(Math.PI);
-        scene.add(textBehind);
         if (arr[0].length > doubleAxisSize) {
           let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
           textBehindAbove.position.set(x + i + 0.9, y+arr[0].length+0.1, z-arr[0][0].length);
@@ -292,7 +303,6 @@ function init() {
 
   let center = shape.concat(Array(3 - shape.length).fill(0)).map(x => Math.floor(x/2));
   center[2] *= -1;
-  console.log(center);
   camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
   controls.target.set(center[0], center[1], center[2]);
 
@@ -471,6 +481,8 @@ greaterThanInput.addEventListener("keyup", function() {
   }
   equalityInput.value = '';
 });
+
+
 
 // ------------Button controls-------------
 
