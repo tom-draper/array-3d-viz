@@ -7,14 +7,13 @@ let renderer;
 let cubes = [];
 let array;
 
-$.get( "/data", function( data ) {
-  $( ".result" ).html( data );
+$.get("/data", function (data) {
+  $(".result").html(data);
   array = JSON.parse(data);
   console.log(array);
   init();
   animate();
 });
-
 
 function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   if (colour == undefined) {
@@ -66,7 +65,6 @@ function setArrayShape(arr) {
   document.getElementById("arrayShape").textContent = shape;
 }
 
-
 function graphArrayElement(loc, value, opacity) {
   let [x, y, z] = loc;
 
@@ -98,17 +96,20 @@ function graphArrayElement(loc, value, opacity) {
   // Display element value
   let loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_regular.typeface.json", function (font) {
-    let nDigits = value.toString().includes('.') ? 7 : 5;
-    let textsShapes = font.generateShapes(value.toString().slice(0, nDigits+1), 0.15);
+    let nDigits = value.toString().includes(".") ? 7 : 5;
+    let textsShapes = font.generateShapes(
+      value.toString().slice(0, nDigits + 1),
+      0.15
+    );
     let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
     let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
     let text = new THREE.Mesh(textsGeometry, textsMaterial);
-    text.position.set(x + 0.05, y + 0.05, z+0.01);
+    text.position.set(x + 0.05, y + 0.05, z + 0.01);
     scene.add(text);
 
     let textReverse = new THREE.Mesh(textsGeometry, textsMaterial);
-    textReverse.position.set(x + 0.95, y + 0.05, z-1.01);
+    textReverse.position.set(x + 0.95, y + 0.05, z - 1.01);
     textReverse.rotateY(Math.PI);
     scene.add(textReverse);
   });
@@ -144,7 +145,23 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
-  if (shape.length > 0) {
+  if (shape.length == 1) {
+    for (let i = 0; i < arr.length; i++) {
+      let textsShapes = font.generateShapes(i.toString(), 0.3);
+      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+      let text = new THREE.Mesh(textsGeometry, textsMaterial);
+      text.position.set(x + i + 0.1, y - 0.4, z);
+      scene.add(text);
+
+      let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      let depth = shape.length > 2 ? arr[0][0].length : 1;
+      textBehind.position.set(x + i + 0.9, y - 0.4, z - depth);
+      textBehind.rotateY(Math.PI);
+      scene.add(textBehind);
+    }
+  } else if (shape.length == 2) {
     // x axis coords on floor
     for (let i = 0; i < arr[0].length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
@@ -152,28 +169,62 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x + i + 0.1, y-0.4, z);
+      text.position.set(x + i + 0.1, y - 0.4, z);
       scene.add(text);
 
-      if (shape.length > 1 && arr[0].length > doubleAxisSize) {
+      if (arr[0].length > doubleAxisSize) {
         let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-        textAbove.position.set(x + i + 0.1, y+arr[0].length+0.1, z);
+        textAbove.position.set(x + i + 0.1, y + arr.length + 0.1, z);
         scene.add(textAbove);
       }
 
       let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-      let depth = shape.length > 2 ? arr[0][0].length : 1;
-      textBehind.position.set(x + i + 0.9, y-0.4, z-depth);
+      textBehind.position.set(x + i + 0.9, y - 0.4, z - 1);
       textBehind.rotateY(Math.PI);
       scene.add(textBehind);
 
-      if (shape.length > 2) {
-        if (arr[0].length > doubleAxisSize) {
-          let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-          textBehindAbove.position.set(x + i + 0.9, y+arr[0].length+0.1, z-arr[0][0].length);
-          textBehindAbove.rotateY(Math.PI);
-          scene.add(textBehindAbove);
-        }
+      if (arr.length > doubleAxisSize) {
+        let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehindAbove.position.set(
+          x + i + 0.9,
+          y + arr.length + 0.1,
+          z - 1
+        );
+        textBehindAbove.rotateY(Math.PI);
+        scene.add(textBehindAbove);
+      }
+    }
+  } else if (shape.length == 3) {
+    // x axis coords on floor
+    for (let i = 0; i < arr[0][0].length; i++) {
+      let textsShapes = font.generateShapes(i.toString(), 0.3);
+      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+      let text = new THREE.Mesh(textsGeometry, textsMaterial);
+      text.position.set(x + i + 0.1, y - 0.4, z);
+      scene.add(text);
+
+      if (arr[0].length > doubleAxisSize) {
+        let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+        textAbove.position.set(x + i + 0.1, y + arr[0].length + 0.1, z);
+        scene.add(textAbove);
+      }
+
+      let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      textBehind.position.set(x + i + 0.9, y - 0.4, z - arr.length);
+      textBehind.rotateY(Math.PI);
+      scene.add(textBehind);
+
+      if (arr.length > doubleAxisSize) {
+        let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehindAbove.position.set(
+          x + i + 0.9,
+          y + arr[0].length + 0.1,
+          z - arr.length
+        );
+        textBehindAbove.rotateY(Math.PI);
+        scene.add(textBehindAbove);
       }
     }
   }
@@ -183,38 +234,79 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
-  if (shape.length > 1) {
+  if (shape.length == 2) {
     // y axis coords top to bottom
     for (let i = 0; i < arr.length; i++) {
-      let textsShapes = font.generateShapes((arr.length - 1 - i).toString(),0.3);
+      let textsShapes = font.generateShapes(
+        (arr.length - 1 - i).toString(),
+        0.3
+      );
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  
+
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
       text.position.set(x - 0.35, y + i + 0.1, z);
       scene.add(text);
 
       if (arr.length > doubleAxisSize) {
         let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
-        textRight.position.set(x + arr.length+0.15, y + i + 0.1, z);
+        textRight.position.set(x + arr[0].length + 0.15, y + i + 0.1, z);
         scene.add(textRight);
       }
 
       let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
-      let depth = shape.length > 2 ? arr[0][0].length : 1;
-      textBehindRight.position.set(x + arr.length+0.4, y + i + 0.1, z - depth);
+      textBehindRight.position.set(
+        x + arr[0].length + 0.4,
+        y + i + 0.1,
+        z - 1
+      );
       textBehindRight.rotateY(Math.PI);
       scene.add(textBehindRight);
 
-      if (shape.length > 2) {
-        if (arr.length > doubleAxisSize) {
-          let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-          textBehind.position.set(x - 0.15, y + i + 0.1, z-arr[0][0].length);
-          textBehind.rotateY(Math.PI);
-          scene.add(textBehind);
-        }
+      if (arr.length > doubleAxisSize) {
+        let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehind.position.set(x - 0.15, y + i + 0.1, z - 1);
+        textBehind.rotateY(Math.PI);
+        scene.add(textBehind);
       }
     }
+  } else if (shape.length == 3) {
+    // y axis coords top to bottom
+    for (let i = 0; i < arr[0].length; i++) {
+      let textsShapes = font.generateShapes(
+        (arr[0].length - 1 - i).toString(),
+        0.3
+      );
+      let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+      let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+      let text = new THREE.Mesh(textsGeometry, textsMaterial);
+      text.position.set(x - 0.35, y + i + 0.1, z);
+      scene.add(text);
+
+      if (arr.length > doubleAxisSize) {
+        let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
+        textRight.position.set(x + arr[0][0].length + 0.15, y + i + 0.1, z);
+        scene.add(textRight);
+      }
+
+      let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
+      textBehindRight.position.set(
+        x + arr[0][0].length + 0.4,
+        y + i + 0.1,
+        z - arr.length
+      );
+      textBehindRight.rotateY(Math.PI);
+      scene.add(textBehindRight);
+
+      if (arr.length > doubleAxisSize) {
+        let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+        textBehind.position.set(x - 0.15, y + i + 0.1, z - arr.length);
+        textBehind.rotateY(Math.PI);
+        scene.add(textBehind);
+      }
+    }
+
   }
 }
 
@@ -222,29 +314,36 @@ function zAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
-  if (shape.length > 2) {
+  if (shape.length == 3) {
     // z axis coords on floor
-    for (let i = 0; i < arr[0][0].length; i++) {
+    for (let i = 0; i < arr.length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x, y-0.4, z - i - 0.95);
-      text.rotateY(-Math.PI/2);
+      text.position.set(x, y - 0.4, z - i - 0.95);
+      text.rotateY(-Math.PI / 2);
       scene.add(text);
+
       let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-      textBehind.position.set(x+arr.length, y-0.4, z - i - 0.1);
-      textBehind.rotateY(Math.PI/2);
+      textBehind.position.set(x + arr[0][0].length, y - 0.4, z - i - 0.1);
+      textBehind.rotateY(Math.PI / 2);
       scene.add(textBehind);
+
       if (arr[0].length > doubleAxisSize) {
         let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-        textAbove.position.set(x, y+0.1+arr[0].length, z - i - 0.95);
-        textAbove.rotateY(-Math.PI/2);
+        textAbove.position.set(x, y + 0.1 + arr[0].length, z - i - 0.95);
+        textAbove.rotateY(-Math.PI / 2);
         scene.add(textAbove);
+
         let textAboveBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-        textAboveBehind.position.set(x+arr.length, y+0.1+arr[0].length, z - i - 0.1);
-        textAboveBehind.rotateY(Math.PI/2);
+        textAboveBehind.position.set(
+          x + arr[0][0].length,
+          y + 0.1 + arr[0].length,
+          z - i - 0.1
+        );
+        textAboveBehind.rotateY(Math.PI / 2);
         scene.add(textAboveBehind);
       }
     }
@@ -271,7 +370,11 @@ function graph3DArray(loc, arr) {
         let opacity = ((arr[i][j][k] - min) / (max - min)) * 0.8;
         // graphArrayElement([x + i, y + arr[0].length - 1 - j, z - k], arr[i][j][k], opacity);
         // graphArrayElement([x + j, y + arr.length - 1 - i, z], arr[i][j], opacity);
-        graphArrayElement([x + k, y + arr[0].length - 1 - j, z - i], arr[i][j][k], opacity);
+        graphArrayElement(
+          [x + k, y + arr[0].length - 1 - j, z - i],
+          arr[i][j][k],
+          opacity
+        );
       }
     }
   }
@@ -297,11 +400,13 @@ function init() {
   controls = new OrbitControls(camera, renderer.domElement);
   let shape = arrayShape(array);
   // Shape padded to 3D with 0s for non-existent dimensions
-  let shape3D = (shape.concat(Array(3 - shape.length).fill(0)));
+  let shape3D = shape.concat(Array(3 - shape.length).fill(0));
   shape3D[2] = Math.max(Math.max(...shape3D), 3);
   camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
 
-  let center = shape.concat(Array(3 - shape.length).fill(0)).map(x => Math.floor(x/2));
+  let center = shape
+    .concat(Array(3 - shape.length).fill(0))
+    .map((x) => Math.floor(x / 2));
   center[2] *= -1;
   camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
   controls.target.set(center[0], center[1], center[2]);
@@ -311,7 +416,7 @@ function init() {
   graphLine(-100, 0, 0, 100, 0, 0, 0xff0000);
   graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
-  
+
   if (shape.length == 1) {
     graph1DArray([0, 0, 0], array);
   } else if (shape.length == 2) {
@@ -391,11 +496,11 @@ equalityInput.addEventListener("keyup", function () {
   equalityInputValue = document.getElementById("equalityQuery").value;
   if (isNumeric(equalityInputValue)) {
     highlightValue(parseFloat(equalityInputValue));
-  } else if (equalityInputValue == '') {
+  } else if (equalityInputValue == "") {
     resetScale();
   }
-  lessThanInput.value = '';
-  greaterThanInput.value = '';
+  lessThanInput.value = "";
+  greaterThanInput.value = "";
 });
 
 function highlightInequality(low, high) {
@@ -411,7 +516,7 @@ function highlightInequality(low, high) {
 let lessThanInput = document.getElementById("lessThanQuery");
 let lessThanInputValue = lessThanInput.value;
 
-lessThanInput.addEventListener("keyup", function() {
+lessThanInput.addEventListener("keyup", function () {
   lessThanInputValue = document.getElementById("lessThanQuery").value;
   if (isNumeric(lessThanInputValue)) {
     let high = Number.POSITIVE_INFINITY;
@@ -421,17 +526,20 @@ lessThanInput.addEventListener("keyup", function() {
     highlightInequality(parseFloat(lessThanInputValue), high);
   } else if (isNumeric(greaterThanInputValue)) {
     // If just erased less than input, but greater than input available
-    highlightInequality(Number.NEGATIVE_INFINITY, parseFloat(greaterThanInputValue));
-  } else if (lessThanInputValue == '' && greaterThanInput == '') {
+    highlightInequality(
+      Number.NEGATIVE_INFINITY,
+      parseFloat(greaterThanInputValue)
+    );
+  } else if (lessThanInputValue == "" && greaterThanInput == "") {
     resetScale();
   }
-  equalityInput.value = '';
+  equalityInput.value = "";
 });
 
 let greaterThanInput = document.getElementById("greaterThanQuery");
 let greaterThanInputValue = greaterThanInput.value;
 
-greaterThanInput.addEventListener("keyup", function() {
+greaterThanInput.addEventListener("keyup", function () {
   greaterThanInputValue = document.getElementById("greaterThanQuery").value;
   if (isNumeric(greaterThanInputValue)) {
     let low = Number.NEGATIVE_INFINITY;
@@ -441,9 +549,12 @@ greaterThanInput.addEventListener("keyup", function() {
     highlightInequality(low, parseFloat(greaterThanInputValue));
   } else if (isNumeric(lessThanInputValue)) {
     // If just erased greater than input, but less than input still available
-    highlightInequality(parseFloat(lessThanInputValue), Number.POSITIVE_INFINITY);
-  } else if (greaterThanInputValue == '') {
+    highlightInequality(
+      parseFloat(lessThanInputValue),
+      Number.POSITIVE_INFINITY
+    );
+  } else if (greaterThanInputValue == "") {
     resetScale();
   }
-  equalityInput.value = '';
+  equalityInput.value = "";
 });
