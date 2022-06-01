@@ -193,16 +193,20 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
       text.position.set(x - 0.35, y + i + 0.1, z);
       scene.add(text);
+
       if (arr.length > doubleAxisSize) {
         let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
         textRight.position.set(x + arr.length+0.15, y + i + 0.1, z);
         scene.add(textRight);
       }
+
+      let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
+      let depth = shape.length > 2 ? arr[0][0].length : 1;
+      textBehindRight.position.set(x + arr.length+0.4, y + i + 0.1, z - depth);
+      textBehindRight.rotateY(Math.PI);
+      scene.add(textBehindRight);
+
       if (shape.length > 2) {
-        let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
-        textBehindRight.position.set(x + arr.length+0.4, y + i + 0.1, z - arr[0][0].length);
-        textBehindRight.rotateY(Math.PI);
-        scene.add(textBehindRight);
         if (arr.length > doubleAxisSize) {
           let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
           textBehind.position.set(x - 0.15, y + i + 0.1, z-arr[0][0].length);
@@ -278,9 +282,6 @@ function graph3DArray(loc, arr) {
 }
 
 function init() {
-  // array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-  // array = [1, 2, 3, 4, 5, 50, 100, 200, 300, 350];
-
   // Set up the Web GL renderer.
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -335,43 +336,9 @@ function init() {
   window.addEventListener("resize", handleResize, false);
 }
 
-
-function updateValues(direction) {
-  let x_ = Math.abs(direction.x);
-  let y_ = Math.abs(direction.y);
-  let z_ = Math.abs(direction.z);
-  if (x_ > y_ && x_ > z_) {
-    if (direction.x >= 0) {
-      console.log("Positive x");
-    } else {
-      console.log("Negative x");
-    }
-  } else if (y_ > x_ && y_ > z_) {
-    if (direction.y >= 0) {
-      console.log("Positive y");
-    } else {
-      console.log("Negative y");
-    }
-  } else {
-    if (direction.z >= 0) {
-      console.log("Positive z");
-    } else {
-      console.log("Negative z");
-    }
-  }
-}
-
-
-// var vector = new THREE.Vector3(); // create once and reuse it!
-
 /* Loops to animate the scene */
 function animate() {
   requestAnimationFrame(animate);
-
-  // updateValues(camera.getWorldDirection(vector));
-
-  // Render the current scene to the screen.
-  // controls.update();
   renderer.render(scene, camera);
 }
 
@@ -481,32 +448,3 @@ greaterThanInput.addEventListener("keyup", function() {
   }
   equalityInput.value = '';
 });
-
-
-
-// ------------Button controls-------------
-
-/* Handle keyboard presses */
-function handleKeyDown(event) {
-  switch (event.keyCode) {
-    case 32:
-      camera.position.y += 0.1;
-      break;
-    case 16:
-      camera.position.y -= 0.1;
-      break;
-    case 37: // Left arrow
-      camera.translateX(-0.1);
-      break;
-    case 39: // Right arrow
-      camera.translateX(0.1);
-      break;
-    case 40: // Down arrow
-      camera.translateZ(0.1);
-      break;
-    case 82: // R
-      camera.translateZ(-0.1);
-      break;
-  }
-  controls.update();
-}
