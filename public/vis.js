@@ -298,9 +298,10 @@ function init() {
   );
   controls = new OrbitControls(camera, renderer.domElement);
   let shape = arrayShape(array);
-  let shapePadded = (shape.concat(Array(3 - shape.length).fill(0)));
-  shapePadded[2] = Math.max(Math.max(...shapePadded), 3);
-  camera.position.set(shapePadded[0], shapePadded[1], shapePadded[2]);
+  // Shape padded to 3D with 0s for non-existent dimensions
+  let shape3D = (shape.concat(Array(3 - shape.length).fill(0)));
+  shape3D[2] = Math.max(Math.max(...shape3D), 3);
+  camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
 
   let center = shape.concat(Array(3 - shape.length).fill(0)).map(x => Math.floor(x/2));
   center[2] *= -1;
