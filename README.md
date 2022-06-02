@@ -9,8 +9,12 @@ Compatibility:
 ![] pickle    
 
 ## Usage 
-
+```
 node main <filename>
+```
+to start the server.
+
+Then open localhost:8080 in a browser to access visualisation.
 
 ### Example JSON (2 x 2 x 4)
 
