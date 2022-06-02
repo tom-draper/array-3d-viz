@@ -2,9 +2,9 @@
 A tool to visualise 1D, 2D and 3D arrays in 3D space from saved files.
 
 Compatibility:    
-![X] JSON    
-![X] Numpy .npy    
-![] pickle      
+- [x] JSON    
+- [x] Numpy .npy    
+- [ ] pickle      
 
 ## Usage 
 
