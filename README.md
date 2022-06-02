@@ -6,13 +6,13 @@ Visualies 1D, 2D and 3D arrays and matrices from saved files.
 Compatibility:
 ![X] JSON    
 ![X] Numpy .npy    
-![] pickle    
+![] pickle      
 
 ## Usage 
 
 node main <filename>
 
-### Example JSON (2 x 2 x 4)
+### Example JSON (2 x 4 x 3)
 
 ```json
 [
