@@ -3,7 +3,7 @@ A tool to visualise matrices in 3-dimensional space.
 
 Visualies 1D, 2D and 3D arrays and matrices from saved files.
 
-Compatibility:
+Compatibility:    
 ![X] JSON    
 ![X] Numpy .npy    
 ![] pickle      
