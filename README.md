@@ -32,5 +32,7 @@ Then open localhost:8080 in a browser to access visualisation.
   ]
 ]
 ```
-![Example5](https://user-images.githubusercontent.com/41476809/171645395-7c71391c-0efe-47a0-bfc2-39f4d50c115e.png)
+![Example5](https://user-images.githubusercontent.com/41476809/171648209-0aefce87-c66a-4483-b655-0e05259b60e0.png)
+![Example6](https://user-images.githubusercontent.com/41476809/171648124-06b23bc9-fce3-4dd8-a57f-9ebc71eef517.png)
+
 
