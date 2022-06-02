@@ -27,19 +27,6 @@ function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   scene.add(line);
 }
 
-function graph1DArray2(x, y, z, arr) {
-  graphLine(x, y, z, x + arr.length, y, z);
-  graphLine(x, y + 1, z, x + arr.length, y + 1, z);
-  graphLine(x, y + 1, z - 1, x + arr.length, y + 1, z - 1);
-  graphLine(x, y, z - 1, x + arr.length, y, z - 1);
-  for (let i = 0; i < arr.length + 1; i++) {
-    graphLine(x + i, y, z, x + i, y + 1, z);
-    graphLine(x + i, y, z - 1, x + i, y + 1, z - 1);
-    graphLine(x + i, y + 1, z, x + i, y + 1, z - 1);
-    graphLine(x + i, y, z, x + i, y, z - 1);
-  }
-}
-
 function arrayEquals(a, b) {
   return (
     a.length === b.length &&
@@ -76,9 +63,7 @@ function graphArrayElement(loc, value, opacity) {
     transparent: true,
   });
   let cube = new THREE.Mesh(geometry, material);
-  cube.position.x = x + 0.5;
-  cube.position.y = y + 0.5;
-  cube.position.z = z - 0.5;
+  cube.position.set(x+0.5, y+0.5, z-0.5);
   scene.add(cube);
   cube.value = value;
   cubes.push(cube);
@@ -88,9 +73,7 @@ function graphArrayElement(loc, value, opacity) {
     new THREE.EdgesGeometry(geometry),
     new THREE.LineBasicMaterial({ color: 0x00ff00 })
   );
-  wireframe.position.x = x + 0.5;
-  wireframe.position.y = y + 0.5;
-  wireframe.position.z = z - 0.5;
+  wireframe.position.set(x+0.5, y+0.5, z-0.5);
   scene.add(wireframe);
 
   // Display element value
@@ -411,8 +394,6 @@ function init() {
   camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
   controls.target.set(center[0], center[1], center[2]);
 
-  // controls.update();
-
   graphLine(-100, 0, 0, 100, 0, 0, 0xff0000);
   graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
   graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
@@ -427,9 +408,7 @@ function init() {
 
   // Add directional lighting to scene.
   let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-  directionalLight.position.x = 10;
-  directionalLight.position.y = 10;
-  directionalLight.position.z = 0;
+  directionalLight.position.set(10, 10, 0);
   directionalLight.intensity = 1.5;
   scene.add(directionalLight);
   let ambientLight = new THREE.AmbientLight();
@@ -499,6 +478,7 @@ equalityInput.addEventListener("keyup", function () {
   } else if (equalityInputValue == "") {
     resetScale();
   }
+  // Erase any inqeuality input
   lessThanInput.value = "";
   greaterThanInput.value = "";
 });
@@ -533,7 +513,7 @@ lessThanInput.addEventListener("keyup", function () {
   } else if (lessThanInputValue == "" && greaterThanInput == "") {
     resetScale();
   }
-  equalityInput.value = "";
+  equalityInput.value = "";  // Erase any equality input
 });
 
 let greaterThanInput = document.getElementById("greaterThanQuery");
@@ -556,5 +536,6 @@ greaterThanInput.addEventListener("keyup", function () {
   } else if (greaterThanInputValue == "") {
     resetScale();
   }
-  equalityInput.value = "";
+
+  equalityInput.value = "";  // Erase any equality input
 });
