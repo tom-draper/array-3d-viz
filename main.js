@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+const { PythonShell } = require("python-shell");
 
 function getFilePath() {
   let path = process.argv[2];
@@ -24,13 +25,16 @@ function fileExists(file) {
 }
 
 function convertToJSON(path) {
+  if (path == undefined) {
+    return;
+  }
   let extension = path.split(".").slice(-1)[0];
   if (extension == "json") {
     fs.readFile(path, "utf8", (err, data) => {
       if (err) {
         console.log(`Error reading file from disk: ${err}`);
       } else {
-        fs.writeFile("data/temp.json", data, "utf8", (err) => {
+        fs.writeFile("data/temp/temp.json", data, "utf8", (err) => {
           if (err) {
             console.log(`Error writing file: ${err}`);
           }
@@ -38,14 +42,28 @@ function convertToJSON(path) {
       }
     });
   } else if (extension == "npy") {
+    // Run script to load target .npy file and save it in json format
+    PythonShell.run('load.py', {args: [path]}, function(err, results) {
+      if (err) {
+        console.log(err, results);
+      }
+    });
   } else {
     throw "File type not supported.";
   }
 }
 
-function run(path) {
-  convertToJSON(path); // Save target data into data/temp.json
+function fileExists(filepath) {
+  let flag = true;
+  try {
+    fs.accessSync(filepath, fs.constants.F_OK);
+  } catch (e) {
+    flag = false;
+  }
+  return flag;
+}
 
+function run() {
   const app = express();
   const port = process.env.PORT || 8080;
 
@@ -57,7 +75,7 @@ function run(path) {
 
   // To pass through array data
   app.get("/data", function (req, res) {
-    let readable = fs.createReadStream("data/temp.json");
+    let readable = fs.createReadStream("data/temp/temp.json");
     readable.pipe(res);
   });
 
@@ -65,19 +83,12 @@ function run(path) {
   console.log("Server started at: http://localhost:" + port);
 }
 
+
 let path = getFilePath();
-
-// let n = new npyjs();
-
-// n.load("my-array.npy", (array, shape) => {
-//   // `array` is a one-dimensional array of the raw data
-//   // `shape` is a one-dimensional array that holds a numpy-style shape.
-//   console.log(
-//     `You loaded an array with ${array.length} elements and ${shape.length} dimensions.`
-//   );
-// });
-
-fs.promises
-  .access(path, fs.constants.F_OK)
-  .then(run(path))
-  .catch(() => console.log("File path not found."));
+ 
+if (fileExists(path)) {
+  convertToJSON(path); // Save target data into data/temp.json
+  run();
+} else {
+  console.log("Data file not found.");
+}
