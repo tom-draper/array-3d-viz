@@ -1,4 +1,4 @@
 package.json
 package-lock.json
 node_modules
-temp/temp.json
+data/temp/temp.json
