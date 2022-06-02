@@ -1,7 +1,7 @@
 # 3D-Data-Viz
-A tool to visualise matrices in 3-dimensional space.
+A tool to visualise arrays in 3-dimensional space.
 
-Visualies 1D, 2D and 3D arrays and matrices from saved files.
+Visualies 1D, 2D and 3D arrays from saved files.
 
 Compatibility:    
 ![X] JSON    
