@@ -6,7 +6,7 @@ Visualies 1D, 2D and 3D arrays and matrices from saved files.
 Compatibility:
 ![X] JSON    
 ![X] Numpy .npy    
-![] pickle    
+![] pickle      
 
 ## Usage 
 ```
@@ -16,7 +16,7 @@ to start the server.
 
 Then open localhost:8080 in a browser to access visualisation.
 
-### Example JSON (2 x 2 x 4)
+### Example JSON (2 x 4 x 3)
 
 ```json
 [
