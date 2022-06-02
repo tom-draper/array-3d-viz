@@ -7,6 +7,9 @@ Compatibility:
 ![] pickle      
 
 ## Usage 
+
+Place the array file (.json, .npy) in the data directory.
+
 ```
 node main <filename>
 ```
