@@ -63,7 +63,7 @@ function fileExists(filepath) {
   return flag;
 }
 
-function run() {
+function run(gui) {
   const app = express();
   const port = process.env.PORT || 8080;
 
@@ -73,22 +73,33 @@ function run() {
     res.render("index.html");
   });
 
-  // To pass through array data
-  app.get("/data", function (req, res) {
-    let readable = fs.createReadStream("data/temp/temp.json");
-    readable.pipe(res);
+  app.get("/gui", function (req, res) {
+    res.send(gui);
   });
+
+  if (!gui) {
+    // To pass through array data
+    app.get("/data", function (req, res) {
+      let readable = fs.createReadStream("data/temp/temp.json");
+      readable.pipe(res);
+    });
+  }
 
   app.listen(port);
   console.log("Server started at: http://localhost:" + port);
 }
 
+let gui = process.argv.length != 3;
 
-let path = getFilePath();
- 
-if (fileExists(path)) {
-  convertToJSON(path); // Save target data into data/temp.json
-  run();
+if (gui) {
+  run(gui);
 } else {
-  console.log("Data file not found.");
+  let path = getFilePath();
+   
+  if (fileExists(path)) {
+    convertToJSON(path); // Save target data into data/temp.json
+    run(gui);
+  } else {
+    console.log("Data file not found.");
+  }
 }

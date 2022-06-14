@@ -1,5 +1,5 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js';
 
 let camera, controls;
 let scene;
@@ -7,13 +7,66 @@ let renderer;
 let cubes = [];
 let array;
 
-$.get("/data", function (data) {
-  $(".result").html(data);
-  array = JSON.parse(data);
-  console.log(array);
-  init();
-  animate();
+
+// Check whether using GUI
+$.get('/gui', function(gui) {
+  if (gui) {
+    setupGUI();  // Setup gui and wait for button click to fetch array input
+  } else {
+    disableGUI();
+    // Fetch array from saved file from server
+    $.get('/data', function (data) {
+      $('.result').html(data);
+      array = JSON.parse(data);
+      console.log(array);
+      init();
+      animate();
+    });
+  }
 });
+
+function setupGUI() {
+  disableViz();
+  $('#runViz').bind('click', runInput);
+}
+
+function disableGUI() {
+  $('#gui').css('display', 'none');  // Disable GUI
+}
+
+function enableGUI() {
+  $('#gui').css('display', 'block');  // Disable GUI
+}
+
+function disableViz() {
+  $('#dataViz').css('display', 'none');
+  $('.equality-container').css('display', 'none');
+  $('.inequality-container').css('display', 'none');
+}
+
+function enableViz() {
+  $('#dataViz').css('display', 'block');
+  $('.equality-container').css('display', 'flex');
+  $('.inequality-container').css('display', 'flex');
+}
+
+function validArray(input) {
+  return true;
+}
+
+function runInput() {
+  let input = $('#arrayInput').val().replace(/\s/g, '');
+  if (validArray(input)) {
+    array = new Array($.parseJSON(input));
+    disableGUI();
+    enableViz();
+    console.log(array);
+    init();
+    animate();
+  } else {
+    alert('Array not valid.');
+  }
+}
 
 function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   if (colour == undefined) {
@@ -48,8 +101,8 @@ function arrayShape(arr) {
 }
 
 function setArrayShape(arr) {
-  let shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
-  document.getElementById("arrayShape").textContent = shape;
+  let shape = '(' + arrayShape(arr).toString().replaceAll(',', ', ') + ')';
+  document.getElementById('arrayShape').textContent = shape;
 }
 
 function graphArrayElement(loc, value, opacity) {
@@ -78,8 +131,8 @@ function graphArrayElement(loc, value, opacity) {
 
   // Display element value
   let loader = new THREE.FontLoader();
-  loader.load("fonts/helvetiker_regular.typeface.json", function (font) {
-    let nDigits = value.toString().includes(".") ? 7 : 5;
+  loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+    let nDigits = value.toString().includes('.') ? 7 : 5;
     let textsShapes = font.generateShapes(
       value.toString().slice(0, nDigits + 1),
       0.15
@@ -336,7 +389,7 @@ function zAxisLabels(loc, arr, font, doubleAxisSize) {
 function axisCoordinates(loc, arr) {
   let doubleAxisSize = 10;
   var loader = new THREE.FontLoader();
-  loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
+  loader.load('fonts/helvetiker_bold.typeface.json', function (font) {
     xAxisLabels(loc, arr, font, doubleAxisSize);
     yAxisLabels(loc, arr, font, doubleAxisSize);
     zAxisLabels(loc, arr, font, doubleAxisSize);
@@ -416,7 +469,7 @@ function init() {
   scene.add(ambientLight);
 
   // Handle resizing of the browser window.
-  window.addEventListener("resize", handleResize, false);
+  window.addEventListener('resize', handleResize, false);
 }
 
 /* Loops to animate the scene */
@@ -461,26 +514,26 @@ function resetScale() {
 }
 
 function isNumeric(str) {
-  if (typeof str != "string") return false;
+  if (typeof str != 'string') return false;
   return (
     !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
     !isNaN(parseFloat(str))
   );
 }
 
-let equalityInput = document.getElementById("equalityQuery");
+let equalityInput = document.getElementById('equalityQuery');
 let equalityInputValue = equalityInput.value;
 
-equalityInput.addEventListener("keyup", function () {
-  equalityInputValue = document.getElementById("equalityQuery").value;
+equalityInput.addEventListener('keyup', function () {
+  equalityInputValue = document.getElementById('equalityQuery').value;
   if (isNumeric(equalityInputValue)) {
     highlightValue(parseFloat(equalityInputValue));
-  } else if (equalityInputValue == "") {
+  } else if (equalityInputValue == '') {
     resetScale();
   }
   // Erase any inqeuality input
-  lessThanInput.value = "";
-  greaterThanInput.value = "";
+  lessThanInput.value = '';
+  greaterThanInput.value = '';
 });
 
 function highlightInequality(low, high) {
@@ -493,11 +546,11 @@ function highlightInequality(low, high) {
   }
 }
 
-let lessThanInput = document.getElementById("lessThanQuery");
+let lessThanInput = document.getElementById('lessThanQuery');
 let lessThanInputValue = lessThanInput.value;
 
-lessThanInput.addEventListener("keyup", function () {
-  lessThanInputValue = document.getElementById("lessThanQuery").value;
+lessThanInput.addEventListener('keyup', function () {
+  lessThanInputValue = document.getElementById('lessThanQuery').value;
   if (isNumeric(lessThanInputValue)) {
     let high = Number.POSITIVE_INFINITY;
     if (isNumeric(greaterThanInputValue)) {
@@ -510,17 +563,17 @@ lessThanInput.addEventListener("keyup", function () {
       Number.NEGATIVE_INFINITY,
       parseFloat(greaterThanInputValue)
     );
-  } else if (greaterThanInputValue == "") {
+  } else if (greaterThanInputValue == '') {
     resetScale();
   }
-  equalityInput.value = "";  // Erase any equality input
+  equalityInput.value = '';  // Erase any equality input
 });
 
-let greaterThanInput = document.getElementById("greaterThanQuery");
+let greaterThanInput = document.getElementById('greaterThanQuery');
 let greaterThanInputValue = greaterThanInput.value;
 
-greaterThanInput.addEventListener("keyup", function () {
-  greaterThanInputValue = document.getElementById("greaterThanQuery").value;
+greaterThanInput.addEventListener('keyup', function () {
+  greaterThanInputValue = document.getElementById('greaterThanQuery').value;
   if (isNumeric(greaterThanInputValue)) {
     let low = Number.NEGATIVE_INFINITY;
     if (isNumeric(lessThanInputValue)) {
@@ -533,9 +586,9 @@ greaterThanInput.addEventListener("keyup", function () {
       parseFloat(lessThanInputValue),
       Number.POSITIVE_INFINITY
     );
-  } else if (greaterThanInputValue == "") {
+  } else if (greaterThanInputValue == '') {
     resetScale();
   }
 
-  equalityInput.value = "";  // Erase any equality input
+  equalityInput.value = '';  // Erase any equality input
 });

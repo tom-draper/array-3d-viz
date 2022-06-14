@@ -3,87 +3,34 @@
     <title>Data</title>
     <meta charset="utf-8" />
     <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    name="viewport"
+    content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
-    <link rel="icon" type="favicon" href="favicon.png"/>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-      }
-      #arrayShape {
-        position: fixed;
-        bottom: 10px;
-        left: 20px;
-        color: white;
-        font-family: Arial;
-      }
-      .query-container {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        background: rgba(255, 255, 255, 0.16);
-        border-radius: 4px;
-        width: 200px;
-        /* height: 50px; */
-        padding: 10px 20px;
-        color: white;
-      }
-      .equality-container {
-        display: flex;
-      }
-      .x-equals {
-        margin: auto;
-        font-family: Arial, Helvetica, sans-serif;
-        letter-spacing: 6px;
-      }
-      #equalityQuery {
-        margin: 5px 0 5px 0;
-        width: 100%;
-      }
-      .inequality-container {
-        display: flex;
-      }
-      #greaterThanQuery,
-      #lessThanQuery {
-        width: 100%;
-        margin: 5px 0;
-        flex: 1;
-      }
-      .x-inequality {
-        margin: auto 5px auto 7px;
-        font-family: Arial, Helvetica, sans-serif;
-        letter-spacing: 3px;
-      }
-      input {
-        color: white;
-        background: rgba(0, 0, 0, 0.7);
-        border: none;
-        border-radius: 4px;
-      }
-    </style>
-  </head>
-
-  <body>
+    <script type="module" src="viz.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <!-- <script src="array.js"></script> -->
-    <script type="module" src="vis.js"></script>
-
-    <div id="arrayShape"></div>
-    <div class="query-container">
-      <div class="equality-container">
-        <div class="x-equals">x=</div>
-        <input id="equalityQuery" type="text">
-      </div>
-      <div class="inequality-container">
-        <input id="lessThanQuery" type="text">
-        <div class="x-inequality">&lt;x&lt;</div>
-        <input id="greaterThanQuery" type="text">
+    <link rel="icon" type="favicon" href="favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+  </head>
+  
+  <body>
+    <div id="gui">
+      <textarea name="" id="arrayInput" cols="30" rows="10">
+        [1, 2, 3]
+      </textarea>
+      <button id="runViz">Run</button>
+    </div>
+    <div id="dataViz">
+      <div id="arrayShape"></div>
+      <div class="query-container">
+        <div class="equality-container">
+          <div class="x-equals">x=</div>
+          <input id="equalityQuery" type="text">
+        </div>
+        <div class="inequality-container">
+          <input id="lessThanQuery" type="text">
+          <div class="x-inequality">&lt;x&lt;</div>
+          <input id="greaterThanQuery" type="text">
+        </div>
       </div>
     </div>
   </body>
