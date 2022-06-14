@@ -1,7 +1,8 @@
 {
     "version": 2,
+    "name": "array-3d-viz",
     "builds": [ {
-            "src": "./main.js",
+            "src": "main.js",
             "use": "@vercel/node"
         }
     ],
