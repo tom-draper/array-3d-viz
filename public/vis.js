@@ -510,7 +510,7 @@ lessThanInput.addEventListener("keyup", function () {
       Number.NEGATIVE_INFINITY,
       parseFloat(greaterThanInputValue)
     );
-  } else if (lessThanInputValue == "" && greaterThanInput == "") {
+  } else if (greaterThanInputValue == "") {
     resetScale();
   }
   equalityInput.value = "";  // Erase any equality input
