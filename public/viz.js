@@ -71,7 +71,7 @@ function runInput() {
     init();
     animate();
   } else {
-    alert('Array not valid.');
+    alert('Invalid array');
   }
 }
 
