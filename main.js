@@ -1,6 +1,6 @@
-const express = require("express");
-const fs = require("fs");
-const { PythonShell } = require("python-shell");
+import express from "express";
+import { promises, constants, readFile, writeFile, accessSync, createReadStream } from "fs";
+import { PythonShell } from "python-shell";
 
 function getFilePath() {
   let path = process.argv[2];
@@ -18,8 +18,8 @@ function getFilePath() {
 }
 
 function fileExists(file) {
-  return fs.promises
-    .access(file, fs.constants.F_OK)
+  return promises
+    .access(file, constants.F_OK)
     .then(() => true)
     .catch(() => false);
 }
@@ -30,11 +30,11 @@ function convertToJSON(path) {
   }
   let extension = path.split(".").slice(-1)[0];
   if (extension == "json") {
-    fs.readFile(path, "utf8", (err, data) => {
+    readFile(path, "utf8", (err, data) => {
       if (err) {
         console.log(`Error reading file from disk: ${err}`);
       } else {
-        fs.writeFile("data/temp/temp.json", data, "utf8", (err) => {
+        writeFile("data/temp/temp.json", data, "utf8", (err) => {
           if (err) {
             console.log(`Error writing file: ${err}`);
           }
@@ -56,7 +56,7 @@ function convertToJSON(path) {
 function fileExists(filepath) {
   let flag = true;
   try {
-    fs.accessSync(filepath, fs.constants.F_OK);
+    accessSync(filepath, constants.F_OK);
   } catch (e) {
     flag = false;
   }
@@ -67,7 +67,7 @@ function run(gui) {
   const app = express();
   const port = process.env.PORT || 8080;
 
-  app.use(express.static(__dirname + "/public"));
+  app.use(static(__dirname + "/public"));
 
   app.get("/", function (req, res) {
     res.render("index.html");
@@ -81,7 +81,7 @@ function run(gui) {
   if (!gui) {
     // To return array data read from file
     app.get("/data", function (req, res) {
-      let readable = fs.createReadStream("data/temp/temp.json");
+      let readable = createReadStream("data/temp/temp.json");
       readable.pipe(res);
     });
   }
