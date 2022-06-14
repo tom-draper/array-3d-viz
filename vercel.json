@@ -3,14 +3,14 @@
     "name": "array-3d-viz",
     "builds": [
         {
-            "src": "./index.js",
+            "src": "./main.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "index.js"
+            "dest": "main.js"
         }
     ]
 }
