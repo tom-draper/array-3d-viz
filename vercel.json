@@ -1,7 +1,8 @@
 {
     "version": 2,
     "name": "array-3d-viz",
-    "builds": [ {
+    "builds": [
+        {
             "src": "./index.js",
             "use": "@vercel/node"
         }
@@ -9,7 +10,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/index.js"
+            "dest": "index.js"
         }
     ]
 }
