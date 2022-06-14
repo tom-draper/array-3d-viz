@@ -1,0 +1,27 @@
+{
+  "name": "array-3d-viz",
+  "version": "1.0.0",
+  "description": "A tool to visualise matrices in 3-dimensional space.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tom-Draper/3D-Data-Viz.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tom-Draper/3D-Data-Viz/issues"
+  },
+  "homepage": "https://github.com/Tom-Draper/3D-Data-Viz#readme",
+  "dependencies": {
+    "cross-fetch": "^3.1.5",
+    "express": "^4.18.1",
+    "node-fetch": "^2.6.7",
+    "npyjs": "^0.4.0",
+    "python-shell": "^3.0.1"
+  }
+}
