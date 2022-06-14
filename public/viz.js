@@ -13,7 +13,7 @@ $.get('/gui', function(gui) {
   if (gui) {
     setupGUI();  // Setup gui and wait for button click to fetch array input
   } else {
-    disableGUI();
+    enableViz();
     // Fetch array from saved file from server
     $.get('/data', function (data) {
       $('.result').html(data);
@@ -26,12 +26,16 @@ $.get('/gui', function(gui) {
 });
 
 function setupGUI() {
-  disableViz();
+  enableGUI();
   $('#runViz').bind('click', runInput);
 }
 
 function disableGUI() {
   $('#gui').css('display', 'none');  // Disable GUI
+}
+
+function enableGUI() {
+  $('#gui').css('display', 'flex');  // Disable GUI
 }
 
 function disableViz() {

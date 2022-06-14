@@ -132,3 +132,11 @@ input {
         margin: 1em;
     }
 }
+
+
+#gui,
+#dataViz,
+.inequality-container,
+.equality-container {
+    display: none;
+}
