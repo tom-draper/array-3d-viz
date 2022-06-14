@@ -2,14 +2,14 @@
     "version": 2,
     "name": "array-3d-viz",
     "builds": [ {
-            "src": "main.js",
+            "src": "./index.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/main.js"
+            "dest": "/index.js"
         }
     ]
 }
