@@ -34,10 +34,6 @@ function disableGUI() {
   $('#gui').css('display', 'none');  // Disable GUI
 }
 
-function enableGUI() {
-  $('#gui').css('display', 'block');  // Disable GUI
-}
-
 function disableViz() {
   $('#dataViz').css('display', 'none');
   $('.equality-container').css('display', 'none');
@@ -51,6 +47,17 @@ function enableViz() {
 }
 
 function validArray(input) {
+  try {
+    // Test if valid array syntax
+    let arr = new Array(JSON.parse(input));
+    // Check max of 3 dimensions
+    if (arrayShape(arr).length > 3) {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+
   return true;
 }
 
@@ -58,9 +65,9 @@ function runInput() {
   let input = $('#arrayInput').val().replace(/\s/g, '');
   if (validArray(input)) {
     array = new Array($.parseJSON(input));
+    console.log(array);
     disableGUI();
     enableViz();
-    console.log(array);
     init();
     animate();
   } else {
@@ -404,8 +411,6 @@ function graph3DArray(loc, arr) {
     for (let j = 0; j < arr[0].length; j++) {
       for (let k = 0; k < arr[0][0].length; k++) {
         let opacity = ((arr[i][j][k] - min) / (max - min)) * 0.8;
-        // graphArrayElement([x + i, y + arr[0].length - 1 - j, z - k], arr[i][j][k], opacity);
-        // graphArrayElement([x + j, y + arr.length - 1 - i, z], arr[i][j], opacity);
         graphArrayElement(
           [x + k, y + arr[0].length - 1 - j, z - i],
           arr[i][j][k],
@@ -416,6 +421,12 @@ function graph3DArray(loc, arr) {
   }
   axisCoordinates(loc, arr);
   setArrayShape(arr);
+}
+
+function graphAxisLines() {
+  graphLine(-100, 0, 0, 100, 0, 0, 0xff0000);
+  graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
+  graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
 }
 
 function init() {
@@ -443,13 +454,10 @@ function init() {
   let center = shape
     .concat(Array(3 - shape.length).fill(0))
     .map((x) => Math.floor(x / 2));
-  center[2] *= -1;
-  camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
-  controls.target.set(center[0], center[1], center[2]);
+  camera.lookAt(new THREE.Vector3(center[2], center[1], center[0]));
+  controls.target.set(center[2], center[1], center[0]);
 
-  graphLine(-100, 0, 0, 100, 0, 0, 0xff0000);
-  graphLine(0, -100, 0, 0, 100, 0, 0x00ff00);
-  graphLine(0, 0, -100, 0, 0, 100, 0x0000ff);
+  graphAxisLines();
 
   if (shape.length == 1) {
     graph1DArray([0, 0, 0], array);

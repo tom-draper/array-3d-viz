@@ -73,12 +73,13 @@ function run(gui) {
     res.render("index.html");
   });
 
+  // To return whether GUI version enabled
   app.get("/gui", function (req, res) {
     res.send(gui);
   });
 
   if (!gui) {
-    // To pass through array data
+    // To return array data read from file
     app.get("/data", function (req, res) {
       let readable = fs.createReadStream("data/temp/temp.json");
       readable.pipe(res);
