@@ -32,7 +32,7 @@ to start the server.
 
 Then open localhost:8080 in a browser to access visualisation.
 
-### Example JSON (2 x 4 x 3)
+## Example JSON (2 x 4 x 3)
 
 ```json
 [
