@@ -11,10 +11,10 @@ Two modes of use:
 
 Place the array file (.json, .npy) in the /data directory.
 
+To start the server run:
 ```
 node main <filename>
 ```
-to start the server.
 
 Then open localhost:8080 in a browser to access visualisation.
 
@@ -25,10 +25,10 @@ Then open localhost:8080 in a browser to access visualisation.
 
 ### Mode 2: Paste array data (JSON format) into web app from clipboard
 
+To start the server run:
 ```
 node main
 ```
-to start the server.
 
 Then open localhost:8080 in a browser to access visualisation.
 
