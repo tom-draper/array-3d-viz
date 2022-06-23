@@ -9,7 +9,7 @@ Two modes of use:
 
 ###  Mode 1: Run with a specified array file
 
-Place the array file (.json, .npy) in the data directory.
+Place the array file (.json, .npy) in the /data directory.
 
 ```
 node main <filename>
