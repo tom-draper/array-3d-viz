@@ -68,8 +68,8 @@ function validArray(input) {
 function runInput() {
   let input = $('#arrayInput').val().replace(/\s/g, '');
   if (validArray(input)) {
-    array = new Array($.parseJSON(input));
-    console.log(array);
+    array = $.parseJSON(input);
+    console.log(array)
     disableGUI();
     enableViz();
     init();
@@ -461,11 +461,15 @@ function init() {
     .map((x) => Math.floor(x / 2));
   
   if (nDim == 3) {
+    // Negative z-index as array is build behind the x-axis line (negative z coords)
     camera.lookAt(new THREE.Vector3(center[2], center[1], -center[0]));
     controls.target.set(center[2], center[1], -center[0]);
+  } else if (nDim == 2) {
+    camera.lookAt(new THREE.Vector3(center[1], center[0], 0));
+    controls.target.set(center[1], center[0], 0);
   } else {
-    camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
-    controls.target.set(center[0], center[1], center[2]);
+    camera.lookAt(new THREE.Vector3(center[0], 0, 0));
+    controls.target.set(center[0], 0, 0);
   }
 
   graphAxisLines();
