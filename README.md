@@ -9,14 +9,14 @@ Two modes of use:
 
 ###  Mode 1: Run with a specified array file
 
-Place the array file (.json, .npy) in the /data directory.
+Place the array file (.json, .npy) in the <code>/data</code> directory.
 
 To start the server run:
 ```
 node main <filename>
 ```
 
-Then open localhost:8080 in a browser to access visualisation.
+Then open <code>localhost:8080</code> in a browser to access visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
@@ -30,7 +30,7 @@ To start the server run:
 node main
 ```
 
-Then open localhost:8080 in a browser to access visualisation.
+Then open <code>localhost:8080</code> in a browser to access visualisation.
 
 ## Example JSON (2 x 4 x 3)
 
