@@ -450,16 +450,23 @@ function init() {
   );
   controls = new OrbitControls(camera, renderer.domElement);
   let shape = arrayShape(array);
+  let nDim = shape.length;
   // Shape padded to 3D with 0s for non-existent dimensions
-  let shape3D = shape.concat(Array(3 - shape.length).fill(0));
+  let shape3D = shape.concat(Array(3 - nDim).fill(0));
   shape3D[2] = Math.max(Math.max(...shape3D), 3);
   camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
 
   let center = shape
     .concat(Array(3 - shape.length).fill(0))
     .map((x) => Math.floor(x / 2));
-  camera.lookAt(new THREE.Vector3(center[2], center[1], center[0]));
-  controls.target.set(center[2], center[1], center[0]);
+  
+  if (nDim == 3) {
+    camera.lookAt(new THREE.Vector3(center[2], center[1], -center[0]));
+    controls.target.set(center[2], center[1], -center[0]);
+  } else {
+    camera.lookAt(new THREE.Vector3(center[0], center[1], center[2]));
+    controls.target.set(center[0], center[1], center[2]);
+  }
 
   graphAxisLines();
 
