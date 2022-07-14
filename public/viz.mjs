@@ -1,5 +1,5 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
 
 let camera, controls;
 let scene;
@@ -7,47 +7,45 @@ let renderer;
 let cubes = [];
 let array;
 
-
 // Check whether using GUI
-$.get('/gui', function(gui) {
+$.get("/gui", function (gui) {
   if (gui) {
-    setupGUI();  // Setup gui and wait for button click to fetch array input
+    setupGUI(); // Setup gui and wait for button click to fetch array input
   } else {
     enableViz();
     // Fetch array from saved file from server
-    $.get('/data', function (data) {
-      $('.result').html(data);
+    $.get("/data", function (data) {
+      $(".result").html(data);
       array = JSON.parse(data);
       console.log(array);
-      init();
-      animate();
+      startViz();
     });
   }
 });
 
 function setupGUI() {
   enableGUI();
-  $('#runViz').bind('click', runInput);
+  $("#runViz").bind("click", runInput);
 }
 
 function disableGUI() {
-  $('#gui').css('display', 'none');  // Disable GUI
+  $("#gui").css("display", "none"); // Disable GUI
 }
 
 function enableGUI() {
-  $('#gui').css('display', 'flex');  // Disable GUI
+  $("#gui").css("display", "flex"); // Disable GUI
 }
 
 function disableViz() {
-  $('#dataViz').css('display', 'none');
-  $('.equality-container').css('display', 'none');
-  $('.inequality-container').css('display', 'none');
+  $("#dataViz").css("display", "none");
+  $(".equality-container").css("display", "none");
+  $(".inequality-container").css("display", "none");
 }
 
 function enableViz() {
-  $('#dataViz').css('display', 'block');
-  $('.equality-container').css('display', 'flex');
-  $('.inequality-container').css('display', 'flex');
+  $("#dataViz").css("display", "block");
+  $(".equality-container").css("display", "flex");
+  $(".inequality-container").css("display", "flex");
 }
 
 function validArray(input) {
@@ -65,17 +63,156 @@ function validArray(input) {
   return true;
 }
 
+function startViz() {
+  graphDistribution();
+  init();
+  animate();
+}
+
 function runInput() {
-  let input = $('#arrayInput').val().replace(/\s/g, '');
+  let input = $("#arrayInput").val().replace(/\s/g, "");
   if (validArray(input)) {
     array = $.parseJSON(input);
-    console.log(array)
+    console.log(array);
     disableGUI();
     enableViz();
-    init();
-    animate();
+    startViz();
   } else {
-    alert('Invalid array');
+    alert("Invalid array");
+  }
+}
+
+function isInt(value) {
+  let x;
+  if (isNaN(value)) {
+    return false;
+  }
+  x = parseFloat(value);
+  return (x | 0) === x;
+}
+
+function isIntegerArray(arr) {
+  for (let value of arr) {
+    if (!isInt(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function randn_bm(min, max, skew) {
+  let u = 0, v = 0;
+  while(u === 0) u = Math.random() //Converting [0,1) to (0,1)
+  while(v === 0) v = Math.random()
+  let num = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v )
+  
+  num = num / 10.0 + 0.5 // Translate to 0 -> 1
+  if (num > 1 || num < 0) 
+    num = randn_bm(min, max, skew) // resample between 0 and 1 if out of range
+  
+  else{
+    num = Math.pow(num, skew) // Skew
+    num *= max - min // Stretch to fill range
+    num += min // offset to min
+  }
+  return parseInt(num)
+}
+
+function graphDistribution() {
+  let values = array.flat().flat();
+
+  let a = []
+  for (let i = 0; i < 8; i++) {
+    let b = []
+    for (let j = 0; j < 10; j++) {
+      let c = []
+      for (let k = 0; k < 12; k++) {
+        c.push(randn_bm(41, 227, 3))
+      }
+      b.push(c)
+    }
+    a.push(b)
+  }
+  console.log(a)
+
+  if (isIntegerArray(values)) {
+    // Count frequency of each value
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+    let data = {};
+    for (let value of values) {
+      if (!(value in data)) {
+        data[value] = 1;
+      } else {
+        data[value] += 1;
+      }
+      if (value < min) {
+        min = value;
+      }
+      if (value > max) {
+        max = value;
+      }
+    }
+
+    // Fill in any zeros
+    for (let i = min; i <= max; i++) {
+      if (!(i in data)) {
+        data[i] = 0;
+      }
+    }
+
+    let sorted = Object.keys(data).sort().reduce(
+      (obj, key) => { 
+        obj[key] = data[key]; 
+        return obj;
+      }, 
+      {}
+    );
+
+    console.log(Object.keys(sorted).map(Number));
+
+    let graphData = [
+      {
+        x: Object.keys(sorted).map(Number),
+        y: Object.values(sorted),
+        type: 'bar',
+        marker: {
+          color: 'rgb(0,255,0)',
+          opacity: 0.9,
+        }
+      }
+    ]
+
+    let layout = {
+      height: 180,
+      width: 270,
+      margin: {t: 0, b: 20, r: 20, l: 20},
+      // margin: {t: 0, b: 0, r: 0, l: 0},
+      paper_bgcolor: "rgba(0,0,0,0)", 
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: {
+        color: 'white',
+        showgrid: false,
+        zeroline: false,
+        autotick: false,
+        showticklabels: false
+      },
+      xaxis: {
+        color: 'white',
+        showgrid: false,
+        zeroline: false,
+        // autotick: false,
+        // showticklabels: false,
+        tickmode: "array",
+        tickvals: [min, max],
+        ticklabels: [min, max],
+        tickfont: {
+          size: 10
+        }
+      }
+    }
+
+    Plotly.newPlot("graph", graphData, layout, {staticPlot: true});
   }
 }
 
@@ -112,8 +249,8 @@ function arrayShape(arr) {
 }
 
 function setArrayShape(arr) {
-  let shape = '(' + arrayShape(arr).toString().replaceAll(',', ', ') + ')';
-  document.getElementById('arrayShape').textContent = shape;
+  let shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
+  document.getElementById("arrayShape").textContent = shape;
 }
 
 function graphArrayElement(loc, value, opacity) {
@@ -127,7 +264,7 @@ function graphArrayElement(loc, value, opacity) {
     transparent: true,
   });
   let cube = new THREE.Mesh(geometry, material);
-  cube.position.set(x+0.5, y+0.5, z-0.5);
+  cube.position.set(x + 0.5, y + 0.5, z - 0.5);
   scene.add(cube);
   cube.value = value;
   cubes.push(cube);
@@ -137,13 +274,13 @@ function graphArrayElement(loc, value, opacity) {
     new THREE.EdgesGeometry(geometry),
     new THREE.LineBasicMaterial({ color: 0x00ff00 })
   );
-  wireframe.position.set(x+0.5, y+0.5, z-0.5);
+  wireframe.position.set(x + 0.5, y + 0.5, z - 0.5);
   scene.add(wireframe);
 
   // Display element value
   let loader = new THREE.FontLoader();
-  loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-    let nDigits = value.toString().includes('.') ? 7 : 5;
+  loader.load("fonts/helvetiker_regular.typeface.json", function (font) {
+    let nDigits = value.toString().includes(".") ? 7 : 5;
     let textsShapes = font.generateShapes(
       value.toString().slice(0, nDigits + 1),
       0.15
@@ -232,11 +369,7 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
 
       if (arr.length > doubleAxisSize) {
         let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
-        textBehindAbove.position.set(
-          x + i + 0.9,
-          y + arr.length + 0.1,
-          z - 1
-        );
+        textBehindAbove.position.set(x + i + 0.9, y + arr.length + 0.1, z - 1);
         textBehindAbove.rotateY(Math.PI);
         scene.add(textBehindAbove);
       }
@@ -302,11 +435,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       }
 
       let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
-      textBehindRight.position.set(
-        x + arr[0].length + 0.4,
-        y + i + 0.1,
-        z - 1
-      );
+      textBehindRight.position.set(x + arr[0].length + 0.4, y + i + 0.1, z - 1);
       textBehindRight.rotateY(Math.PI);
       scene.add(textBehindRight);
 
@@ -353,7 +482,6 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
         scene.add(textBehind);
       }
     }
-
   }
 }
 
@@ -400,7 +528,7 @@ function zAxisLabels(loc, arr, font, doubleAxisSize) {
 function axisCoordinates(loc, arr) {
   let doubleAxisSize = 10;
   var loader = new THREE.FontLoader();
-  loader.load('fonts/helvetiker_bold.typeface.json', function (font) {
+  loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
     xAxisLabels(loc, arr, font, doubleAxisSize);
     yAxisLabels(loc, arr, font, doubleAxisSize);
     zAxisLabels(loc, arr, font, doubleAxisSize);
@@ -459,7 +587,7 @@ function init() {
   let center = shape
     .concat(Array(3 - shape.length).fill(0))
     .map((x) => Math.floor(x / 2));
-  
+
   if (nDim == 3) {
     // Negative z-index as array is build behind the x-axis line (negative z coords)
     camera.lookAt(new THREE.Vector3(center[2], center[1], -center[0]));
@@ -492,7 +620,7 @@ function init() {
   scene.add(ambientLight);
 
   // Handle resizing of the browser window.
-  window.addEventListener('resize', handleResize, false);
+  window.addEventListener("resize", handleResize, false);
 }
 
 /* Loops to animate the scene */
@@ -537,26 +665,26 @@ function resetScale() {
 }
 
 function isNumeric(str) {
-  if (typeof str != 'string') return false;
+  if (typeof str != "string") return false;
   return (
     !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
     !isNaN(parseFloat(str))
   );
 }
 
-let equalityInput = document.getElementById('equalityQuery');
+let equalityInput = document.getElementById("equalityQuery");
 let equalityInputValue = equalityInput.value;
 
-equalityInput.addEventListener('keyup', function () {
-  equalityInputValue = document.getElementById('equalityQuery').value;
+equalityInput.addEventListener("keyup", function () {
+  equalityInputValue = document.getElementById("equalityQuery").value;
   if (isNumeric(equalityInputValue)) {
     highlightValue(parseFloat(equalityInputValue));
-  } else if (equalityInputValue == '') {
+  } else if (equalityInputValue == "") {
     resetScale();
   }
   // Erase any inqeuality input
-  lessThanInput.value = '';
-  greaterThanInput.value = '';
+  lessThanInput.value = "";
+  greaterThanInput.value = "";
 });
 
 function highlightInequality(low, high) {
@@ -569,11 +697,11 @@ function highlightInequality(low, high) {
   }
 }
 
-let lessThanInput = document.getElementById('lessThanQuery');
+let lessThanInput = document.getElementById("lessThanQuery");
 let lessThanInputValue = lessThanInput.value;
 
-lessThanInput.addEventListener('keyup', function () {
-  lessThanInputValue = document.getElementById('lessThanQuery').value;
+lessThanInput.addEventListener("keyup", function () {
+  lessThanInputValue = document.getElementById("lessThanQuery").value;
   if (isNumeric(lessThanInputValue)) {
     let high = Number.POSITIVE_INFINITY;
     if (isNumeric(greaterThanInputValue)) {
@@ -586,17 +714,17 @@ lessThanInput.addEventListener('keyup', function () {
       Number.NEGATIVE_INFINITY,
       parseFloat(greaterThanInputValue)
     );
-  } else if (greaterThanInputValue == '') {
+  } else if (greaterThanInputValue == "") {
     resetScale();
   }
-  equalityInput.value = '';  // Erase any equality input
+  equalityInput.value = ""; // Erase any equality input
 });
 
-let greaterThanInput = document.getElementById('greaterThanQuery');
+let greaterThanInput = document.getElementById("greaterThanQuery");
 let greaterThanInputValue = greaterThanInput.value;
 
-greaterThanInput.addEventListener('keyup', function () {
-  greaterThanInputValue = document.getElementById('greaterThanQuery').value;
+greaterThanInput.addEventListener("keyup", function () {
+  greaterThanInputValue = document.getElementById("greaterThanQuery").value;
   if (isNumeric(greaterThanInputValue)) {
     let low = Number.NEGATIVE_INFINITY;
     if (isNumeric(lessThanInputValue)) {
@@ -609,9 +737,9 @@ greaterThanInput.addEventListener('keyup', function () {
       parseFloat(lessThanInputValue),
       Number.POSITIVE_INFINITY
     );
-  } else if (greaterThanInputValue == '') {
+  } else if (greaterThanInputValue == "") {
     resetScale();
   }
 
-  equalityInput.value = '';  // Erase any equality input
+  equalityInput.value = ""; // Erase any equality input
 });

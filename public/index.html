@@ -7,6 +7,7 @@
     content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
     <script type="module" src="viz.mjs"></script>
     <link rel="icon" type="favicon" href="favicon.png"/>
     <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
@@ -33,6 +34,9 @@
     </div>
     <div id="dataViz">
       <div id="arrayShape"></div>
+      <div class="distribution">
+        <div id="graph"></div>
+      </div>
       <div class="query-container">
         <div class="equality-container">
           <div class="x-equals">x=</div>
