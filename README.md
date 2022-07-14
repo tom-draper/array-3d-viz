@@ -1,5 +1,5 @@
 # array-3d-viz
-A tool to vizualise 1D, 2D and 3D arrays in 3D space.
+A tool to visualise 1D, 2D and 3D arrays in 3D space.
 
 Available at: https://array-3d-viz.vercel.app/
 
@@ -22,7 +22,7 @@ To start the server run:
 node main <filename>
 ```
 
-Then open <code>localhost:8080</code> in a browser to access the vizualisation.
+Then open <code>localhost:8080</code> in a browser to access the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
