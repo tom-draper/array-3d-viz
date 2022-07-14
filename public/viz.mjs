@@ -329,6 +329,7 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
+  // x axis coords on floor
   if (shape.length == 1) {
     for (let i = 0; i < arr.length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
@@ -346,7 +347,6 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
       scene.add(textBehind);
     }
   } else if (shape.length == 2) {
-    // x axis coords on floor
     for (let i = 0; i < arr[0].length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
@@ -375,7 +375,6 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
       }
     }
   } else if (shape.length == 3) {
-    // x axis coords on floor
     for (let i = 0; i < arr[0][0].length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
@@ -414,18 +413,20 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
+  // y axis coords top to bottom
   if (shape.length == 2) {
-    // y axis coords top to bottom
     for (let i = 0; i < arr.length; i++) {
+      let tickVal = (arr.length - 1 - i).toString();
+      let nChars = Array.from(tickVal).length;
       let textsShapes = font.generateShapes(
-        (arr.length - 1 - i).toString(),
+        tickVal,
         0.3
       );
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x - 0.35, y + i + 0.1, z);
+      text.position.set(x - 0.20 - 0.25*nChars, y + i + 0.1, z);
       scene.add(text);
 
       if (arr.length > doubleAxisSize) {
@@ -435,10 +436,10 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       }
 
       let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
-      textBehindRight.position.set(x + arr[0].length + 0.4, y + i + 0.1, z - 1);
+      textBehindRight.position.set(x + arr[0].length + 0.25 + 0.25*nChars, y + i + 0.1, z - 1);
       textBehindRight.rotateY(Math.PI);
       scene.add(textBehindRight);
-
+      
       if (arr.length > doubleAxisSize) {
         let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
         textBehind.position.set(x - 0.15, y + i + 0.1, z - 1);
@@ -447,17 +448,18 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       }
     }
   } else if (shape.length == 3) {
-    // y axis coords top to bottom
     for (let i = 0; i < arr[0].length; i++) {
+      let tickVal = (arr.length - 1 - i).toString();
+      let nChars = Array.from(tickVal).length;
       let textsShapes = font.generateShapes(
-        (arr[0].length - 1 - i).toString(),
+        tickVal,
         0.3
       );
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x - 0.35, y + i + 0.1, z);
+      text.position.set(x - 0.20 - 0.25*nChars, y + i + 0.1, z);
       scene.add(text);
 
       if (arr.length > doubleAxisSize) {
@@ -468,7 +470,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
 
       let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
       textBehindRight.position.set(
-        x + arr[0][0].length + 0.4,
+        x + arr[0][0].length + 0.25 + 0.25*nChars,
         y + i + 0.1,
         z - arr.length
       );
@@ -489,8 +491,8 @@ function zAxisLabels(loc, arr, font, doubleAxisSize) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
+  // z axis coords on floor
   if (shape.length == 3) {
-    // z axis coords on floor
     for (let i = 0; i < arr.length; i++) {
       let textsShapes = font.generateShapes(i.toString(), 0.3);
       let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
