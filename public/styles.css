@@ -105,7 +105,8 @@ input {
     margin-bottom: 2.5em;
     height: 70vh;
     font-family: 'Fira-Code';
-    border-radius: 4px;
+    border-radius: 7px;
+    padding: 8px;
 }
 #runViz {
     /* width: 50px; */
