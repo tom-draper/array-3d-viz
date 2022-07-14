@@ -449,7 +449,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
     }
   } else if (shape.length == 3) {
     for (let i = 0; i < arr[0].length; i++) {
-      let tickVal = (arr.length - 1 - i).toString();
+      let tickVal = (arr[0].length - 1 - i).toString();
       let nChars = Array.from(tickVal).length;
       let textsShapes = font.generateShapes(
         tickVal,
