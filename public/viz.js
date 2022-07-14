@@ -53,7 +53,7 @@ function enableViz() {
 function validArray(input) {
   try {
     // Test if valid array syntax
-    let arr = new Array(JSON.parse(input));
+    let arr = JSON.parse(input);
     // Check max of 3 dimensions
     if (arrayShape(arr).length > 3) {
       return false;

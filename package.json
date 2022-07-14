@@ -20,8 +20,7 @@
   "dependencies": {
     "cross-fetch": "^3.1.5",
     "express": "^4.18.1",
-    "node-fetch": "^2.6.7",
-    "npyjs": "^0.4.0",
+    "node-fetch": "^3.2.8",
     "python-shell": "^3.0.1"
   }
 }
