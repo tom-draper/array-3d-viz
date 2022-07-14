@@ -13,11 +13,15 @@ Available at: https://array-3d-viz.vercel.app/
 
 Two modes of use:
 
-###  Mode 1: Run with a specified array file
+##  Mode 1: Run with a specified array file
 
 Place the array file (.json, .npy) in the <code>/data</code> directory.
 
-To start the server run:
+Install packages:
+```
+npm install
+```
+Run server:
 ```
 node main <filename>
 ```
@@ -29,9 +33,13 @@ Then open <code>localhost:8080</code> in a browser to access the visualisation.
 - [x] Numpy (.npy)    
 - [ ] pickle (.pickle)    
 
-### Mode 2: Paste array data (JSON format) into web app from clipboard
+## Mode 2: Paste array data (JSON format) into web app from clipboard
 
-To start the server run:
+Install packages:
+```
+npm install
+```
+Run server:
 ```
 node main
 ```
