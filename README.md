@@ -44,7 +44,7 @@ Run server:
 node main
 ```
 
-Then open <code>localhost:8080</code> in a browser to access visualisation.
+Then open <code>localhost:8080</code> in a browser to access the visualisation.
 
 ## Example JSON (2 x 4 x 3)
 
