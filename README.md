@@ -22,7 +22,7 @@ To start the server run:
 node main <filename>
 ```
 
-Then open <code>localhost:8080</code> in a browser to access visualisation.
+Then open <code>localhost:8080</code> in a browser to access the vizualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
