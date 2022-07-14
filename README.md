@@ -38,7 +38,7 @@ node main
 
 Then open <code>localhost:8080</code> in a browser to access visualisation.
 
-## Example JSON (2 x 4 x 3)
+# Example JSON (2 x 4 x 3)
 
 ```json
 [
@@ -49,17 +49,21 @@ Then open <code>localhost:8080</code> in a browser to access visualisation.
     [10, 11, 12]
   ],
   [
-    [10, 20, 30],
-    [40, 50, 60],
-    [70, 80, 90],
-    [100, 110, 120]
+    [13, 14, 15],
+    [16, 17, 18],
+    [19, 20, 21],
+    [22, 23, 24]
   ]
 ]
+
 ```
-![Example5](https://user-images.githubusercontent.com/41476809/171648209-0aefce87-c66a-4483-b655-0e05259b60e0.png)
 
-#### Values of given values and within ranges can be highlighted to help reveal patterns:
+![Data6](https://user-images.githubusercontent.com/41476809/179065871-d10666a7-6091-49f8-a26f-01cfd9bca5a2.png)
 
-![Example6](https://user-images.githubusercontent.com/41476809/171648124-06b23bc9-fce3-4dd8-a57f-9ebc71eef517.png)
+<!-- ![Example5](https://user-images.githubusercontent.com/41476809/171648209-0aefce87-c66a-4483-b655-0e05259b60e0.png) -->
+
+<!-- #### Values of given values and within ranges can be highlighted to help reveal patterns: -->
+
+<!-- ![Example6](https://user-images.githubusercontent.com/41476809/171648124-06b23bc9-fce3-4dd8-a57f-9ebc71eef517.png) -->
 
 
