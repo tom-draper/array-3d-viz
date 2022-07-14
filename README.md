@@ -3,7 +3,13 @@ A tool to visualise 1D, 2D and 3D arrays in 3D space.
 
 Available at: https://array-3d-viz.vercel.app/
 
-## Usage 
+![Data](https://user-images.githubusercontent.com/41476809/179063555-7dbf08d4-ded9-4131-b4bf-b6b619e8e715.png)
+
+![Data4](https://user-images.githubusercontent.com/41476809/179064728-ac07c0d0-3b9e-42d1-a979-85ba35b49aac.png)
+
+![Data5](https://user-images.githubusercontent.com/41476809/179065260-ac1415f9-d0b8-4d4c-b03b-1be5e6d54b50.png)
+
+# Usage 
 
 Two modes of use:
 
