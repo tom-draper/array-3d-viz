@@ -1,5 +1,5 @@
 # Interactive 3D Visualiser for Arrays
-A tool to visualise 1D, 2D and 3D arrays in 3D space.
+A tool to visualise 1D, 2D and 3D arrays in 3D space using three.js.
 
 Available at: https://array-3d-viz.vercel.app/
 
