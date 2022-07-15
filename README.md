@@ -37,8 +37,10 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
-- [x] Numpy (.npy)    
-- [ ] pickle (.pickle)    
+- [x] Numpy (.npy, .npz)    
+- [ ] pickle (.pickle)
+- [ ] CSV (.csv)
+- [ ] Binaries 
 
 ### Mode 2: Paste JSON format array data into web app from clipboard
 
