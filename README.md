@@ -1,4 +1,4 @@
-# array-3d-viz
+# Array Interactive 3D Visualiser
 A tool to visualise 1D, 2D and 3D arrays in 3D space.
 
 Available at: https://array-3d-viz.vercel.app/
