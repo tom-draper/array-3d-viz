@@ -9,7 +9,9 @@ Available at: https://array-3d-viz.vercel.app/
 - Camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimensions (bottom left)
 - Query input to highlight values and value ranges (bottom right)
-- Value distribution (bottom right)
+- Value distribution graph (bottom right)      
+
+<br>
 
 ![Data](https://user-images.githubusercontent.com/41476809/179063555-7dbf08d4-ded9-4131-b4bf-b6b619e8e715.png)
 
