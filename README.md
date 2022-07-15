@@ -21,22 +21,19 @@ Available at: https://array-3d-viz.vercel.app/
 
 ## Usage 
 
-Two modes of use:
-
 ###  Mode 1: Run with a specified array file
 
 Place the array file (.json, .npy) in the <code>/data</code> directory.
 
-Install packages:
+#### 1. Install packages:
 ```
 npm install
 ```
-Run server:
+#### 2. Run server
 ```
 node main <filename>
 ```
-
-Then open <code>localhost:8080</code> in a browser to access the visualisation.
+Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
@@ -45,16 +42,16 @@ Then open <code>localhost:8080</code> in a browser to access the visualisation.
 
 ### Mode 2: Paste JSON format array data into web app from clipboard
 
-Install packages:
+#### 1. Install packages
 ```
 npm install
 ```
-Run server:
+#### 2. Run server
 ```
 node main
 ```
 
-Then open <code>localhost:8080</code> in a browser to access the visualisation.
+Then open <code>localhost:8080</code> in a browser run the visualisation.
 
 ### Example JSON (2 x 4 x 3)
 
