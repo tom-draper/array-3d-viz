@@ -74,11 +74,3 @@ Then open <code>localhost:8080</code> in a browser run the visualisation.
 ```
 
 ![Data6](https://user-images.githubusercontent.com/41476809/179065871-d10666a7-6091-49f8-a26f-01cfd9bca5a2.png)
-
-<!-- ![Example5](https://user-images.githubusercontent.com/41476809/171648209-0aefce87-c66a-4483-b655-0e05259b60e0.png) -->
-
-<!-- #### Values of given values and within ranges can be highlighted to help reveal patterns: -->
-
-<!-- ![Example6](https://user-images.githubusercontent.com/41476809/171648124-06b23bc9-fce3-4dd8-a57f-9ebc71eef517.png) -->
-
-
