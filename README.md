@@ -54,7 +54,7 @@ npm install
 node main
 ```
 
-Then open <code>localhost:8080</code> in a browser run the visualisation and paste your array into the input box.
+Then open <code>localhost:8080</code> in a browser and paste your array into the input box.
 
 ### Example JSON (2 x 4 x 3)
 
