@@ -43,7 +43,7 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 - [ ] CSV (.csv)
 - [ ] Binaries 
 
-### Mode 2: Paste JSON format array data into web app from clipboard
+### Mode 2: Paste array data (JSON format) from clipboard into the web app
 
 #### 1. Install packages
 ```
