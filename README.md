@@ -21,9 +21,9 @@ Hosted at: https://array-3d-viz.vercel.app/
 
 ## Usage 
 
-###  Mode 1: Run with a specified array file
+###  Mode 1: Run with a specified array file (.json, .npy, etc.)
 
-Place the array file (.json, .npy) in the <code>/data</code> directory.
+Place the array file in the <code>/data</code> directory.
 
 #### 1. Install packages:
 ```
