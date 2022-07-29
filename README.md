@@ -1,7 +1,17 @@
-# array-3d-viz
-A tool to visualise 1D, 2D and 3D arrays in 3D space.
+# Interactive 3D Visualiser for Arrays
+A tool to visualise 1D, 2D and 3D arrays in 3D space using three.js.
 
-Available at: https://array-3d-viz.vercel.app/
+Hosted at: https://array-3d-viz.vercel.app/
+
+### Features
+- Array data from text OR read from file
+- Cell colour scaled by relative value
+- Camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
+- Array dimensions (bottom left)
+- Query input to highlight values and value ranges (bottom right)
+- Value distribution graph (bottom right)      
+
+<br>
 
 ![Data](https://user-images.githubusercontent.com/41476809/179063555-7dbf08d4-ded9-4131-b4bf-b6b619e8e715.png)
 
@@ -9,44 +19,44 @@ Available at: https://array-3d-viz.vercel.app/
 
 ![Data5](https://user-images.githubusercontent.com/41476809/179065260-ac1415f9-d0b8-4d4c-b03b-1be5e6d54b50.png)
 
-# Usage 
+## Usage 
 
-Two modes of use:
+###  Mode 1: Run with a specified array file (.json, .npy, etc.)
 
-##  Mode 1: Run with a specified array file
+Place the array file in the <code>/data</code> directory.
 
-Place the array file (.json, .npy) in the <code>/data</code> directory.
-
-Install packages:
+#### 1. Install packages:
 ```
 npm install
 ```
-Run server:
+#### 2. Run server
 ```
 node main <filename>
 ```
-
-Then open <code>localhost:8080</code> in a browser to access the visualisation.
+Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
-- [x] Numpy (.npy)    
-- [ ] pickle (.pickle)    
+- [x] Numpy (.npy)
+- [ ] Compressed Numpy (.npz)    
+- [ ] Pickle (.pickle)
+- [ ] CSV (.csv)
+- [ ] Binaries 
 
-## Mode 2: Paste array data (JSON format) into web app from clipboard
+### Mode 2: Paste array data (JSON format) from clipboard into the web app
 
-Install packages:
+#### 1. Install packages
 ```
 npm install
 ```
-Run server:
+#### 2. Run server
 ```
 node main
 ```
 
-Then open <code>localhost:8080</code> in a browser to access the visualisation.
+Then open <code>localhost:8080</code> in a browser and paste your array into the input box.
 
-## Example JSON (2 x 4 x 3)
+### Example JSON (2 x 4 x 3)
 
 ```json
 [
@@ -67,11 +77,3 @@ Then open <code>localhost:8080</code> in a browser to access the visualisation.
 ```
 
 ![Data6](https://user-images.githubusercontent.com/41476809/179065871-d10666a7-6091-49f8-a26f-01cfd9bca5a2.png)
-
-<!-- ![Example5](https://user-images.githubusercontent.com/41476809/171648209-0aefce87-c66a-4483-b655-0e05259b60e0.png) -->
-
-<!-- #### Values of given values and within ranges can be highlighted to help reveal patterns: -->
-
-<!-- ![Example6](https://user-images.githubusercontent.com/41476809/171648124-06b23bc9-fce3-4dd8-a57f-9ebc71eef517.png) -->
-
-
