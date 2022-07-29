@@ -43,7 +43,7 @@ function convertToJSON(path) {
     });
   } else if (extension == "npy") {
     // Run script to load target .npy file and save it in json format
-    PythonShell.run('load.py', {args: [path]}, function(err, results) {
+    PythonShell.run('scripts/load.py', {args: [path]}, function(err, results) {
       if (err) {
         console.log(err, results);
       }

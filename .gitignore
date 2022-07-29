@@ -1,4 +1,4 @@
 node_modules
 package-lock.json
 data/temp/temp.json
-gen.py
+scripts/gen.py
