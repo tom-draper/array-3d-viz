@@ -1,3 +1,5 @@
+"""Called by main.js to move numpy data into temp.json"""
+
 import numpy as np
 import sys
 import json
