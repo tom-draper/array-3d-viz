@@ -7,8 +7,8 @@ Hosted at: https://array-3d-viz.vercel.app/
 - Array data pasted from clipboard or read from file
 - Cell colour scaled by relative value
 - Camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
-- Array dimensions (bottom left)
-- Query input to highlight values and value ranges (bottom right)
+- Array dimension display (bottom left)
+- Query input for highlighting values and value ranges (bottom right)
 - Value distribution graph (bottom right)      
 
 <br>
