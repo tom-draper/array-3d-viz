@@ -4,7 +4,7 @@ A tool to visualise 1D, 2D and 3D arrays in 3D space using three.js.
 Hosted at: https://array-3d-viz.vercel.app/
 
 ### Features
-- Array data from text OR read from file
+- Array data pasted from clipboard or read from file
 - Cell colour scaled by relative value
 - Camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimensions (bottom left)
