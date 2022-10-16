@@ -32,7 +32,7 @@ npm install
 ```
 #### 2. Run server
 ```
-node main <filename>
+node main <filename.ext>
 ```
 Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
@@ -79,3 +79,7 @@ Then open <code>localhost:8080</code> in a browser and paste your JSON array int
 ```
 
 ![Data6](https://user-images.githubusercontent.com/41476809/179065871-d10666a7-6091-49f8-a26f-01cfd9bca5a2.png)
+
+## Warning
+
+The visualiser works best with relatively small arrays and may struggle to visualise arrays with over 15,000 elements (25x25x25).
