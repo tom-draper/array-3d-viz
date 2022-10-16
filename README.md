@@ -44,7 +44,7 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 - [ ] CSV (.csv)
 - [ ] Binaries 
 
-To load .npy or .npz files, Python must be installed with the numpy library.
+To load .npy or .npz files, Python must be installed with the NumPy library.
 
 ### Mode 2: Visualise pasted array data (JSON format) from clipboard
 
