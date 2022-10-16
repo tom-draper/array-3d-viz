@@ -4,12 +4,13 @@ A tool to visualise arrays in 3D space using three.js.
 Hosted at: https://array-3d-viz.vercel.app/
 
 ### Features
-- Array data pasted from clipboard or read from file
+- Works with 1D, 2D or 3D arrays
+- Paste array data from clipboard or read from file
 - Cell colour scaled by relative value
-- Camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
+- Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
-- Query input for highlighting values and value ranges (bottom right)
-- Value distribution graph (bottom right)      
+- Query input for highlighting values or value ranges (bottom right)
+- Value distribution graph (bottom right)
 
 <br>
 
@@ -21,7 +22,7 @@ Hosted at: https://array-3d-viz.vercel.app/
 
 ## Usage 
 
-###  Mode 1: Run with a specified array file (.json, .npy, etc.)
+###  Mode 1: Visualise specified array file (.json, .npy, etc.)
 
 Place the array file in the <code>/data</code> directory.
 
@@ -37,13 +38,14 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
-- [x] Numpy (.npy)
-- [ ] Compressed Numpy (.npz)    
+- [x] NumPy (.npy, .npz)
 - [ ] Pickle (.pickle)
 - [ ] CSV (.csv)
-- [ ] Binaries 
+- [ ] Binaries
 
-### Mode 2: Paste array data (JSON format) from clipboard into the web app
+To load .npy or .npz files, Python must be installed with the NumPy library.
+
+### Mode 2: Visualise pasted array data (JSON format) from clipboard
 
 #### 1. Install packages
 ```
@@ -54,7 +56,7 @@ npm install
 node main
 ```
 
-Then open <code>localhost:8080</code> in a browser and paste your array into the input box.
+Then open <code>localhost:8080</code> in a browser and paste your JSON array into the input box. Ensure there are no trailing commas after any final elements in a list.
 
 ### Example JSON (2 x 4 x 3)
 
