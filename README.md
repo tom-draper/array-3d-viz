@@ -10,7 +10,7 @@ Hosted at: https://array-3d-viz.vercel.app/
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
-- Value distribution graph (bottom right)      
+- Value distribution graph (bottom right)
 
 <br>
 
@@ -38,11 +38,10 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
-- [x] NumPy (.npy)
-- [ ] Compressed NumPy (.npz)    
+- [x] NumPy (.npy, .npz)
 - [ ] Pickle (.pickle)
 - [ ] CSV (.csv)
-- [ ] Binaries 
+- [ ] Binaries
 
 To load .npy or .npz files, Python must be installed with the NumPy library.
 

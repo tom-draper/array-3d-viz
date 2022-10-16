@@ -41,7 +41,7 @@ function convertToJSON(path) {
         });
       }
     });
-  } else if (extension == "npy") {
+  } else if (extension == "npy" || extension == "npz") {
     // Run script to load target .npy file and save it in json format
     PythonShell.run('scripts/load.py', {args: [path]}, function(err, results) {
       if (err) {
