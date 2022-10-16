@@ -38,8 +38,8 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 #### Compatibility 
 - [x] JSON (.json) 
-- [x] Numpy (.npy)
-- [ ] Compressed Numpy (.npz)    
+- [x] NumPy (.npy)
+- [ ] Compressed NumPy (.npz)    
 - [ ] Pickle (.pickle)
 - [ ] CSV (.csv)
 - [ ] Binaries 
