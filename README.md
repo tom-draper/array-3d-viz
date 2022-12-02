@@ -11,7 +11,7 @@ Hosted at: https://array-3d-viz.vercel.app/
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
-- Value distribution graph (bottom right)
+- Array value histogram (bottom right)
 
 <br>
 
