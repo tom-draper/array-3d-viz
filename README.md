@@ -1,5 +1,6 @@
-# Interactive 3D Visualiser for Arrays
-A tool to visualise arrays in 3D space using three.js.
+# Interactive 3D Visualizer for Arrays
+
+A tool to visualize arrays in 3D space using three.js.
 
 Hosted at: https://array-3d-viz.vercel.app/
 
@@ -10,7 +11,7 @@ Hosted at: https://array-3d-viz.vercel.app/
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
-- Value distribution graph (bottom right)
+- Array value histogram (bottom right)
 
 <br>
 
@@ -22,7 +23,7 @@ Hosted at: https://array-3d-viz.vercel.app/
 
 ## Usage 
 
-###  Mode 1: Visualise specified array file (.json, .npy, etc.)
+###  Mode 1: Visualize array file (.json, .npy, etc.)
 
 Place the array file in the <code>/data</code> directory.
 
@@ -34,7 +35,7 @@ npm install
 ```
 node main <filename>
 ```
-Then open <code>localhost:8080</code> in a browser to run the visualisation.
+Then open <code>localhost:8080</code> in a browser to run the visualization.
 
 #### Compatibility 
 - [x] JSON (.json) 
@@ -45,7 +46,7 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 To load .npy or .npz files, Python must be installed with the NumPy library.
 
-### Mode 2: Visualise pasted array data (JSON format) from clipboard
+### Mode 2: Visualize pasted array data (JSON format) from clipboard
 
 #### 1. Install packages
 ```
