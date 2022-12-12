@@ -1,6 +1,6 @@
 # Interactive 3D Visualizer for Arrays
 
-A tool to visualize arrays in 3D space using three.js.
+A tool to visualize arrays and matrices in 3D space using three.js.
 
 Hosted at: https://array-3d-viz.vercel.app/
 
