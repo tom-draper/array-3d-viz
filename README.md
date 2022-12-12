@@ -2,7 +2,7 @@
 
 A tool to visualize arrays and matrices in 3D space using three.js.
 
-Hosted at: https://array-3d-viz.vercel.app/
+Hosted at: https://array-3d-viz.vercel.app
 
 ### Features
 - Works with 1D, 2D or 3D arrays
