@@ -28,11 +28,15 @@ Hosted at: https://array-3d-viz.vercel.app
 Place the array file in the <code>/data</code> directory.
 
 #### 1. Install packages:
-```
+```bash
 npm install
 ```
-#### 2. Run server
+#### 2. Compile TypeScript files
+```bash
+tsc
 ```
+#### 3. Run server
+```bash
 node main <filename>
 ```
 Then open <code>localhost:8080</code> in a browser to run the visualization.
@@ -49,11 +53,15 @@ To load .npy or .npz files, Python must be installed with the NumPy library.
 ### Mode 2: Visualize pasted array data (JSON format) from clipboard
 
 #### 1. Install packages
-```
+```bash
 npm install
 ```
-#### 2. Run server
+#### 2. Compile TypeScript files
+```bash
+tsc
 ```
+#### 3. Run server
+```bash
 node main
 ```
 
