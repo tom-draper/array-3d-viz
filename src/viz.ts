@@ -102,15 +102,15 @@ function isIntegerArray(arr) {
 
 function randn_bm(min, max, skew) {
   let u = 0, v = 0;
-  while(u === 0) u = Math.random() //Converting [0,1) to (0,1)
-  while(v === 0) v = Math.random()
-  let num = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v )
-  
+  while (u === 0) u = Math.random() //Converting [0,1) to (0,1)
+  while (v === 0) v = Math.random()
+  let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)
+
   num = num / 10.0 + 0.5 // Translate to 0 -> 1
-  if (num > 1 || num < 0) 
+  if (num > 1 || num < 0)
     num = randn_bm(min, max, skew) // resample between 0 and 1 if out of range
-  
-  else{
+
+  else {
     num = Math.pow(num, skew) // Skew
     num *= max - min // Stretch to fill range
     num += min // offset to min
@@ -162,10 +162,10 @@ function graphDistribution() {
     }
 
     let sorted = Object.keys(data).sort().reduce(
-      (obj, key) => { 
-        obj[key] = data[key]; 
+      (obj, key) => {
+        obj[key] = data[key];
         return obj;
-      }, 
+      },
       {}
     );
 
@@ -186,9 +186,9 @@ function graphDistribution() {
     let layout = {
       height: 180,
       width: 270,
-      margin: {t: 0, b: 20, r: 20, l: 20},
+      margin: { t: 0, b: 20, r: 20, l: 20 },
       // margin: {t: 0, b: 0, r: 0, l: 0},
-      paper_bgcolor: "rgba(0,0,0,0)", 
+      paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor: "rgba(0,0,0,0)",
       yaxis: {
         color: 'white',
@@ -212,7 +212,7 @@ function graphDistribution() {
       }
     }
 
-    Plotly.newPlot("graph", graphData, layout, {staticPlot: true});
+    Plotly.newPlot("graph", graphData, layout, { staticPlot: true });
   }
 }
 
@@ -426,7 +426,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x - 0.20 - 0.25*nChars, y + i + 0.1, z);
+      text.position.set(x - 0.20 - 0.25 * nChars, y + i + 0.1, z);
       scene.add(text);
 
       if (arr.length > doubleAxisSize) {
@@ -436,10 +436,10 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       }
 
       let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
-      textBehindRight.position.set(x + arr[0].length + 0.25 + 0.25*nChars, y + i + 0.1, z - 1);
+      textBehindRight.position.set(x + arr[0].length + 0.25 + 0.25 * nChars, y + i + 0.1, z - 1);
       textBehindRight.rotateY(Math.PI);
       scene.add(textBehindRight);
-      
+
       if (arr.length > doubleAxisSize) {
         let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
         textBehind.position.set(x - 0.15, y + i + 0.1, z - 1);
@@ -459,7 +459,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
       let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
       let text = new THREE.Mesh(textsGeometry, textsMaterial);
-      text.position.set(x - 0.20 - 0.25*nChars, y + i + 0.1, z);
+      text.position.set(x - 0.20 - 0.25 * nChars, y + i + 0.1, z);
       scene.add(text);
 
       if (arr.length > doubleAxisSize) {
@@ -470,7 +470,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
 
       let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
       textBehindRight.position.set(
-        x + arr[0][0].length + 0.25 + 0.25*nChars,
+        x + arr[0][0].length + 0.25 + 0.25 * nChars,
         y + i + 0.1,
         z - arr.length
       );
