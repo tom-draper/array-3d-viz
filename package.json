@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A tool to visualise matrices in 3-dimensional space.",
   "main": "main.js",
-  "type": "module",
   "scripts": {
     "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
