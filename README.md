@@ -5,7 +5,7 @@ A tool to visualize arrays and matrices in 3D space using three.js.
 Hosted at: https://array-3d-viz.vercel.app
 
 ### Features
-- Works with 1D, 2D or 3D arrays
+- Compatible with 1D, 2D or 3D arrays
 - Paste array data from clipboard or read from file
 - Cell colour scaled by relative value
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
@@ -35,9 +35,7 @@ npm install
 ```bash
 tsc
 ```
-#### 3. Run server
-```bash
-node main <filename>
+node main <filename.ext>
 ```
 Then open <code>localhost:8080</code> in a browser to run the visualization.
 
@@ -88,3 +86,7 @@ Then open <code>localhost:8080</code> in a browser and paste your JSON array int
 ```
 
 ![Data6](https://user-images.githubusercontent.com/41476809/179065871-d10666a7-6091-49f8-a26f-01cfd9bca5a2.png)
+
+## Warning
+
+The visualiser works best with relatively small arrays and may struggle to visualise arrays with over 15,000 elements (25x25x25).
