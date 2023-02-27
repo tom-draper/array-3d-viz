@@ -1,6 +1,8 @@
 import express from "express";
 import { promises, constants, readFile, writeFile, createReadStream } from "fs";
 import { PythonShell } from "python-shell";
+import path from "path";
+import { fileURLToPath } from "url";
 
 function getFilePath() {
   let path = process.argv[2];
@@ -63,7 +65,11 @@ function run(gui) {
   const app = express();
   const port = process.env.PORT || 8080;
 
-  app.use(express.static("public"));
+  app.use(
+    express.static(
+      path.join(path.dirname(fileURLToPath(import.meta.url)), "public")
+    )
+  );
 
   app.get("/", function (req, res) {
     res.render("index.html");
