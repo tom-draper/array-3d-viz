@@ -1,7 +1,8 @@
-# Interactive 3D Visualiser for Arrays
-A tool to visualise arrays in 3D space using three.js.
+# Interactive 3D Visualizer for Arrays
 
-Hosted at: https://array-3d-viz.vercel.app/
+A tool to visualize arrays and matrices in 3D space using three.js.
+
+Hosted at: https://array-3d-viz.vercel.app
 
 ### Features
 - Works with 1D, 2D or 3D arrays
@@ -10,7 +11,7 @@ Hosted at: https://array-3d-viz.vercel.app/
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
-- Value distribution graph (bottom right)
+- Array value histogram (bottom right)
 
 <br>
 
@@ -22,19 +23,23 @@ Hosted at: https://array-3d-viz.vercel.app/
 
 ## Usage 
 
-###  Mode 1: Visualise specified array file (.json, .npy, etc.)
+###  Mode 1: Visualize array file (.json, .npy, etc.)
 
 Place the array file in the <code>/data</code> directory.
 
 #### 1. Install packages:
-```
+```bash
 npm install
 ```
-#### 2. Run server
+#### 2. Compile TypeScript files
+```bash
+tsc
 ```
+#### 3. Run server
+```bash
 node main <filename>
 ```
-Then open <code>localhost:8080</code> in a browser to run the visualisation.
+Then open <code>localhost:8080</code> in a browser to run the visualization.
 
 #### Compatibility 
 - [x] JSON (.json) 
@@ -45,14 +50,18 @@ Then open <code>localhost:8080</code> in a browser to run the visualisation.
 
 To load .npy or .npz files, Python must be installed with the NumPy library.
 
-### Mode 2: Visualise pasted array data (JSON format) from clipboard
+### Mode 2: Visualize pasted array data (JSON format) from clipboard
 
 #### 1. Install packages
-```
+```bash
 npm install
 ```
-#### 2. Run server
+#### 2. Compile TypeScript files
+```bash
+tsc
 ```
+#### 3. Run server
+```bash
 node main
 ```
 

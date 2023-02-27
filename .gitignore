@@ -3,3 +3,5 @@ package-lock.json
 .jshintrc
 data/temp/temp.json
 scripts/gen.py
+vercel.json
+public/viz.js
