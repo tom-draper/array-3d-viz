@@ -1,11 +1,21 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
+import Plotly from "plotly.js";
+import { Camera, Scene, WebGLRenderer, Mesh } from "three";
 
-let camera, controls;
-let scene;
-let renderer;
-let cubes = [];
-let array;
+type Array1D = number[]
+type Array2D = number[][]
+type Array3D = number[][][]
+
+type Array = Array1D | Array2D | Array3D
+
+type Coords = [number, number, number]
+
+let camera: Camera, controls;
+let scene: Scene;
+let renderer: WebGLRenderer;
+let cubes: Mesh[] = [];
+let array: number[][];
 
 // Check whether using GUI
 $.get("/gui", function (gui) {
@@ -48,7 +58,7 @@ function enableViz() {
   $(".inequality-container").css("display", "flex");
 }
 
-function validArray(input) {
+function validArray(input: string): boolean {
   try {
     // Test if valid array syntax
     let arr = JSON.parse(input);
@@ -72,7 +82,7 @@ function startViz() {
 function runInput() {
   let input = $("#arrayInput").val().replace(/\s/g, "");
   if (validArray(input)) {
-    array = $.parseJSON(input);
+    array = jQuery.parseJson(input);
     console.log(array);
     disableGUI();
     enableViz();
@@ -82,16 +92,16 @@ function runInput() {
   }
 }
 
-function isInt(value) {
+function isInt(value: number): boolean {
   let x;
   if (isNaN(value)) {
     return false;
   }
-  x = parseFloat(value);
+  x = parseFloat(value.toString());
   return (x | 0) === x;
 }
 
-function isIntegerArray(arr) {
+function isIntegerArray(arr: any[]): boolean {
   for (let value of arr) {
     if (!isInt(value)) {
       return false;
@@ -100,7 +110,7 @@ function isIntegerArray(arr) {
   return true;
 }
 
-function randn_bm(min, max, skew) {
+function randn_bm(min: number, max: number, skew: number): number {
   let u = 0, v = 0;
   while (u === 0) u = Math.random() //Converting [0,1) to (0,1)
   while (v === 0) v = Math.random()
@@ -115,7 +125,7 @@ function randn_bm(min, max, skew) {
     num *= max - min // Stretch to fill range
     num += min // offset to min
   }
-  return parseInt(num)
+  return parseInt(num.toString())
 }
 
 function graphDistribution() {
@@ -139,7 +149,7 @@ function graphDistribution() {
     // Count frequency of each value
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
-    let data = {};
+    let data: {[value: number]: number} = {};
     for (let value of values) {
       if (!(value in data)) {
         data[value] = 1;
@@ -216,8 +226,8 @@ function graphDistribution() {
   }
 }
 
-function graphLine(x1, y1, z1, x2, y2, z2, colour) {
-  if (colour == undefined) {
+function graphLine(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, colour: number) {
+  if (colour === undefined) {
     colour = 0xff0000;
   }
   let lineMaterial = new THREE.LineBasicMaterial({ color: colour });
@@ -228,7 +238,7 @@ function graphLine(x1, y1, z1, x2, y2, z2, colour) {
   scene.add(line);
 }
 
-function arrayEquals(a, b) {
+function arrayEquals(a: Array, b: Array): boolean {
   return (
     a.length === b.length &&
     a.every(function (value, index) {
@@ -237,23 +247,23 @@ function arrayEquals(a, b) {
   );
 }
 
-function arrayShape(arr) {
+function arrayShape(arr: Array | number): number[] {
   if (!(arr instanceof Array) || !arr.length) {
     return [];
   }
-  var dim = arr.reduce(function (result, current) {
+  let dim: any = arr.reduce(function (result, current) {
     return arrayEquals(result, arrayShape(current)) ? result : false;
   }, arrayShape(arr[0]));
 
   return dim && [arr.length].concat(dim);
 }
 
-function setArrayShape(arr) {
+function setArrayShape(arr: Array) {
   let shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
   document.getElementById("arrayShape").textContent = shape;
 }
 
-function graphArrayElement(loc, value, opacity) {
+function graphArrayElement(loc: Coords, value: number, opacity: number) {
   let [x, y, z] = loc;
 
   // Cube
@@ -279,7 +289,7 @@ function graphArrayElement(loc, value, opacity) {
 
   // Display element value
   let loader = new THREE.FontLoader();
-  loader.load("fonts/helvetiker_regular.typeface.json", function (font) {
+  loader.load("fonts/helvetiker_regular.typeface.json", function (font: THREE.Font) {
     let nDigits = value.toString().includes(".") ? 7 : 5;
     let textsShapes = font.generateShapes(
       value.toString().slice(0, nDigits + 1),
@@ -299,7 +309,7 @@ function graphArrayElement(loc, value, opacity) {
   });
 }
 
-function graph1DArray(loc, arr) {
+function graph1DArray(loc: Coords, arr: Array1D) {
   let [x, y, z] = loc;
   let max = Math.max(...arr.flat());
   let min = Math.min(...arr.flat());
@@ -311,7 +321,7 @@ function graph1DArray(loc, arr) {
   setArrayShape(arr);
 }
 
-function graph2DArray(loc, arr) {
+function graph2DArray(loc: Coords, arr: Array2D) {
   let [x, y, z] = loc;
   let max = Math.max(...arr.flat());
   let min = Math.min(...arr.flat());
@@ -325,7 +335,7 @@ function graph2DArray(loc, arr) {
   setArrayShape(arr);
 }
 
-function xAxisLabels(loc, arr, font, doubleAxisSize) {
+function xAxisLabels(loc: Coords, arr: Array, font: THREE.Font, doubleAxisSize: number) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
@@ -409,7 +419,7 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
   }
 }
 
-function yAxisLabels(loc, arr, font, doubleAxisSize) {
+function yAxisLabels(loc: Coords, arr: Array, font: THREE.Font, doubleAxisSize: number) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
@@ -487,7 +497,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
   }
 }
 
-function zAxisLabels(loc, arr, font, doubleAxisSize) {
+function zAxisLabels(loc: Coords, arr: Array, font: THREE.Font, doubleAxisSize: number) {
   let [x, y, z] = loc;
   let shape = arrayShape(arr);
 
@@ -527,17 +537,17 @@ function zAxisLabels(loc, arr, font, doubleAxisSize) {
   }
 }
 
-function axisCoordinates(loc, arr) {
+function axisCoordinates(loc: Coords, arr: Array) {
   let doubleAxisSize = 10;
   var loader = new THREE.FontLoader();
-  loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
+  loader.load("fonts/helvetiker_bold.typeface.json", function (font: THREE.Font) {
     xAxisLabels(loc, arr, font, doubleAxisSize);
     yAxisLabels(loc, arr, font, doubleAxisSize);
     zAxisLabels(loc, arr, font, doubleAxisSize);
   });
 }
 
-function graph3DArray(loc, arr) {
+function graph3DArray(loc: Coords, arr: Array3D) {
   let [x, y, z] = loc;
   let max = Math.max(...arr.flat().flat());
   let min = Math.min(...arr.flat().flat());
@@ -638,7 +648,7 @@ function handleResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function highlightValue(value) {
+function highlightValue(value: number) {
   for (let i = 0; i < cubes.length; i++) {
     if (cubes[i].value == value) {
       cubes[i].material.opacity = 0.8;
@@ -666,7 +676,7 @@ function resetScale() {
   }
 }
 
-function isNumeric(str) {
+function isNumeric(str: string): boolean {
   if (typeof str != "string") return false;
   return (
     !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
@@ -689,7 +699,7 @@ equalityInput.addEventListener("keyup", function () {
   greaterThanInput.value = "";
 });
 
-function highlightInequality(low, high) {
+function highlightInequality(low: number, high: number) {
   for (let i = 0; i < cubes.length; i++) {
     if (low < cubes[i].value && cubes[i].value < high) {
       cubes[i].material.opacity = 0.8;
