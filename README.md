@@ -39,7 +39,7 @@ tsc
 ```bash
 node main <filename.ext>
 ```
-Then open <code>localhost:8080</code> in a browser to run the visualization.
+Then open <code>http://localhost:8080</code> in a browser to run the visualization.
 
 #### Compatibility 
 - [x] JSON (.json) 
@@ -65,7 +65,7 @@ tsc
 node main
 ```
 
-Then open <code>localhost:8080</code> in a browser and paste your JSON array into the input box. Ensure there are no trailing commas after any final elements in a list.
+Then open <code>http://localhost:8080</code> in a browser and paste your JSON array into the input box. Ensure there are no trailing commas after any final elements in a list.
 
 ### Example JSON (2 x 4 x 3)
 
