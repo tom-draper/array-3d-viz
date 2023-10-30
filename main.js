@@ -82,7 +82,7 @@ function run(gui) {
   if (!gui) {
     // To return array data read from file
     app.get("/data", function (req, res) {
-      let readable = fs.createReadStream("data/temp/temp.json");
+      const readable = fs.createReadStream("data/temp/temp.json");
       readable.pipe(res);
     });
   }
@@ -91,12 +91,12 @@ function run(gui) {
   console.log("Server started at: http://localhost:" + port);
 }
 
-let gui = process.argv.length != 3;
+const gui = process.argv.length != 3;
 
 if (gui) {
   run(gui);
 } else {
-  let path = getFilePath();
+  const path = getFilePath();
 
   if (fileExists(path)) {
     convertToJSON(path); // Save target data into data/temp.json
