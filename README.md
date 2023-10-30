@@ -7,7 +7,7 @@ Hosted at: https://array-3d-viz.vercel.app
 ### Features
 - Works with 1D, 2D or 3D arrays
 - Paste array data from clipboard or read from file
-- Cell colour scaled by relative value
+- Cell color scaled by relative value
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
