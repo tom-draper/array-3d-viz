@@ -1,20 +1,25 @@
-const express = require("express");
-const fs = require("fs");
-const { PythonShell } = require("python-shell");
+import express from "express";
+import fs, { write } from 'fs';
+import npyjs from "npyjs";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import ndarray from "ndarray";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function getFilePath() {
-  const path = process.argv[2];
+  let path = process.argv[2];
 
-  // Default to json data format
   if (path === undefined) {
     return undefined
   }
-  if (!path.includes(".")) {
+  // Default to json data format
+  if (!path.slice(1).includes(".")) {
     path = path + ".json";
   }
-  if (!path.includes("data/")) {
-    path = "./data/" + path;
-  }
+
   return path;
 }
 
@@ -27,37 +32,95 @@ async function fileExists(file) {
   }
 }
 
+function writeWorkingJSON(data) {
+  fs.writeFile("data/temp/temp.json", data, "utf8", (err) => {
+    if (err) {
+      console.log(`Error writing file: ${err}`);
+    }
+  });
+}
+
+function loadJSON(path) {
+  fs.readFile(path, "utf8", (err, data) => {
+    if (err) {
+      console.log(`Error reading file from disk: ${err}`);
+      return
+    }
+    writeWorkingJSON(data)
+  });
+}
+
+function convertNDArray(ndArray) {
+  let arr;
+  switch (ndArray.shape.length) {
+    case 1:
+      return Array.from(ndArray.data)
+    case 2:
+      arr = new Array(ndArray.shape[0]).fill(
+        new Array(ndArray.shape[1]).fill(0)
+      )
+      for (let i = 0; i < ndArray.shape[0]; i++) {
+        for (let j = 0; j < ndArray.shape[1]; j++) {
+          arr[i][j] = ndArray.get(i, j)
+        }
+      }
+      break
+    case 3:
+      arr = new Array(ndArray.shape[0]).fill(
+        new Array(ndArray.shape[1]).fill(
+          new Array(ndArray.shape[2]).fill(0)
+        )
+      )
+      for (let i = 0; i < ndArray.shape[0]; i++) {
+        for (let j = 0; j < ndArray.shape[1]; j++) {
+          for (let k = 0; k < ndArray.shape[2]; k++) {
+            arr[i][j][k] = ndArray.get(i, j, k)
+          }
+        }
+      }
+      break
+  }
+  return arr
+}
+
+function loadNumPy(_path) {
+  const n = new npyjs();
+  const buf = fs.readFileSync(_path);
+  const npyData = n.parse(buf.buffer.slice(0, buf.buffer.length));
+
+  const npyArray = ndarray(npyData.data, npyData.shape);
+  const data = JSON.stringify(convertNDArray(npyArray))
+
+  writeWorkingJSON(data)
+}
+
+function loadNumPyWithPython(_path) {
+  // Run script to load target .npy file and save it in json format
+  PythonShell.run(
+    "scripts/load.py",
+    { args: [_path] },
+    function (err, results) {
+      if (err) {
+        console.log(err, results);
+      }
+    }
+  );
+}
+
 function convertToJSON(path) {
   if (path === undefined) {
     return;
   }
-  
+
   const extension = path.split(".").slice(-1)[0];
   switch (extension) {
     case "json":
-      fs.readFile(path, "utf8", (err, data) => {
-        if (err) {
-          console.log(`Error reading file from disk: ${err}`);
-        } else {
-          fs.writeFile("data/temp/temp.json", data, "utf8", (err) => {
-            if (err) {
-              console.log(`Error writing file: ${err}`);
-            }
-          });
-        }
-      });
+      loadJSON(path)
       break;
-    case "npy", "npz":
-      // Run script to load target .npy file and save it in json format
-      PythonShell.run(
-        "scripts/load.py",
-        { args: [path] },
-        function (err, results) {
-          if (err) {
-            console.log(err, results);
-          }
-        }
-      );
+    case "npy":
+    case "npz":
+      // Load target .npy file and save it in json format
+      loadNumPy(path)
       break;
     default:
       throw "File type not supported.";
@@ -98,10 +161,13 @@ if (gui) {
 } else {
   const path = getFilePath();
 
-  if (fileExists(path)) {
-    convertToJSON(path); // Save target data into data/temp.json
-    run(gui);
-  } else {
-    console.log("Data file not found.");
-  }
+  fileExists(path).then(exists => {
+    if (exists) {
+      convertToJSON(path); // Save target data into data/temp.json
+      run(gui);
+    } else {
+      console.log("Data file not found.");
+    }
+  })
+
 }
