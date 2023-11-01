@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "A tool to visualise matrices in 3-dimensional space.",
   "main": "main.js",
+  "type": "module",
   "scripts": {
+    "build": "tsc",
     "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,13 +22,16 @@
   "dependencies": {
     "cross-fetch": "^3.1.5",
     "express": "^4.18.1",
+    "ndarray": "^1.0.19",
     "node-fetch": "^3.2.8",
+    "npyjs": "^0.5.0",
     "python-shell": "^3.0.1",
     "three": "^0.154.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.16",
     "@types/plotly.js": "^2.12.18",
-    "@types/three": "^0.149.0"
+    "@types/three": "^0.149.0",
+    "typescript": "^5.2.2"
   }
 }
