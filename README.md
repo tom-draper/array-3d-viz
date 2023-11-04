@@ -33,7 +33,7 @@ npm install
 ```
 #### 2. Compile TypeScript files
 ```bash
-tsc
+npm run build
 ```
 #### 3. Run server
 ```bash
@@ -58,7 +58,7 @@ npm install
 ```
 #### 2. Compile TypeScript files
 ```bash
-tsc
+npm run build
 ```
 #### 3. Run server
 ```bash
