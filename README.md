@@ -25,8 +25,6 @@ Hosted at: https://array-3d-viz.vercel.app
 
 ###  Mode 1: Visualize array file (.json, .npy, etc.)
 
-Place the array file in the <code>/data</code> directory.
-
 #### 1. Install packages:
 ```bash
 npm install
