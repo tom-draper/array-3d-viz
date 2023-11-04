@@ -37,7 +37,7 @@ npm run build
 ```
 #### 3. Run server
 ```bash
-node main <filename.ext>
+node main path/to/filename.ext
 ```
 Then open <code>localhost:8080</code> in a browser to run the visualization.
 
