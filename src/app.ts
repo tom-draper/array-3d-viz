@@ -231,11 +231,9 @@ function arrayShape(arr: Array | number): number[] {
   if (!(arr instanceof Array) || !arr.length) {
     return [];
   }
-  //@ts-ignore
   const dim = arr.reduce(function (result, current) {
     return arrayEquals(result, arrayShape(current)) ? result : false;
   }, arrayShape(arr[0]));
-
   return dim && [arr.length].concat(dim);
 }
 
