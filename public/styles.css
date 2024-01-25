@@ -87,6 +87,17 @@ input {
 }
 
 
+.red {
+    color: red;
+}
+.green {
+    color: rgb(0, 255, 0);
+}
+.blue {
+    color: blue;
+}
+
+
 #gui {
     display: flex;
     flex-direction: column;

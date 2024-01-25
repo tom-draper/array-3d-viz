@@ -17,13 +17,13 @@ let cubes: THREE.Mesh[] = [];
 let array: Array;
 
 // Check whether using GUI
-$.get("/gui", function (gui) {
+$.get("/gui", gui => {
   if (gui) {
     setupGUI(); // Setup gui and wait for button click to fetch array input
   } else {
     enableViz();
     // Fetch array from saved file from server
-    $.get("/data", function (data) {
+    $.get("/data", data => {
       $(".result").html(data);
       array = JSON.parse(data);
       console.log(array);
@@ -60,7 +60,7 @@ function enableViz() {
 function validArray(input: string): boolean {
   try {
     // Test if valid array syntax
-    let arr = JSON.parse(input);
+    const arr = JSON.parse(input);
     // Check max of 3 dimensions
     if (arrayShape(arr).length > 3) {
       return false;
@@ -79,7 +79,7 @@ function startViz() {
 }
 
 function runInput() {
-  let input = $("#arrayInput").val()?.toString().replace(/\s/g, "");
+  const input = $("#arrayInput").val()?.toString().replace(/\s/g, "");
   if (input && validArray(input)) {
     array = jQuery.parseJSON(input);
     console.log(array);
@@ -92,16 +92,15 @@ function runInput() {
 }
 
 function isInt(value: number): boolean {
-  let x;
   if (isNaN(value)) {
     return false;
   }
-  x = parseFloat(value.toString());
+  const x = parseFloat(value.toString());
   return (x | 0) === x;
 }
 
 function isIntegerArray(arr: any[]): boolean {
-  for (let value of arr) {
+  for (const value of arr) {
     if (!isInt(value)) {
       return false;
     }
@@ -128,18 +127,15 @@ function randn_bm(min: number, max: number, skew: number): number {
 }
 
 function graphDistribution() {
-  let values = array.flat().flat();
+  const values = array.flat().flat();
   if (isIntegerArray(values)) {
     // Count frequency of each value
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
-    let data: { [value: number]: number } = {};
-    for (let value of values) {
-      if (!(value in data)) {
-        data[value] = 1;
-      } else {
-        data[value] += 1;
-      }
+    const data: { [value: number]: number } = {};
+    for (const value of values) {
+      data[value] ||= 0;
+      data[value] += 1;
       if (value < min) {
         min = value;
       }
@@ -150,12 +146,10 @@ function graphDistribution() {
 
     // Fill in any zeros
     for (let i = min; i <= max; i++) {
-      if (!(i in data)) {
-        data[i] = 0;
-      }
+      data[i] ||= 0;
     }
 
-    let sorted = Object.keys(data).sort().reduce(
+    const sorted = Object.keys(data).sort().reduce(
       (obj, key) => {
         //@ts-ignore
         obj[key] = data[key];
@@ -164,7 +158,7 @@ function graphDistribution() {
       {}
     );
 
-    let graphData: Plotly.Data[] = [
+    const graphData: Plotly.Data[] = [
       {
         x: Object.keys(sorted).map(Number),
         //@ts-ignore
@@ -177,7 +171,7 @@ function graphDistribution() {
       }
     ]
 
-    let layout: Plotly.Layout = {
+    const layout: Plotly.Layout = {
       height: 180,
       width: 270,
       margin: { t: 0, b: 20, r: 20, l: 20 },
@@ -212,15 +206,15 @@ function graphDistribution() {
   }
 }
 
-function graphLine(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, colour: number) {
-  if (colour === undefined) {
-    colour = 0xff0000;
+function graphLine(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, color: number) {
+  if (color === undefined) {
+    color = 0xff0000;
   }
-  let lineMaterial = new THREE.LineBasicMaterial({ color: colour });
-  let geometry = new THREE.Geometry();
+  const lineMaterial = new THREE.LineBasicMaterial({ color: color });
+  const geometry = new THREE.Geometry();
   geometry.vertices.push(new THREE.Vector3(x1, y1, z1));
   geometry.vertices.push(new THREE.Vector3(x2, y2, z2));
-  let line = new THREE.Line(geometry, lineMaterial);
+  const line = new THREE.Line(geometry, lineMaterial);
   scene.add(line);
 }
 
@@ -238,7 +232,7 @@ function arrayShape(arr: Array | number): number[] {
     return [];
   }
   //@ts-ignore
-  let dim = arr.reduce(function (result, current) {
+  const dim = arr.reduce(function (result, current) {
     return arrayEquals(result, arrayShape(current)) ? result : false;
   }, arrayShape(arr[0]));
 
@@ -246,29 +240,41 @@ function arrayShape(arr: Array | number): number[] {
 }
 
 function setArrayShape(arr: Array) {
-  let shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
+  // const shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
+  const shape = arrayShape(arr);
   //@ts-ignore
-  document.getElementById("arrayShape").textContent = shape;
+  // document.getElementById("arrayShape").textContent = shape;
+  switch (shape.length) {
+    case 1:
+      document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`
+      break;
+    case 2:
+      document.getElementById("arrayShape").innerHTML = `<span class="green">${shape[0]}</span> × <span class="red">${shape[1]}</span>`
+      break;
+    case 3:
+      document.getElementById("arrayShape").innerHTML = `<span class="blue">${shape[0]}</span> × <span class="green">${shape[1]}</span> × <span class="red">${shape[2]}</span>`
+      break;
+  }
 }
 
 function graphArrayElement(loc: Coords, value: number, opacity: number) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
 
   // Cube
-  let geometry = new THREE.BoxGeometry();
-  let material = new THREE.MeshBasicMaterial({
+  const geometry = new THREE.BoxGeometry();
+  const material = new THREE.MeshBasicMaterial({
     color: 0x00ff00,
     opacity: opacity,
     transparent: true,
   });
-  let cube = new THREE.Mesh(geometry, material);
+  const cube = new THREE.Mesh(geometry, material);
   cube.position.set(x + 0.5, y + 0.5, z - 0.5);
   scene.add(cube);
   cube.value = value;
   cubes.push(cube);
 
   // Cube edges
-  let wireframe = new THREE.LineSegments(
+  const wireframe = new THREE.LineSegments(
     new THREE.EdgesGeometry(geometry),
     new THREE.LineBasicMaterial({ color: 0x00ff00 })
   );
@@ -276,21 +282,21 @@ function graphArrayElement(loc: Coords, value: number, opacity: number) {
   scene.add(wireframe);
 
   // Display element value
-  let loader = new THREE.FontLoader();
+  const loader = new THREE.FontLoader();
   loader.load("fonts/helvetiker_regular.typeface.json", function (font: THREE.Font) {
-    let nDigits = value.toString().includes(".") ? 7 : 5;
-    let textsShapes = font.generateShapes(
+    const nDigits = value.toString().includes(".") ? 7 : 5;
+    const textsShapes = font.generateShapes(
       value.toString().slice(0, nDigits + 1),
       0.15
     );
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x + 0.05, y + 0.05, z + 0.01);
     scene.add(text);
 
-    let textReverse = new THREE.Mesh(textsGeometry, textsMaterial);
+    const textReverse = new THREE.Mesh(textsGeometry, textsMaterial);
     textReverse.position.set(x + 0.95, y + 0.05, z - 1.01);
     textReverse.rotateY(Math.PI);
     scene.add(textReverse);
@@ -298,11 +304,11 @@ function graphArrayElement(loc: Coords, value: number, opacity: number) {
 }
 
 function graph1DArray(loc: Coords, arr: Array1D) {
-  let [x, y, z] = loc;
-  let max = Math.max(...arr.flat());
-  let min = Math.min(...arr.flat());
+  const [x, y, z] = loc;
+  const max = Math.max(...arr.flat());
+  const min = Math.min(...arr.flat());
   for (let i = 0; i < arr.length; i++) {
-    let opacity = ((arr[i] - min) / (max - min)) * 0.8;
+    const opacity = ((arr[i] - min) / (max - min)) * 0.8;
     graphArrayElement([x + i, y, z], arr[i], opacity);
   }
   axisCoordinates(loc, arr);
@@ -310,12 +316,12 @@ function graph1DArray(loc: Coords, arr: Array1D) {
 }
 
 function graph2DArray(loc: Coords, arr: Array2D) {
-  let [x, y, z] = loc;
-  let max = Math.max(...arr.flat());
-  let min = Math.min(...arr.flat());
+  const [x, y, z] = loc;
+  const max = Math.max(...arr.flat());
+  const min = Math.min(...arr.flat());
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr[0].length; j++) {
-      let opacity = ((arr[i][j] - min) / (max - min)) * 0.8;
+      const opacity = ((arr[i][j] - min) / (max - min)) * 0.8;
       graphArrayElement([x + j, y + arr.length - 1 - i, z], arr[i][j], opacity);
     }
   }
@@ -324,34 +330,34 @@ function graph2DArray(loc: Coords, arr: Array2D) {
 }
 
 function xAxisLabels(loc: Coords, arr: Array, font: THREE.Font, doubleAxisSize: number) {
-  let shape = arrayShape(arr);
+  const shape = arrayShape(arr);
   switch (shape.length) {
     case 1:
       // x axis coords on floor
-      xAxisLabels1D(loc, arr as Array1D, font)
+      xAxisLabels1D(loc, <Array1D>arr, font)
       break;
     case 2:
-      xAxisLabels2D(loc, arr as Array2D, font, doubleAxisSize)
+      xAxisLabels2D(loc, <Array2D>arr, font, doubleAxisSize)
       break;
     case 3:
-      xAxisLabels3D(loc, arr as Array3D, font, doubleAxisSize)
+      xAxisLabels3D(loc, <Array3D>arr, font, doubleAxisSize)
       break;
   }
 }
 
 function xAxisLabels1D(loc: Coords, arr: Array1D, font: THREE.Font) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
   for (let i = 0; i < arr.length; i++) {
-    let textsShapes = font.generateShapes(i.toString(), 0.3);
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const textsShapes = font.generateShapes(i.toString(), 0.3);
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x + i + 0.1, y - 0.4, z);
     scene.add(text);
 
-    let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
-    let depth = 1;
+    const textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+    const depth = 1;
     textBehind.position.set(x + i + 0.9, y - 0.4, z - depth);
     textBehind.rotateY(Math.PI);
     scene.add(textBehind);
@@ -359,29 +365,29 @@ function xAxisLabels1D(loc: Coords, arr: Array1D, font: THREE.Font) {
 }
 
 function xAxisLabels2D(loc: Coords, arr: Array2D, font: THREE.Font, doubleAxisSize: number) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
   for (let i = 0; i < arr[0].length; i++) {
-    let textsShapes = font.generateShapes(i.toString(), 0.3);
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const textsShapes = font.generateShapes(i.toString(), 0.3);
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x + i + 0.1, y - 0.4, z);
     scene.add(text);
 
     if (arr[0].length > doubleAxisSize) {
-      let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
       textAbove.position.set(x + i + 0.1, y + arr.length + 0.1, z);
       scene.add(textAbove);
     }
 
-    let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+    const textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
     textBehind.position.set(x + i + 0.9, y - 0.4, z - 1);
     textBehind.rotateY(Math.PI);
     scene.add(textBehind);
 
     if (arr.length > doubleAxisSize) {
-      let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
       textBehindAbove.position.set(x + i + 0.9, y + arr.length + 0.1, z - 1);
       textBehindAbove.rotateY(Math.PI);
       scene.add(textBehindAbove);
@@ -391,29 +397,29 @@ function xAxisLabels2D(loc: Coords, arr: Array2D, font: THREE.Font, doubleAxisSi
 
 
 function xAxisLabels3D(loc: Coords, arr: Array3D, font: THREE.Font, doubleAxisSize: number) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
   for (let i = 0; i < arr[0][0].length; i++) {
-    let textsShapes = font.generateShapes(i.toString(), 0.3);
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const textsShapes = font.generateShapes(i.toString(), 0.3);
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x + i + 0.1, y - 0.4, z);
     scene.add(text);
 
     if (arr[0].length > doubleAxisSize) {
-      let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
       textAbove.position.set(x + i + 0.1, y + arr[0].length + 0.1, z);
       scene.add(textAbove);
     }
 
-    let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+    const textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
     textBehind.position.set(x + i + 0.9, y - 0.4, z - arr.length);
     textBehind.rotateY(Math.PI);
     scene.add(textBehind);
 
     if (arr.length > doubleAxisSize) {
-      let textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textBehindAbove = new THREE.Mesh(textsGeometry, textsMaterial);
       textBehindAbove.position.set(
         x + i + 0.9,
         y + arr[0].length + 0.1,
@@ -427,47 +433,47 @@ function xAxisLabels3D(loc: Coords, arr: Array3D, font: THREE.Font, doubleAxisSi
 
 
 function yAxisLabels(loc: Coords, arr: Array, font: THREE.Font, doubleAxisSize: number) {
-  let shape = arrayShape(arr);
+  const shape = arrayShape(arr);
   switch (shape.length) {
     case 2:
       // y axis coords top to bottom
-      yAxisLabels2D(loc, arr as Array2D, font, doubleAxisSize)
+      yAxisLabels2D(loc, <Array2D>arr, font, doubleAxisSize)
       break;
     case 3:
-      yAxisLabels3D(loc, arr as Array3D, font, doubleAxisSize)
+      yAxisLabels3D(loc, <Array3D>arr, font, doubleAxisSize)
       break;
   }
 }
 
 function yAxisLabels2D(loc: Coords, arr: Array2D, font: THREE.Font, doubleAxisSize: number) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
   for (let i = 0; i < arr.length; i++) {
-    let tickVal = (arr.length - 1 - i).toString();
-    let nChars = Array.from(tickVal).length;
-    let textsShapes = font.generateShapes(
+    const tickVal = (arr.length - 1 - i).toString();
+    const nChars = Array.from(tickVal).length;
+    const textsShapes = font.generateShapes(
       tickVal,
       0.3
     );
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x - 0.20 - 0.25 * nChars, y + i + 0.1, z);
     scene.add(text);
 
     if (arr.length > doubleAxisSize) {
-      let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textRight = new THREE.Mesh(textsGeometry, textsMaterial);
       textRight.position.set(x + arr[0].length + 0.15, y + i + 0.1, z);
       scene.add(textRight);
     }
 
-    let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
+    const textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
     textBehindRight.position.set(x + arr[0].length + 0.25 + 0.25 * nChars, y + i + 0.1, z - 1);
     textBehindRight.rotateY(Math.PI);
     scene.add(textBehindRight);
 
     if (arr.length > doubleAxisSize) {
-      let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
       textBehind.position.set(x - 0.15, y + i + 0.1, z - 1);
       textBehind.rotateY(Math.PI);
       scene.add(textBehind);
@@ -476,28 +482,28 @@ function yAxisLabels2D(loc: Coords, arr: Array2D, font: THREE.Font, doubleAxisSi
 }
 
 function yAxisLabels3D(loc: Coords, arr: Array3D, font: THREE.Font, doubleAxisSize: number) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
   for (let i = 0; i < arr[0].length; i++) {
-    let tickVal = (arr[0].length - 1 - i).toString();
-    let nChars = Array.from(tickVal).length;
-    let textsShapes = font.generateShapes(
+    const tickVal = (arr[0].length - 1 - i).toString();
+    const nChars = Array.from(tickVal).length;
+    const textsShapes = font.generateShapes(
       tickVal,
       0.3
     );
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x - 0.20 - 0.25 * nChars, y + i + 0.1, z);
     scene.add(text);
 
     if (arr.length > doubleAxisSize) {
-      let textRight = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textRight = new THREE.Mesh(textsGeometry, textsMaterial);
       textRight.position.set(x + arr[0][0].length + 0.15, y + i + 0.1, z);
       scene.add(textRight);
     }
 
-    let textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
+    const textBehindRight = new THREE.Mesh(textsGeometry, textsMaterial);
     textBehindRight.position.set(
       x + arr[0][0].length + 0.25 + 0.25 * nChars,
       y + i + 0.1,
@@ -507,7 +513,7 @@ function yAxisLabels3D(loc: Coords, arr: Array3D, font: THREE.Font, doubleAxisSi
     scene.add(textBehindRight);
 
     if (arr.length > doubleAxisSize) {
-      let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
       textBehind.position.set(x - 0.15, y + i + 0.1, z - arr.length);
       textBehind.rotateY(Math.PI);
       scene.add(textBehind);
@@ -516,39 +522,39 @@ function yAxisLabels3D(loc: Coords, arr: Array3D, font: THREE.Font, doubleAxisSi
 }
 
 function zAxisLabels(loc: Coords, arr: Array, font: THREE.Font, doubleAxisSize: number) {
-  let shape = arrayShape(arr);
+  const shape = arrayShape(arr);
   // z axis coords on floor
   switch (shape.length) {
     case 3:
-      zAxisLabels3D(loc, arr as Array3D, font, doubleAxisSize)
+      zAxisLabels3D(loc, <Array3D>arr, font, doubleAxisSize)
       break;
   }
 }
 
 function zAxisLabels3D(loc: Coords, arr: Array3D, font: THREE.Font, doubleAxisSize: number) {
-  let [x, y, z] = loc;
+  const [x, y, z] = loc;
   for (let i = 0; i < arr.length; i++) {
-    let textsShapes = font.generateShapes(i.toString(), 0.3);
-    let textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
-    let textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const textsShapes = font.generateShapes(i.toString(), 0.3);
+    const textsGeometry = new THREE.ShapeBufferGeometry(textsShapes);
+    const textsMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 
-    let text = new THREE.Mesh(textsGeometry, textsMaterial);
+    const text = new THREE.Mesh(textsGeometry, textsMaterial);
     text.position.set(x, y - 0.4, z - i - 0.95);
     text.rotateY(-Math.PI / 2);
     scene.add(text);
 
-    let textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+    const textBehind = new THREE.Mesh(textsGeometry, textsMaterial);
     textBehind.position.set(x + arr[0][0].length, y - 0.4, z - i - 0.1);
     textBehind.rotateY(Math.PI / 2);
     scene.add(textBehind);
 
     if (arr[0].length > doubleAxisSize) {
-      let textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textAbove = new THREE.Mesh(textsGeometry, textsMaterial);
       textAbove.position.set(x, y + 0.1 + arr[0].length, z - i - 0.95);
       textAbove.rotateY(-Math.PI / 2);
       scene.add(textAbove);
 
-      let textAboveBehind = new THREE.Mesh(textsGeometry, textsMaterial);
+      const textAboveBehind = new THREE.Mesh(textsGeometry, textsMaterial);
       textAboveBehind.position.set(
         x + arr[0][0].length,
         y + 0.1 + arr[0].length,
