@@ -23,7 +23,7 @@ Hosted at: https://array-3d-viz.vercel.app
 
 ## Usage 
 
-###  Mode 1: Visualize array file (.json, .npy, etc.)
+###  Option 1: Array file (.json, .npy, etc.)
 
 #### 1. Install packages:
 ```bash
@@ -48,7 +48,7 @@ Then open <code>localhost:8080</code> in a browser to run the visualization.
 
 To load .npy or .npz files, Python must be installed with the NumPy library.
 
-### Mode 2: Visualize pasted array data (JSON format) from clipboard
+### Option 2: Paste JSON array from clipboard
 
 #### 1. Install packages
 ```bash
