@@ -21,44 +21,45 @@ Hosted at: https://array-3d-viz.vercel.app
 
 ![Data3](https://user-images.githubusercontent.com/41476809/179065260-ac1415f9-d0b8-4d4c-b03b-1be5e6d54b50.png)
 
-## Usage 
+## Getting Started
 
-###  Option 1: Array file (.json, .npy, etc.)
+### Installation
 
-#### 1. Install packages:
+#### Install packages
+
 ```bash
 npm install
 ```
-#### 2. Compile TypeScript files
+
+#### Compile TypeScript files
+
 ```bash
 npm run build
 ```
-#### 3. Run server
+
+### Usage 
+
+####  Option 1: Array file (.json, .npy, etc.)
+
+Start the node server providing the path to your array file.
+
 ```bash
 node main path/to/filename.ext
 ```
-Then open <code>localhost:8080</code> in a browser to run the visualization.
 
-#### Compatibility 
+Then open <code>localhost:8080</code> in a browser to view the visualization.
+
+##### Compatibility 
 - [x] JSON (.json) 
 - [x] NumPy (.npy, .npz)
 - [ ] Pickle (.pickle)
 - [ ] CSV (.csv)
 - [ ] Binaries
 
-To load .npy or .npz files, Python must be installed with the NumPy library.
+To load .npy or .npz files, Python must be installed along with the NumPy library.
 
-### Option 2: Paste JSON array from clipboard
+#### Option 2: Paste JSON array from clipboard
 
-#### 1. Install packages
-```bash
-npm install
-```
-#### 2. Compile TypeScript files
-```bash
-npm run build
-```
-#### 3. Run server
 ```bash
 node main
 ```
