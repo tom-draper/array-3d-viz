@@ -1,9 +1,7 @@
 import express from "express";
-import fs, { write } from 'fs';
-import npyjs from "npyjs";
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import ndarray from "ndarray";
 
 
 const __filename = fileURLToPath(import.meta.url);

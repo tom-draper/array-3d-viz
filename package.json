@@ -1,8 +1,9 @@
 {
   "name": "array-3d-viz",
   "version": "1.0.0",
-  "description": "A tool to visualise matrices in 3-dimensional space.",
+  "description": "A tool to visualize matrices in 3-dimensional space.",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "node main.js",
