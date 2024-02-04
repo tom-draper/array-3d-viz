@@ -110,4 +110,12 @@ if (gui) {
 } else {
   const path = getFilePath();
 
+  fileExists(path).then(exists => {
+    if (exists) {
+      convertToJSON(path); // Save target data into data/temp.json
+      run(gui);
+    } else {
+      console.log("Data file not found.");
+    }
+  })
 }
