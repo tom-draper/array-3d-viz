@@ -44,7 +44,7 @@ npm run build
 Start the node server providing the path to your array file.
 
 ```bash
-node main path/to/filename.ext
+node main.js path/to/filename.ext
 ```
 
 Then open <code>localhost:8080</code> in a browser to view the visualization.
@@ -61,7 +61,7 @@ To load .npy or .npz files, Python must be installed along with the NumPy librar
 #### Option 2: Paste JSON array from clipboard
 
 ```bash
-node main
+node main.js
 ```
 
 Then open <code>localhost:8080</code> in a browser and paste your JSON array into the input box. Ensure the JSON is valid and there are no trailing commas after any final elements in a list.
