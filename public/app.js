@@ -6,14 +6,14 @@ let scene;
 let renderer;
 let cubes = [];
 let array;
-// Check whether using GUI
+// Check whether using GUI.
 $.get("/gui", gui => {
     if (gui) {
-        setupGUI(); // Setup gui and wait for button click to fetch array input
+        setupGUI(); // Setup gui and wait for button click to fetch array input.
     }
     else {
         enableViz();
-        // Fetch array from saved file from server
+        // Fetch array from saved file from server.
         $.get("/data", data => {
             $(".result").html(data);
             array = JSON.parse(data);
@@ -27,10 +27,10 @@ function setupGUI() {
     $("#runViz").bind("click", runInput);
 }
 function disableGUI() {
-    $("#gui").css("display", "none"); // Disable GUI
+    $("#gui").css("display", "none"); // Disable GUI.
 }
 function enableGUI() {
-    $("#gui").css("display", "flex"); // Disable GUI
+    $("#gui").css("display", "flex"); // Disable GUI.
 }
 function disableViz() {
     $("#dataViz").css("display", "none");
@@ -44,9 +44,9 @@ function enableViz() {
 }
 function validArray(input) {
     try {
-        // Test if valid array syntax
+        // Test if valid array syntax.
         const arr = JSON.parse(input);
-        // Check max of 3 dimensions
+        // Check max of 3 dimensions.
         if (arrayShape(arr).length > 3) {
             return false;
         }
@@ -93,24 +93,25 @@ function isIntegerArray(arr) {
 function randn_bm(min, max, skew) {
     let u = 0, v = 0;
     while (u === 0)
-        u = Math.random(); //Converting [0,1) to (0,1)
+        u = Math.random(); // Converting [0,1) to (0,1).
     while (v === 0)
         v = Math.random();
     let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    num = num / 10.0 + 0.5; // Translate to 0 -> 1
-    if (num > 1 || num < 0)
-        num = randn_bm(min, max, skew); // resample between 0 and 1 if out of range
+    num = num / 10.0 + 0.5; // Translate to 0 -> 1.
+    if (num > 1 || num < 0) {
+        num = randn_bm(min, max, skew); // Resample between 0 and 1 if out of range.
+    }
     else {
-        num = Math.pow(num, skew); // Skew
-        num *= max - min; // Stretch to fill range
-        num += min; // offset to min
+        num = Math.pow(num, skew); // Skew.
+        num *= max - min; // Stretch to fill range.
+        num += min; // offset to min.
     }
     return parseInt(num.toString());
 }
 function graphDistribution() {
     const values = array.flat().flat();
     if (isIntegerArray(values)) {
-        // Count frequency of each value
+        // Count frequency of each value.
         let min = Number.POSITIVE_INFINITY;
         let max = Number.NEGATIVE_INFINITY;
         const data = {};
@@ -149,7 +150,6 @@ function graphDistribution() {
             height: 180,
             width: 270,
             margin: { t: 0, b: 20, r: 20, l: 20 },
-            // margin: {t: 0, b: 0, r: 0, l: 0},
             paper_bgcolor: "rgba(0,0,0,0)",
             plot_bgcolor: "rgba(0,0,0,0)",
             yaxis: {
@@ -205,10 +205,7 @@ function arrayShape(arr) {
     return dim && [arr.length].concat(dim);
 }
 function setArrayShape(arr) {
-    // const shape = "(" + arrayShape(arr).toString().replaceAll(",", ", ") + ")";
     const shape = arrayShape(arr);
-    //@ts-ignore
-    // document.getElementById("arrayShape").textContent = shape;
     switch (shape.length) {
         case 1:
             document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`;
@@ -223,7 +220,7 @@ function setArrayShape(arr) {
 }
 function graphArrayElement(loc, value, opacity) {
     const [x, y, z] = loc;
-    // Cube
+    // Cube.
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshBasicMaterial({
         color: 0x00ff00,
@@ -235,11 +232,11 @@ function graphArrayElement(loc, value, opacity) {
     scene.add(cube);
     cube.value = value;
     cubes.push(cube);
-    // Cube edges
+    // Cube edges.
     const wireframe = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), new THREE.LineBasicMaterial({ color: 0x00ff00 }));
     wireframe.position.set(x + 0.5, y + 0.5, z - 0.5);
     scene.add(wireframe);
-    // Display element value
+    // Display element value.
     const loader = new THREE.FontLoader();
     loader.load("fonts/helvetiker_regular.typeface.json", function (font) {
         const nDigits = value.toString().includes(".") ? 7 : 5;
@@ -283,7 +280,7 @@ function xAxisLabels(loc, arr, font, doubleAxisSize) {
     const shape = arrayShape(arr);
     switch (shape.length) {
         case 1:
-            // x axis coords on floor
+            // x axis coords on floor.
             xAxisLabels1D(loc, arr, font);
             break;
         case 2:
@@ -366,7 +363,7 @@ function yAxisLabels(loc, arr, font, doubleAxisSize) {
     const shape = arrayShape(arr);
     switch (shape.length) {
         case 2:
-            // y axis coords top to bottom
+            // y axis coords top to bottom.
             yAxisLabels2D(loc, arr, font, doubleAxisSize);
             break;
         case 3:
@@ -506,7 +503,7 @@ function init() {
     controls = new OrbitControls(camera, renderer.domElement);
     let shape = arrayShape(array);
     let nDim = shape.length;
-    // Shape padded to 3D with 0s for non-existent dimensions
+    // Shape padded to 3D with 0s for non-existent dimensions.
     let shape3D = shape.concat(Array(3 - nDim).fill(0));
     shape3D[2] = Math.max(Math.max(...shape3D), 3);
     camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
@@ -551,7 +548,7 @@ function init() {
     // Handle resizing of the browser window.
     window.addEventListener("resize", handleResize, false);
 }
-/* Loops to animate the scene */
+/* Loops to animate the scene. */
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
@@ -593,7 +590,7 @@ function isNumeric(str) {
         return false;
     return (
     //@ts-ignore
-    !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+    !isNaN(str) && // Use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
         !isNaN(parseFloat(str)));
 }
 let equalityInput = document.getElementById("equalityQuery");
@@ -632,13 +629,13 @@ lessThanInput === null || lessThanInput === void 0 ? void 0 : lessThanInput.addE
         highlightInequality(parseFloat(lessThanInputValue), high);
     }
     else if (isNumeric(greaterThanInputValue)) {
-        // If just erased less than input, but greater than input available
+        // If just erased less than input, but greater than input available.
         highlightInequality(Number.NEGATIVE_INFINITY, parseFloat(greaterThanInputValue));
     }
     else if (greaterThanInputValue === "") {
         resetScale();
     }
-    equalityInput.value = ""; // Erase any equality input
+    equalityInput.value = ""; // Erase any equality input.
 });
 let greaterThanInput = document.getElementById("greaterThanQuery");
 let greaterThanInputValue = greaterThanInput === null || greaterThanInput === void 0 ? void 0 : greaterThanInput.value;
@@ -652,11 +649,11 @@ greaterThanInput === null || greaterThanInput === void 0 ? void 0 : greaterThanI
         highlightInequality(low, parseFloat(greaterThanInputValue));
     }
     else if (isNumeric(lessThanInputValue)) {
-        // If just erased greater than input, but less than input still available
+        // If just erased greater than input, but less than input still available.
         highlightInequality(parseFloat(lessThanInputValue), Number.POSITIVE_INFINITY);
     }
     else if (greaterThanInputValue === "") {
         resetScale();
     }
-    equalityInput.value = ""; // Erase any equality input
+    equalityInput.value = ""; // Erase any equality input.
 });

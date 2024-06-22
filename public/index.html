@@ -6,6 +6,14 @@
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
+    <meta
+      name="description"
+      content="A tool for visualising 3D arrays and matricies."
+    />
+    <meta
+      name="keywords"
+      content="array, visualizer, 3D, matrix, viz, interactive, three.js"
+    />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
     <script type="module" src="app.js"></script>
@@ -33,9 +41,24 @@
 ]</textarea
       >
       <button id="runViz">Run</button>
+      <div class="github-image-container">
+        <a href="https://github.com/tom-draper/array-3d-viz" target="_blank">
+          <img src="img/github-40.png" alt="GitHub" class="github-image" />
+        </a>
+      </div>
     </div>
     <div id="dataViz">
-      <div id="arrayShape"></div>
+      <div class="bottom-left">
+        <div id="arrayShape"></div>
+        <div class="donate-link-container">
+          <a
+            class="donate-link"
+            href="https://www.buymeacoffee.com/tomdraper"
+            target="_blank"
+            >Donate</a
+          >
+        </div>
+      </div>
       <div class="distribution">
         <div id="graph"></div>
       </div>
