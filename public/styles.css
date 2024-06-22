@@ -65,6 +65,7 @@ canvas {
 
 .donate-link {
     cursor: pointer;
+    text-decoration: none;
     color: #00ff00;
 }
 
