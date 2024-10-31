@@ -99,7 +99,7 @@ function parseCSVArray(input: string): Array1D | Array2D {
 	const rows = input.trim().split("\n");
 
 	// Map each row to an array of values by splitting on commas
-	const data = rows.map(row => row.split(",").map(value => tryParseInt(value.trim())));
+	const data = rows.map(row => row.split(",").map(value => tryParseNumber(value.trim())));
 
 	if (data.length == 1) {
 		return data[0] as Array1D;
@@ -108,8 +108,8 @@ function parseCSVArray(input: string): Array1D | Array2D {
 	}
 }
 
-function tryParseInt(value: string): number | string {
-	const result = parseInt(value, 10);
+function tryParseNumber(value: string): number | string {
+	const result = parseFloat(value);
 	if (isNaN(result)) {
 		return value;
 	} else {
@@ -359,7 +359,7 @@ function graphArrayElement(loc: Coords, value: number, opacity: number) {
 function minMax(arr: number[]): [number, number] {
 	let min = Infinity;
 	let max = -Infinity;
-	for (let i = 1; i < arr.length; i++) {
+	for (let i = 0; i < arr.length; i++) {
 		const value = arr[i];
 		if (isNumeric2(value)) {
 			if (value < min) {
