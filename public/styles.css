@@ -31,7 +31,16 @@ canvas {
     color: white;
     text-decoration: none;
     font-family: 'Lato Black';
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+    padding: 10px 20px;
+}
 
+.supported {
+    text-align: right;
+    padding: 10px;
+    color: rgb(0, 0, 0, 0.5);
+    margin-top: -2em;
 }
 
 .distribution {
@@ -61,6 +70,7 @@ canvas {
     font-weight: 400;
     font-family: 'Lato Black';
     padding-top: 2px;
+    align-self: center;
 }
 
 .donate-link {
