@@ -26,7 +26,6 @@ $.get("/gui", gui => {
 		$.get("/data", data => {
 			$(".result").html(data);
 			array = JSON.parse(data);
-			console.log(array);
 			startViz();
 		});
 	}
@@ -57,7 +56,7 @@ function enableViz() {
 	$(".inequality-container").css("display", "flex");
 }
 
-function validArray(input: string): boolean {
+function validJSONArray(input: string): boolean {
 	try {
 		// Test if valid array syntax.
 		const arr = JSON.parse(input);
@@ -72,6 +71,57 @@ function validArray(input: string): boolean {
 	return true;
 }
 
+function validCSVArray(csvText) {
+	// Split text by line to get rows
+	const rows = csvText.trim().split("\n");
+
+	// Check if there is at least one row
+	if (rows.length < 1) return false;
+
+	// Get the number of columns from the first row
+	const columnCount = rows[0].split(",").length;
+
+	// Validate each row has the same number of columns
+	for (let i = 1; i < rows.length; i++) {
+		const row = rows[i].split(",");
+
+		// Check if the current row has the expected number of columns
+		if (row.length !== columnCount) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function parseCSVArray(input: string): Array1D | Array2D {
+	// Split text by line to get rows
+	const rows = input.trim().split("\n");
+
+	// Map each row to an array of values by splitting on commas
+	const data = rows.map(row => row.split(",").map(value => tryParseInt(value.trim())));
+
+	if (data.length == 1) {
+		return data[0] as Array1D;
+	} else {
+		return data as Array2D;
+	}
+}
+
+function tryParseInt(value: string): number | string {
+	const result = parseInt(value, 10);
+	if (isNaN(result)) {
+		return value;
+	} else {
+		return result;
+	}
+}
+
+function isInteger(value: string): boolean {
+	const x = parseFloat(value);
+	return (x | 0) === x;
+}
+
 function startViz() {
 	graphDistribution();
 	init();
@@ -79,15 +129,25 @@ function startViz() {
 }
 
 function runInput() {
-	const input = $("#arrayInput").val()?.toString().replace(/\s/g, "");
-	if (input && validArray(input)) {
-		array = jQuery.parseJSON(input);
-		console.log(array);
-		disableGUI();
-		enableViz();
-		startViz();
+	const input = $("#arrayInput").val()?.toString().replace(/[ \t]+/g, "");
+	if (input) {
+		array = undefined;
+		if (validJSONArray(input)) {
+			array = JSON.parse(input);
+		} else if (validCSVArray(input)) {
+			array = parseCSVArray(input);
+		} else {
+			alert("JSON or CSV format required.");
+		}
+
+		if (array) {
+			console.log(array);
+			disableGUI();
+			enableViz();
+			startViz();
+		}
 	} else {
-		alert("Invalid array");
+		alert("JSON or CSV format required.");
 	}
 }
 
@@ -296,10 +356,26 @@ function graphArrayElement(loc: Coords, value: number, opacity: number) {
 	});
 }
 
+function minMax(arr: number[]): [number, number] {
+	let min = Infinity;
+	let max = -Infinity;
+	for (let i = 1; i < arr.length; i++) {
+		const value = arr[i];
+		if (isNumeric2(value)) {
+			if (value < min) {
+				min = value;
+			}
+			if (value > max) {
+				max = value;
+			}
+		}
+	}
+	return [min, max];
+}
+
 function graph1DArray(loc: Coords, arr: Array1D) {
 	const [x, y, z] = loc;
-	const max = Math.max(...arr.flat());
-	const min = Math.min(...arr.flat());
+	const [min, max] = minMax(arr);
 	for (let i = 0; i < arr.length; i++) {
 		const opacity = ((arr[i] - min) / (max - min)) * 0.8;
 		graphArrayElement([x + i, y, z], arr[i], opacity);
@@ -310,8 +386,7 @@ function graph1DArray(loc: Coords, arr: Array1D) {
 
 function graph2DArray(loc: Coords, arr: Array2D) {
 	const [x, y, z] = loc;
-	const max = Math.max(...arr.flat());
-	const min = Math.min(...arr.flat());
+	const [min, max] = minMax([...arr.flat()]);
 	for (let i = 0; i < arr.length; i++) {
 		for (let j = 0; j < arr[0].length; j++) {
 			const opacity = ((arr[i][j] - min) / (max - min)) * 0.8;
@@ -571,8 +646,7 @@ function axisCoordinates(loc: Coords, arr: Array) {
 
 function graph3DArray(loc: Coords, arr: Array3D) {
 	let [x, y, z] = loc;
-	let max = Math.max(...arr.flat().flat());
-	let min = Math.min(...arr.flat().flat());
+	const [min, max] = minMax([...arr.flat().flat()]);
 	for (let i = 0; i < arr.length; i++) {
 		for (let j = 0; j < arr[0].length; j++) {
 			for (let k = 0; k < arr[0][0].length; k++) {
@@ -689,16 +763,7 @@ function highlightValue(value: number) {
 }
 
 function resetScale() {
-	let max = cubes[0].value;
-	let min = cubes[0].value;
-	for (let i = 1; i < cubes.length; i++) {
-		if (cubes[i].value > max) {
-			max = cubes[i].value;
-		}
-		if (cubes[i].value < min) {
-			min = cubes[i].value;
-		}
-	}
+	const [min, max] = minMax(cubes.map(cube => cube.value));
 
 	for (let i = 0; i < cubes.length; i++) {
 		let opacity = ((cubes[i].value - min) / (max - min)) * 0.8;
@@ -713,6 +778,10 @@ function isNumeric(str: string): boolean {
 		!isNaN(str) && // Use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
 		!isNaN(parseFloat(str))
 	);
+}
+
+function isNumeric2(str: string) {
+    return !isNaN(str) && isFinite(str);
 }
 
 let equalityInput = <HTMLInputElement>document.getElementById("equalityQuery");
