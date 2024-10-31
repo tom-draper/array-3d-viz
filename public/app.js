@@ -77,7 +77,7 @@ function parseCSVArray(input) {
     // Split text by line to get rows
     const rows = input.trim().split("\n");
     // Map each row to an array of values by splitting on commas
-    const data = rows.map(row => row.split(",").map(value => tryParseInt(value.trim())));
+    const data = rows.map(row => row.split(",").map(value => tryParseNumber(value.trim())));
     if (data.length == 1) {
         return data[0];
     }
@@ -85,8 +85,8 @@ function parseCSVArray(input) {
         return data;
     }
 }
-function tryParseInt(value) {
-    const result = parseInt(value, 10);
+function tryParseNumber(value) {
+    const result = parseFloat(value);
     if (isNaN(result)) {
         return value;
     }
@@ -308,7 +308,7 @@ function graphArrayElement(loc, value, opacity) {
 function minMax(arr) {
     let min = Infinity;
     let max = -Infinity;
-    for (let i = 1; i < arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
         const value = arr[i];
         if (isNumeric2(value)) {
             if (value < min) {
