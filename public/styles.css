@@ -23,6 +23,13 @@ canvas {
     bottom: 10px;
     left: 20px;
     color: white;
+    display: flex;
+}
+
+.top-right {
+    position: fixed;
+    top: 10px;
+    right: 20px;
     font-family: Arial;
     display: flex;
 }
@@ -30,7 +37,7 @@ canvas {
 #arrayShape {
     color: white;
     text-decoration: none;
-    font-family: 'Lato Black';
+    font-family: 'Geist Mono';
     background: rgba(255, 255, 255, 0.16);
     border-radius: 4px;
     padding: 10px 20px;
@@ -61,6 +68,7 @@ canvas {
     width: 200px;
     padding: 10px 20px;
     color: white;
+    font-family: 'Geist Mono';
 }
 
 .donate-link-container {
@@ -68,7 +76,7 @@ canvas {
     font-size: 0.75em;
     margin-left: 2em;
     font-weight: 400;
-    font-family: 'Lato Black';
+    font-family: 'Geist Mono', 'Lato Black', Arial, Helvetica, sans-serif;
     padding-top: 2px;
     align-self: center;
 }
@@ -76,6 +84,7 @@ canvas {
 .donate-link {
     cursor: pointer;
     color: #00ff00;
+    text-decoration: none;
 }
 
 .donate-link:hover {
@@ -89,7 +98,6 @@ canvas {
 
 .x-equals {
     margin: auto;
-    font-family: 'Lato Black', Arial, Helvetica, sans-serif;
     letter-spacing: 6px;
 }
 
@@ -111,7 +119,6 @@ canvas {
 
 .x-inequality {
     margin: auto 5px auto 7px;
-    font-family: 'Lato Black', Arial, Helvetica, sans-serif;
     letter-spacing: 3px;
 }
 
@@ -135,6 +142,10 @@ input {
     color: blue;
 }
 
+.multiply {
+    padding: 0 0.5em;
+}
+
 
 #gui {
     display: flex;
@@ -147,7 +158,6 @@ input {
 
 .title {
     text-justify: center;
-    font-family: Arial, Helvetica, sans-serif;
     font-family: 'Lato Black';
 }
 
@@ -173,7 +183,6 @@ input {
 }
 
 #runViz {
-    /* width: 50px; */
     margin: auto;
     background-color: #134aef;
     border: none;
@@ -206,7 +215,6 @@ input {
         margin: 1em;
     }
 }
-
 
 #gui,
 #dataViz,
