@@ -264,10 +264,10 @@ function setArrayShape(arr) {
             document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`;
             break;
         case 2:
-            document.getElementById("arrayShape").innerHTML = `<span class="green">${shape[0]}</span> × <span class="red">${shape[1]}</span>`;
+            document.getElementById("arrayShape").innerHTML = `<span class="green">${shape[0]}</span><span class="multiply">×</span><span class="red">${shape[1]}</span>`;
             break;
         case 3:
-            document.getElementById("arrayShape").innerHTML = `<span class="blue">${shape[0]}</span> × <span class="green">${shape[1]}</span> × <span class="red">${shape[2]}</span>`;
+            document.getElementById("arrayShape").innerHTML = `<span class="blue">${shape[0]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="red">${shape[2]}</span>`;
             break;
     }
 }
