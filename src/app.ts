@@ -1,4 +1,6 @@
+//@ts-ignore
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
+//@ts-ignore
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
 
 type Array1D = number[]
@@ -285,7 +287,7 @@ function arrayEquals(a: any[], b: any[]): boolean {
 	);
 }
 
-function arrayShape(arr: Array | number): number[] {
+function arrayShape(arr: any[] | number): number[] {
 	if (!(arr instanceof Array) || !arr.length) {
 		return [];
 	}
@@ -780,7 +782,7 @@ function isNumeric(str: string): boolean {
 	);
 }
 
-function isNumeric2(str: string) {
+function isNumeric2(str: number) {
     return !isNaN(str) && isFinite(str);
 }
 
