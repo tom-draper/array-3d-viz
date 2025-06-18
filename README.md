@@ -31,12 +31,6 @@ Hosted at: https://array-3d-viz.vercel.app
 npm install
 ```
 
-#### Compile TypeScript files
-
-```bash
-npm run build
-```
-
 ### Usage 
 
 ####  Option 1: Array file (.json, .npy, etc.)
@@ -44,7 +38,7 @@ npm run build
 Start the node server providing the path to your array file.
 
 ```bash
-node main.js path/to/filename.ext
+node server.js path/to/filename.ext
 ```
 
 Then open <code>localhost:8080</code> in a browser to view the visualization.
@@ -61,7 +55,7 @@ To load .npy or .npz files, Python must be installed along with the NumPy librar
 #### Option 2: Paste JSON array from clipboard
 
 ```bash
-node main.js
+node server.js
 ```
 
 Then open <code>localhost:8080</code> in a browser and paste your JSON array into the input box. Ensure the JSON is valid and there are no trailing commas after any final elements in a list.
