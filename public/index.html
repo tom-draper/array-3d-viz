@@ -32,7 +32,7 @@
     [22, 23, 24]
   ]
 ]</textarea>
-		<button id="runViz" onclick="runInput">Run</button>
+		<button id="runViz" onclick="runInput()">Run</button>
 		<div class="github-image-container">
 			<a href="https://github.com/tom-draper/array-3d-viz" target="_blank">
 				<img src="img/github-40.png" alt="GitHub" class="github-image" />
@@ -54,12 +54,12 @@
 		<div class="query-container">
 			<div class="equality-container">
 				<div class="x-equals">x=</div>
-				<input id="equalityQuery" type="text" />
+				<input id="equalityQuery" type="text" onkeyup="handleEqualityInput()" />
 			</div>
 			<div class="inequality-container">
-				<input id="lessThanQuery" type="text" />
+				<input id="lessThanQuery" type="text" onkeyup="handleLessThanInput()" />
 				<div class="x-inequality">&lt;x&lt;</div>
-				<input id="greaterThanQuery" type="text" />
+				<input id="greaterThanQuery" type="text" onkeyup="handleGreaterThanInput()" />
 			</div>
 		</div>
 	</div>

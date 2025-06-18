@@ -4,6 +4,7 @@ import npyjs from "npyjs";
 import path from "path";
 import { fileURLToPath } from "url";
 import ndarray from "ndarray";
+import { PythonShell } from "python-shell";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -205,7 +206,6 @@ function startServer(guiEnabled) {
 		console.log(`Server started at: http://localhost:${port}`);
 	});
 }
-
 
 async function main() {
 	const guiEnabled = isGUIEnabled();
