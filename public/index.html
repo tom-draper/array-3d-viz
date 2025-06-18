@@ -1,24 +1,23 @@
 <html lang="en">
 
 <head>
-  <title>Array Visualizer</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-  <meta name="description" content="A tool for visualising 3D arrays and matricies." />
-  <meta name="keywords" content="array, visualizer, 3D, matrix, viz, interactive, three.js" />
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-  <script src="https://cdn.plot.ly/plotly-2.12.1.min.js" defer></script>
-  <script type="module" src="app.js" defer></script>
-  <link rel="icon" type="image/png" href="img/favicon.png" />
-  <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
-  <!-- <base href="https://array-3d-viz.vercel.app/" /> -->
+	<title>Array Visualizer</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+	<meta name="description" content="A tool for visualising 3D arrays and matricies." />
+	<meta name="keywords" content="array, visualizer, 3D, matrix, viz, interactive, three.js" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+	<script src="https://cdn.plot.ly/plotly-2.12.1.min.js" defer></script>
+	<script type="module" src="js/index.js" defer></script>
+	<link rel="icon" type="image/png" href="img/favicon.png" />
+	<link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
 </head>
 
 <body>
-  <div id="gui">
-    <h1 class="title">Paste array to visualize</h1>
-    <div class="supported">json/csv</div>
-    <textarea name="" id="arrayInput" cols="30" rows="10">
+	<div id="gui">
+		<h1 class="title">Paste array to visualize</h1>
+		<div class="supported">json/csv</div>
+		<textarea name="" id="arrayInput" cols="30" rows="10">
 [
   [
     [1, 2, 3],
@@ -33,37 +32,37 @@
     [22, 23, 24]
   ]
 ]</textarea>
-    <button id="runViz">Run</button>
-    <div class="github-image-container">
-      <a href="https://github.com/tom-draper/array-3d-viz" target="_blank">
-        <img src="img/github-40.png" alt="GitHub" class="github-image" />
-      </a>
-    </div>
-  </div>
-  <div id="dataViz">
-    <div class="bottom-left">
-      <div id="arrayShape"></div>
-    </div>
-    <div class="top-right">
-      <div class="donate-link-container">
-        <a class="donate-link" href="https://www.buymeacoffee.com/tomdraper" target="_blank">Donate</a>
-      </div>
-    </div>
-    <div class="distribution">
-      <div id="graph"></div>
-    </div>
-    <div class="query-container">
-      <div class="equality-container">
-        <div class="x-equals">x=</div>
-        <input id="equalityQuery" type="text" />
-      </div>
-      <div class="inequality-container">
-        <input id="lessThanQuery" type="text" />
-        <div class="x-inequality">&lt;x&lt;</div>
-        <input id="greaterThanQuery" type="text" />
-      </div>
-    </div>
-  </div>
+		<button id="runViz" onclick="runInput">Run</button>
+		<div class="github-image-container">
+			<a href="https://github.com/tom-draper/array-3d-viz" target="_blank">
+				<img src="img/github-40.png" alt="GitHub" class="github-image" />
+			</a>
+		</div>
+	</div>
+	<div id="dataViz">
+		<div class="bottom-left">
+			<div id="arrayShape"></div>
+		</div>
+		<div class="top-right">
+			<div class="donate-link-container">
+				<a class="donate-link" href="https://www.buymeacoffee.com/tomdraper" target="_blank">Donate</a>
+			</div>
+		</div>
+		<div class="distribution">
+			<div id="graph"></div>
+		</div>
+		<div class="query-container">
+			<div class="equality-container">
+				<div class="x-equals">x=</div>
+				<input id="equalityQuery" type="text" />
+			</div>
+			<div class="inequality-container">
+				<input id="lessThanQuery" type="text" />
+				<div class="x-inequality">&lt;x&lt;</div>
+				<input id="greaterThanQuery" type="text" />
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>
