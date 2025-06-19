@@ -85,6 +85,12 @@ export function isInteger(value) {
 	return Number.isInteger(x);
 }
 
+/**
+ * Compares two arrays for equality by checking length and element-wise equality.
+ * @param {any[]} a - First array to compare
+ * @param {any[]} b - Second array to compare
+ * @returns {boolean} - True if arrays are equal, false otherwise
+ */
 export function arrayEquals(a, b) {
 	return (
 		a.length === b.length &&
@@ -94,6 +100,12 @@ export function arrayEquals(a, b) {
 	);
 }
 
+/**
+ * Determines the shape (dimensions) of a nested array structure.
+ * Returns an array representing the size of each dimension, or false if dimensions are inconsistent.
+ * @param {any[]} arr - The array to analyze
+ * @returns {number[]|false} - Array of dimension sizes, or false if inconsistent structure
+ */
 export function arrayShape(arr) {
 	if (!(arr) || !arr.length) {
 		return [];
@@ -104,6 +116,11 @@ export function arrayShape(arr) {
 	return dim && [arr.length].concat(dim);
 }
 
+/**
+ * Checks if all elements in an array are integers.
+ * @param {any[]} arr - The array to check
+ * @returns {boolean} - True if all elements are integers, false otherwise
+ */
 export function isIntegerArray(arr) {
 	for (const value of arr) {
 		if (!isInt(value)) {
@@ -113,6 +130,12 @@ export function isIntegerArray(arr) {
 	return true;
 }
 
+/**
+ * Helper function to check if a value is an integer.
+ * Handles both numeric and string representations of numbers.
+ * @param {any} value - The value to check
+ * @returns {boolean} - True if the value is an integer, false otherwise
+ */
 function isInt(value) {
 	if (isNaN(value)) {
 		return false;

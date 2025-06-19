@@ -192,7 +192,8 @@ export function resetScale() {
 }
 
 /**
- * Animation loop
+ * Animation loop for rendering the 3D scene
+ * Continuously updates and renders the scene using requestAnimationFrame
  */
 export function animate() {
     requestAnimationFrame(animate);
@@ -200,7 +201,8 @@ export function animate() {
 }
 
 /**
- * Handles window resize events
+ * Handles window resize events by updating camera aspect ratio and renderer size
+ * Should be called when the browser window is resized to maintain proper aspect ratio
  */
 export function handleResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -208,76 +210,86 @@ export function handleResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+/**
+ * Initializes the 3D visualization scene with the given array
+ * Sets up renderer, scene, camera, controls, lighting, and visualizes the array based on its dimensions
+ * @param {import('./types.js').Array1D|import('./types.js').Array2D|import('./types.js').Array3D} arr - Array to visualize (1D, 2D, or 3D)
+ */
 export function init(arr) {
-	// Set up the Web GL renderer.
-	renderer = new THREE.WebGLRenderer({ antialias: true });
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.autoClear = false;
-	document.body.appendChild(renderer.domElement);
+    // Set up the Web GL renderer.
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.autoClear = false;
+    document.body.appendChild(renderer.domElement);
 
-	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera(
-		60,
-		window.innerWidth / window.innerHeight,
-		0.1,
-		1000
-	);
-	controls = new OrbitControls(camera, renderer.domElement);
-	let shape = arrayShape(arr);
-	let nDim = shape.length;
-	// Shape padded to 3D with 0s for non-existent dimensions.
-	let shape3D = shape.concat(Array(3 - nDim).fill(0));
-	shape3D[2] = Math.max(Math.max(...shape3D), 3);
-	camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+    controls = new OrbitControls(camera, renderer.domElement);
+    let shape = arrayShape(arr);
+    let nDim = shape.length;
+    // Shape padded to 3D with 0s for non-existent dimensions.
+    let shape3D = shape.concat(Array(3 - nDim).fill(0));
+    shape3D[2] = Math.max(Math.max(...shape3D), 3);
+    camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
 
-	let center = shape
-		.concat(Array(3 - shape.length).fill(0))
-		.map((x) => Math.floor(x / 2));
+    let center = shape
+        .concat(Array(3 - shape.length).fill(0))
+        .map((x) => Math.floor(x / 2));
 
-	switch (nDim) {
-		case 3:
-			// Negative z-index as array is build behind the x-axis line (negative z coords)
-			camera.lookAt(new THREE.Vector3(center[2], center[1], -center[0]));
-			controls.target.set(center[2], center[1], -center[0]);
-			break;
-		case 2:
-			camera.lookAt(new THREE.Vector3(center[1], center[0], 0));
-			controls.target.set(center[1], center[0], 0);
-			break;
-		default:
-			camera.lookAt(new THREE.Vector3(center[0], 0, 0));
-			controls.target.set(center[0], 0, 0);
-			break;
-	}
+    switch (nDim) {
+        case 3:
+            // Negative z-index as array is build behind the x-axis line (negative z coords)
+            camera.lookAt(new THREE.Vector3(center[2], center[1], -center[0]));
+            controls.target.set(center[2], center[1], -center[0]);
+            break;
+        case 2:
+            camera.lookAt(new THREE.Vector3(center[1], center[0], 0));
+            controls.target.set(center[1], center[0], 0);
+            break;
+        default:
+            camera.lookAt(new THREE.Vector3(center[0], 0, 0));
+            controls.target.set(center[0], 0, 0);
+            break;
+    }
 
-	graphAxisLines();
+    graphAxisLines();
 
-	switch (shape.length) {
-		case 1:
-			graph1DArray([0, 0, 0], arr);
-			break;
-		case 2:
-			graph2DArray([0, 0, 0], arr);
-			break;
-		case 3:
-			graph3DArray([0, 0, 0], arr);
-			break;
-	}
+    switch (shape.length) {
+        case 1:
+            graph1DArray([0, 0, 0], arr);
+            break;
+        case 2:
+            graph2DArray([0, 0, 0], arr);
+            break;
+        case 3:
+            graph3DArray([0, 0, 0], arr);
+            break;
+    }
 
-	// Add directional lighting to scene.
-	let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-	directionalLight.position.set(10, 10, 0);
-	directionalLight.intensity = 1.5;
-	scene.add(directionalLight);
-	let ambientLight = new THREE.AmbientLight();
-	ambientLight.intensity = 0.2;
-	scene.add(ambientLight);
+    // Add directional lighting to scene.
+    let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    directionalLight.position.set(10, 10, 0);
+    directionalLight.intensity = 1.5;
+    scene.add(directionalLight);
+    let ambientLight = new THREE.AmbientLight();
+    ambientLight.intensity = 0.2;
+    scene.add(ambientLight);
 
-	// Handle resizing of the browser window.
-	window.addEventListener("resize", handleResize, false);
+    // Handle resizing of the browser window.
+    window.addEventListener("resize", handleResize, false);
 }
 
+/**
+ * Creates and displays a distribution graph for array values using Plotly
+ * For integer arrays, generates a bar chart showing frequency distribution of values
+ * @param {import('./types.js').Array1D|import('./types.js').Array2D|import('./types.js').Array3D} arr - Array to analyze and graph
+ */
 export function graphDistribution(arr) {
     const values = arr.flat().flat();
     if (isIntegerArray(values)) {
@@ -354,17 +366,22 @@ export function graphDistribution(arr) {
     }
 }
 
+/**
+ * Updates the DOM element displaying array dimensions with color-coded shape information
+ * Shows array shape with color coding: red for 1D, green×red for 2D, blue×green×red for 3D
+ * @param {import('./types.js').Array1D|import('./types.js').Array2D|import('./types.js').Array3D} arr - Array whose dimensions to display
+ */
 export function setArrayDimensions(arr) {
-	const shape = arrayShape(arr);
-	switch (shape.length) {
-		case 1:
-			document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`
-			break;
-		case 2:
-			document.getElementById("arrayShape").innerHTML = `<span class="green">${shape[0]}</span><span class="multiply">×</span><span class="red">${shape[1]}</span>`
-			break;
-		case 3:
-			document.getElementById("arrayShape").innerHTML = `<span class="blue">${shape[0]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="red">${shape[2]}</span>`
-			break;
-	}
+    const shape = arrayShape(arr);
+    switch (shape.length) {
+        case 1:
+            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`
+            break;
+        case 2:
+            document.getElementById("arrayShape").innerHTML = `<span class="green">${shape[0]}</span><span class="multiply">×</span><span class="red">${shape[1]}</span>`
+            break;
+        case 3:
+            document.getElementById("arrayShape").innerHTML = `<span class="blue">${shape[0]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="red">${shape[2]}</span>`
+            break;
+    }
 }

@@ -4,13 +4,17 @@ import npyjs from "npyjs";
 import path from "path";
 import { fileURLToPath } from "url";
 import ndarray from "ndarray";
-import { PythonShell } from "python-shell";
+import { parse } from "csv-parse/sync";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const TEMP_DATA_PATH = "data/temp/temp.json";
 
+/**
+ * Gets the file path from command line arguments and ensures it has the correct extension
+ * @returns {string|undefined} The file path with extension, or undefined if no path provided
+ */
 function getFilePath() {
 	const filePath = process.argv[2];
 
@@ -26,6 +30,11 @@ function getFilePath() {
 	return filePath;
 }
 
+/**
+ * Checks if a file exists at the given path
+ * @param {string} filePath - The path to check
+ * @returns {Promise<boolean>} True if file exists, false otherwise
+ */
 async function fileExists(filePath) {
 	try {
 		await fs.promises.access(filePath, fs.constants.F_OK);
@@ -35,15 +44,29 @@ async function fileExists(filePath) {
 	}
 }
 
+/**
+ * Extracts the file extension from a file path
+ * @param {string} filePath - The file path
+ * @returns {string} The file extension in lowercase (without the dot)
+ */
 function getFileExtension(filePath) {
 	return path.extname(filePath).slice(1).toLowerCase();
 }
 
+/**
+ * Determines if GUI mode is enabled based on command line arguments
+ * @returns {boolean} True if GUI is enabled (no file path argument), false otherwise
+ */
 function isGUIEnabled() {
 	// Simply GUI enabled if no file path argument has been provided.
 	return process.argv.length !== 3;
 }
 
+/**
+ * Stores JSON data to the temporary working file
+ * @param {string} data - The JSON data to store
+ * @throws {Error} If writing to file fails
+ */
 async function storeWorkingJSON(data) {
 	try {
 		await fs.promises.writeFile(TEMP_DATA_PATH, data, "utf8");
@@ -53,6 +76,11 @@ async function storeWorkingJSON(data) {
 	}
 }
 
+/**
+ * Loads a JSON file and stores it as working data
+ * @param {string} filePath - Path to the JSON file
+ * @throws {Error} If reading the file fails
+ */
 async function loadJSON(filePath) {
 	try {
 		const data = await fs.promises.readFile(filePath, "utf8");
@@ -63,10 +91,81 @@ async function loadJSON(filePath) {
 	}
 }
 
+/**
+ * Loads a CSV file and converts it to JSON format
+ * @param {string} filePath - Path to the CSV file
+ * @throws {Error} If reading or parsing the file fails
+ */
+async function loadCSV(filePath) {
+	try {
+		const data = await fs.promises.readFile(filePath, "utf8");
+		
+		// Parse CSV with headers detection
+		const records = parse(data, {
+			columns: true, // Use first row as headers
+			skip_empty_lines: true,
+			trim: true,
+			cast: (value, context) => {
+				// Try to convert to number if possible, otherwise keep as string
+				if (value === '' || value === null || value === undefined) {
+					return null;
+				}
+				
+				const num = Number(value);
+				if (!isNaN(num) && isFinite(num)) {
+					return num;
+				}
+				
+				return value;
+			}
+		});
+
+		// If parsing with headers fails or produces empty result, try without headers
+		if (!records || records.length === 0) {
+			const recordsNoHeaders = parse(data, {
+				columns: false, // Don't use headers
+				skip_empty_lines: true,
+				trim: true,
+				cast: (value, context) => {
+					if (value === '' || value === null || value === undefined) {
+						return null;
+					}
+					
+					const num = Number(value);
+					if (!isNaN(num) && isFinite(num)) {
+						return num;
+					}
+					
+					return value;
+				}
+			});
+			
+			const jsonData = JSON.stringify(recordsNoHeaders);
+			await storeWorkingJSON(jsonData);
+		} else {
+			const jsonData = JSON.stringify(records);
+			await storeWorkingJSON(jsonData);
+		}
+	} catch (error) {
+		console.error(`Error reading CSV file: ${error.message}`);
+		throw error;
+	}
+}
+
+/**
+ * Converts a 1D ndarray to a JavaScript array
+ * @param {ndarray} ndArray - The 1D ndarray to convert
+ * @returns {Array} The converted JavaScript array
+ */
 function convertNdArray1D(ndArray) {
 	return Array.from(ndArray.data);
 }
 
+/**
+ * Converts a 2D ndarray to a JavaScript array of arrays
+ * @param {ndarray} ndArray - The 2D ndarray to convert
+ * @returns {Array<Array>} The converted 2D JavaScript array
+ */
 function convertNdArray2D(ndArray) {
 	const [rows, cols] = ndArray.shape;
 	const result = [];
@@ -82,6 +181,11 @@ function convertNdArray2D(ndArray) {
 	return result;
 }
 
+/**
+ * Converts a 3D ndarray to a JavaScript array of arrays of arrays
+ * @param {ndarray} ndArray - The 3D ndarray to convert
+ * @returns {Array<Array<Array>>} The converted 3D JavaScript array
+ */
 function convertNdArray3D(ndArray) {
 	const [depth, rows, cols] = ndArray.shape;
 	const result = [];
@@ -101,6 +205,12 @@ function convertNdArray3D(ndArray) {
 	return result;
 }
 
+/**
+ * Converts an ndarray to a JavaScript array based on its dimensions
+ * @param {ndarray} ndArray - The ndarray to convert
+ * @returns {Array} The converted JavaScript array
+ * @throws {Error} If the ndarray has unsupported dimensions (not 1D, 2D, or 3D)
+ */
 function convertNdArrayToArray(ndArray) {
 	const { shape } = ndArray;
 
@@ -116,6 +226,11 @@ function convertNdArrayToArray(ndArray) {
 	}
 }
 
+/**
+ * Loads a NumPy file (.npy or .npz) and converts it to JSON format
+ * @param {string} filePath - Path to the NumPy file
+ * @throws {Error} If loading or parsing the NumPy file fails
+ */
 async function loadNumPy(filePath) {
 	// Run Python script to load target .npy file and save it in json format.
 	try {
@@ -134,6 +249,11 @@ async function loadNumPy(filePath) {
 	}
 }
 
+/**
+ * Alternative method to load NumPy files using Python (currently unused)
+ * @param {string} filePath - Path to the NumPy file
+ * @deprecated This function requires PythonShell which is not imported
+ */
 function loadNumPyWithPython(filePath) {
 	// Run script to load target .npy file and save it in json format.
 	PythonShell.run(
@@ -147,6 +267,11 @@ function loadNumPyWithPython(filePath) {
 	);
 }
 
+/**
+ * Converts various file formats to JSON and stores as working data
+ * @param {string} filePath - Path to the file to convert
+ * @throws {Error} If file path is missing, file type is unsupported, or conversion fails
+ */
 async function convertToJSON(filePath) {
 	if (!filePath) {
 		throw new Error("File path is required");
@@ -158,6 +283,9 @@ async function convertToJSON(filePath) {
 		case "json":
 			await loadJSON(filePath);
 			break;
+		case "csv":
+			await loadCSV(filePath);
+			break;
 		case "npy":
 		case "npz":
 			await loadNumPy(filePath);
@@ -167,6 +295,11 @@ async function convertToJSON(filePath) {
 	}
 }
 
+/**
+ * Creates an Express server with appropriate routes
+ * @param {boolean} guiEnabled - Whether GUI mode is enabled
+ * @returns {{app: Express, port: number}} The Express app and port number
+ */
 function createServer(guiEnabled) {
 	const app = express();
 	const port = process.env.PORT || 8080;
@@ -199,6 +332,10 @@ function createServer(guiEnabled) {
 	return { app, port };
 }
 
+/**
+ * Starts the Express server
+ * @param {boolean} guiEnabled - Whether GUI mode is enabled
+ */
 function startServer(guiEnabled) {
 	const { app, port } = createServer(guiEnabled);
 
@@ -207,6 +344,10 @@ function startServer(guiEnabled) {
 	});
 }
 
+/**
+ * Main application entry point
+ * Handles both GUI and CLI modes, processes files, and starts the server
+ */
 async function main() {
 	const guiEnabled = isGUIEnabled();
 
@@ -242,6 +383,7 @@ async function main() {
 	}
 }
 
+// Start the application
 main().catch(error => {
 	console.error("Fatal error:", error);
 	process.exit(1);

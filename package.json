@@ -27,11 +27,5 @@
     "npyjs": "^0.5.0",
     "python-shell": "^3.0.1",
     "three": "^0.154.0"
-  },
-  "devDependencies": {
-    "@types/jquery": "^3.5.16",
-    "@types/plotly.js": "^2.12.18",
-    "@types/three": "^0.149.0",
-    "typescript": "^5.2.2"
   }
 }
