@@ -23,6 +23,7 @@
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.6.0",
     "express": "^4.18.1",
+    "jsfive": "^0.4.0",
     "ndarray": "^1.0.19",
     "node-fetch": "^3.2.8",
     "npyjs": "^0.5.0",

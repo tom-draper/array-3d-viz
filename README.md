@@ -46,11 +46,9 @@ Then open <code>localhost:8080</code> in a browser to view the visualization.
 ##### Compatibility 
 - [x] JSON (.json) 
 - [x] NumPy (.npy, .npz)
+- [X] CSV (.csv)
+- [X] HDF (.hdf, .h5, .hdf5)
 - [ ] Pickle (.pickle)
-- [ ] CSV (.csv)
-- [ ] Binaries
-
-To load .npy or .npz files, Python must be installed along with the NumPy library.
 
 #### Option 2: Paste JSON array from clipboard
 

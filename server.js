@@ -4,7 +4,9 @@ import npyjs from "npyjs";
 import path from "path";
 import { fileURLToPath } from "url";
 import ndarray from "ndarray";
+import * as hdf5 from 'jsfive';
 import { parse } from "csv-parse/sync";
+import { readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -227,6 +229,99 @@ function convertNdArrayToArray(ndArray) {
 }
 
 /**
+ * Recursively processes HDF5 groups and datasets to extract data
+ * @param {Object} item - The HDF5 group or dataset
+ * @param {string} path - Current path in the HDF5 hierarchy
+ * @returns {Object} Processed data structure
+ */
+function processHDF5Item(item, path = '') {
+	if (item.type === 'group') {
+		const groupData = {};
+		
+		// Add metadata if available
+		if (item.attrs && Object.keys(item.attrs).length > 0) {
+			groupData._attrs = item.attrs;
+		}
+		
+		// Process all children
+		for (const [name, child] of Object.entries(item.children || {})) {
+			const childPath = path ? `${path}/${name}` : name;
+			groupData[name] = processHDF5Item(child, childPath);
+		}
+		
+		return groupData;
+	} else if (item.type === 'dataset') {
+		const result = {
+			shape: item.shape,
+			dtype: item.dtype,
+			data: null
+		};
+		
+		// Add attributes if available
+		if (item.attrs && Object.keys(item.attrs).length > 0) {
+			result.attrs = item.attrs;
+		}
+		
+		try {
+			// Get the actual data
+			const data = item.value;
+			
+			if (data !== null && data !== undefined) {
+				// Handle different data types
+				if (Array.isArray(data)) {
+					result.data = data;
+				} else if (data.constructor && data.constructor.name.includes('Array')) {
+					// Handle typed arrays (Float32Array, Int32Array, etc.)
+					result.data = Array.from(data);
+				} else {
+					result.data = data;
+				}
+			}
+		} catch (error) {
+			console.warn(`Warning: Could not read data for dataset at ${path}: ${error.message}`);
+			result.data = null;
+		}
+		
+		return result;
+	}
+	
+	return item;
+}
+
+/**
+ * Loads an HDF5 file and converts it to JSON format
+ * @param {string} filePath - Path to the HDF5 file
+ * @throws {Error} If loading or parsing the HDF5 file fails
+ */
+async function loadHDF5(filePath) {
+	try {
+		// Read the HDF5 file
+		const buffer = readFileSync(filePath);
+		const f = new hdf5.File(buffer.buffer, filePath);
+		
+		// Process the root group
+		const rootData = processHDF5Item(f, '');
+		
+		// Create a structured output
+		const output = {
+			filename: path.basename(filePath),
+			filesize: buffer.length,
+			root: rootData
+		};
+		
+		const jsonData = JSON.stringify(output, null, 2);
+		await storeWorkingJSON(jsonData);
+		
+		console.log(`Successfully loaded HDF5 file: ${filePath}`);
+		console.log(`File contains ${Object.keys(rootData).length} root-level items`);
+		
+	} catch (error) {
+		console.error(`Error loading HDF5 file: ${error}`);
+		throw error;
+	}
+}
+
+/**
  * Loads a NumPy file (.npy or .npz) and converts it to JSON format
  * @param {string} filePath - Path to the NumPy file
  * @throws {Error} If loading or parsing the NumPy file fails
@@ -290,8 +385,13 @@ async function convertToJSON(filePath) {
 		case "npz":
 			await loadNumPy(filePath);
 			break;
+		case "hdf5":
+		case "h5":
+		case "hdf":
+			await loadHDF5(filePath);
+			break;
 		default:
-			throw new Error(`Unsupported file type: .${extension}`);
+			throw new Error(`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf`);
 	}
 }
 
@@ -378,7 +478,7 @@ async function main() {
 			startServer(guiEnabled);
 		}
 	} catch (error) {
-		console.error("Application error:", error.message);
+		console.error("Application error:", error);
 		process.exit(1);
 	}
 }
