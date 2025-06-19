@@ -27,7 +27,6 @@
     "ndarray": "^1.0.19",
     "node-fetch": "^3.2.8",
     "npyjs": "^0.5.0",
-    "python-shell": "^3.0.1",
-    "three": "^0.154.0"
+    "python-shell": "^3.0.1"
   }
 }
