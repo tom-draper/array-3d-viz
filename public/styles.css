@@ -248,3 +248,30 @@ input {
 .equality-container {
     display: none;
 }
+
+#cookieConsentBanner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+#cookieConsentBanner button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+#cookieConsentBanner button:hover {
+    background-color: #45a049;
+}
