@@ -43,25 +43,30 @@
 		<div class="bottom-left">
 			<div id="arrayShape"></div>
 		</div>
-		<div class="top-right">
+
+		<div class="bottom-right flex">
 			<div class="donate-link-container">
 				<a class="donate-link" href="https://www.buymeacoffee.com/tomdraper" target="_blank">Support Me</a>
 			</div>
-		</div>
-		<div class="distribution">
-			<div id="graph"></div>
-		</div>
-		<div class="query-container">
-			<div class="equality-container">
-				<div class="x-equals">x=</div>
-				<input id="equalityQuery" type="text" onkeyup="handleEqualityInput()" />
+			<div class="distribution-query flex-col">
+				<div class="distribution">
+					<div id="graph"></div>
+				</div>
+				<div class="query-container">
+					<div class="equality-container">
+						<div class="x-equals">x=</div>
+						<input id="equalityQuery" type="text" onkeyup="handleEqualityInput()" />
+					</div>
+					<div class="inequality-container">
+						<input id="lessThanQuery" type="text" onkeyup="handleLessThanInput()" />
+						<div class="x-inequality">&lt;x&lt;</div>
+						<input id="greaterThanQuery" type="text" onkeyup="handleGreaterThanInput()" />
+					</div>
+				</div>
 			</div>
-			<div class="inequality-container">
-				<input id="lessThanQuery" type="text" onkeyup="handleLessThanInput()" />
-				<div class="x-inequality">&lt;x&lt;</div>
-				<input id="greaterThanQuery" type="text" onkeyup="handleGreaterThanInput()" />
-			</div>
+
 		</div>
+
 	</div>
 </body>
 
