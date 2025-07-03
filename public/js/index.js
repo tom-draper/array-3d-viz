@@ -125,3 +125,18 @@ window.handleGreaterThanInput = function() {
     
     if (equalityInput) equalityInput.value = ""; // Erase any equality input.
 };
+
+// Cookie Consent Banner Logic
+document.addEventListener("DOMContentLoaded", function() {
+    const cookieBanner = document.getElementById("cookieConsentBanner");
+    const acceptButton = document.getElementById("acceptCookies");
+
+    if (!localStorage.getItem("cookiesAccepted")) {
+        cookieBanner.style.display = "block";
+    }
+
+    acceptButton.addEventListener("click", function() {
+        localStorage.setItem("cookiesAccepted", "true");
+        cookieBanner.style.display = "none";
+    });
+});

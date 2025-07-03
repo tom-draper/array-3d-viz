@@ -1,23 +1,35 @@
 <html lang="en">
 
 <head>
-	<title>Array Visualizer</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-	<meta name="description" content="A tool for visualising 3D arrays and matricies." />
-	<meta name="keywords" content="array, visualizer, 3D, matrix, viz, interactive, three.js" />
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-	<script src="https://cdn.plot.ly/plotly-2.12.1.min.js" defer></script>
-	<script type="module" src="js/index.js" defer></script>
-	<link rel="icon" type="image/png" href="img/favicon.png" />
-	<link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+    <title>Interactive 3D Array Visualizer | JSON/CSV Data Viewer</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="description" content="An interactive 3D array and matrix visualizer. Supports JSON and CSV data formats. Visualize your data in 3D with this easy-to-use tool." />
+    <meta name="keywords" content="array, visualizer, 3D, matrix, viz, interactive, three.js, json, csv, data, visualization, plot, graph" />
+    <meta property="og:title" content="Interactive 3D Array Visualizer" />
+    <meta property="og:description" content="An interactive 3D array and matrix visualizer. Supports JSON and CSV data formats." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://arrayviz.com/" />
+    <meta property="og:image" content="https://arrayviz.com/img/favicon.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Interactive 3D Array Visualizer" />
+    <meta name="twitter:description" content="An interactive 3D array and matrix visualizer. Supports JSON and CSV data formats." />
+    <meta name="twitter:image" content="https://arrayviz.com/img/favicon.png" />
+    <link rel="canonical" href="https://arrayviz.com/" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js" defer></script>
+    <script type="module" src="js/index.js" defer></script>
+    <link rel="icon" type="image/png" href="img/favicon.png" />
+    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
 </head>
 
 <body>
 	<div id="gui">
 		<h1 class="title">Paste array to visualize</h1>
 		<div class="supported">json/csv</div>
-		<textarea name="" id="arrayInput" cols="30" rows="10">
+		<textarea name="arrayInput" id="arrayInput" cols="30" rows="10" aria-label="Paste array data here for visualization">
 [
   [
     [1, 2, 3],
@@ -32,10 +44,10 @@
     [22, 23, 24]
   ]
 ]</textarea>
-		<button id="runViz" onclick="runInput()">Run</button>
+		<button id="runViz" onclick="runInput()" aria-label="Run Visualization">Run</button>
 		<div class="github-image-container">
-			<a href="https://github.com/tom-draper/array-3d-viz" target="_blank">
-				<img src="img/github-40.png" alt="GitHub" class="github-image" />
+			<a href="https://github.com/tom-draper/array-3d-viz" target="_blank" aria-label="View project on GitHub">
+				<img src="img/github-40.png" alt="GitHub logo - link to project repository" class="github-image" />
 			</a>
 		</div>
 	</div>
@@ -46,8 +58,11 @@
 
 		<div class="bottom-right flex">
 			<div class="donate-link-container">
-				<a class="donate-link" href="https://www.buymeacoffee.com/tomdraper" target="_blank">Support Me</a>
+				<a class="donate-link" href="https://www.buymeacoffee.com/tomdraper" target="_blank" aria-label="Support the developer on Buy Me A Coffee">Support Me</a>
 			</div>
+			<!-- <div class="privacy-link-container"> -->
+			<!-- 	<a class="privacy-link" href="privacy.html" aria-label="View Privacy Policy">Privacy Policy</a> -->
+			<!-- </div> -->
 			<div class="distribution-query flex-col">
 				<div class="distribution">
 					<div id="graph"></div>
@@ -55,12 +70,12 @@
 				<div class="query-container">
 					<div class="equality-container">
 						<div class="x-equals">x=</div>
-						<input id="equalityQuery" type="text" onkeyup="handleEqualityInput()" />
+						<input id="equalityQuery" type="text" onkeyup="handleEqualityInput()" aria-label="Enter value for equality query" />
 					</div>
 					<div class="inequality-container">
-						<input id="lessThanQuery" type="text" onkeyup="handleLessThanInput()" />
+						<input id="lessThanQuery" type="text" onkeyup="handleLessThanInput()" aria-label="Enter upper bound for inequality query" />
 						<div class="x-inequality">&lt;x&lt;</div>
-						<input id="greaterThanQuery" type="text" onkeyup="handleGreaterThanInput()" />
+						<input id="greaterThanQuery" type="text" onkeyup="handleGreaterThanInput()" aria-label="Enter lower bound for inequality query" />
 					</div>
 				</div>
 			</div>
@@ -68,6 +83,10 @@
 		</div>
 
 	</div>
+    <div id="cookieConsentBanner" style="display: none;">
+        <p>This website uses cookies to ensure you get the best experience. By continuing to use our site, you agree to our <a href="privacy.html">Privacy Policy</a>.</p>
+        <button id="acceptCookies">Accept</button>
+    </div>
 </body>
 
 </html>
