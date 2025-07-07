@@ -412,6 +412,10 @@ function createServer(guiEnabled) {
 		res.sendFile(path.join(__dirname, "public", "index.html"));
 	});
 
+	app.get("/privacy", (req, res) => {
+		res.sendFile(path.join(__dirname, "public", "privacy.html"));
+	});
+
 	app.get("/gui", (req, res) => {
 		res.json(guiEnabled);
 	});

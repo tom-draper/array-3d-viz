@@ -260,6 +260,7 @@ input {
     padding: 15px;
     box-sizing: border-box;
     z-index: 1000;
+    font-family: 'Funnel Sans', sans-serif;
 }
 
 #cookieConsentBanner button {
@@ -267,11 +268,15 @@ input {
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    margin-left: 20px;
 }
 
 #cookieConsentBanner button:hover {
     background-color: #45a049;
+}
+
+.privacy-policy-link {
+    color: #3498db;
+    /* color: rgb(46, 229, 239); */
 }
