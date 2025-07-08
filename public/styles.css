@@ -55,7 +55,7 @@ canvas {
     color: white;
     text-decoration: none;
     font-family: 'Geist Mono', monospace;
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 4px;
     padding: 10px 20px;
 }
@@ -81,8 +81,9 @@ canvas {
     /* bottom: 15px; */
     /* right: 15px; */
     align-self: center;
-    margin-bottom: 15px;
-    background: rgba(255, 255, 255, 0.16);
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
     border-radius: 4px;
     width: 200px;
     padding: 10px 20px;
