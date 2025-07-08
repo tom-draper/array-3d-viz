@@ -142,9 +142,11 @@ async function createOptimizedLabels(elements, maxLabels = 100) {
  */
 function createOptimizedCubes(elements) {
     const count = elements.length;
+
+    console.log(elements);
     
     // For smaller arrays, use individual cubes for proper transparency
-    if (count <= 2000) {
+    if (count <= 27_000) {
         elements.forEach((element, i) => {
             const { position, opacity, value } = element;
             
@@ -189,7 +191,7 @@ function createOptimizedCubes(elements) {
             instancedWireframes.setMatrixAt(i, matrix);
             
             // Simulate transparency with brightness
-            color.setRGB(0, opacity + 0.2, 0);
+            color.setRGB(0, opacity, 0);
             instancedCubes.setColorAt(i, color);
             instancedWireframes.setColorAt(i, color);
             
