@@ -407,15 +407,6 @@ function createServer(guiEnabled) {
 	// Middleware
 	app.use(express.static(path.join(__dirname, "public")));
 
-	// Redirect to domain
-	app.use((req, res, next) => {
-		const host = req.headers.host;
-		if (host === 'array-3d-viz.vercel.app') {
-			return res.redirect(301, `https://arrayviz.com${req.url}`);
-		}
-		next();
-	});
-
 	// Routes
 	app.get("/", (req, res) => {
 		res.sendFile(path.join(__dirname, "public", "index.html"));
