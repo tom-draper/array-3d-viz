@@ -143,8 +143,6 @@ async function createOptimizedLabels(elements, maxLabels = 100) {
 function createOptimizedCubes(elements) {
     const count = elements.length;
 
-    console.log(elements);
-    
     // For smaller arrays, use individual cubes for proper transparency
     if (count <= 27_000) {
         elements.forEach((element, i) => {
