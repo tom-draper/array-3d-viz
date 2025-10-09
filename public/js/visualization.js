@@ -504,8 +504,6 @@ export function init(arr) {
     );
     
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Smoother camera movement
-    controls.dampingFactor = 0.05;
     
     let shape = arrayShape(arr);
     let nDim = shape.length;
