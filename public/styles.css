@@ -38,6 +38,7 @@ canvas {
     position: fixed;
     bottom: 0;
     right: 0;
+    pointer-events: none;
 }
 
 .flex {
@@ -64,6 +65,7 @@ canvas {
     margin: 0;
     height: 180px;
     width: 270px;
+    pointer-events: auto;
 }
 
 .query-container {
@@ -77,6 +79,7 @@ canvas {
     padding: 10px 20px;
     color: white;
     font-family: 'Geist Mono', monospace;
+    pointer-events: auto;
 }
 
 .equality-container {
@@ -508,6 +511,27 @@ input {
 .donate-link:hover {
     background: #00ff00;
     color: #000;
+}
+
+.min-donate-link-container {
+    height: fit-content;
+    margin-top: auto;
+    pointer-events: none;
+}
+
+.min-donate-link-container a {
+    pointer-events: auto;
+    color: #00ff00;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    font-family: 'Geist Mono', monospace;
+    margin: 1em 0;
+}
+.min-donate-link-container a:hover {
+    text-decoration: underline;
 }
 
 /* Cookie Consent Banner */

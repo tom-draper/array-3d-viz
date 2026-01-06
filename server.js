@@ -448,7 +448,7 @@ function startServer(guiEnabled) {
 	const { app, port } = createServer(guiEnabled);
 
 	app.listen(port, () => {
-		console.log(`Server started at: http://localhost:${port}`);
+		console.log(`Server listening at: http://localhost:${port}`);
 	});
 }
 
