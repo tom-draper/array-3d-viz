@@ -2,145 +2,338 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <title>Privacy Policy</title>
-    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Interactive 3D Array Visualizer</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Geist+Mono:wght@100..900&display=swap');
+        
         body {
-            font-family: 'Funnel Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            font-family: 'Funnel Sans', sans-serif;
             line-height: 1.6;
-            color: #333;
-            max-width: 800px;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem;
-            overflow: unset;
+            padding: 2em;
         }
-        h1, h2, h3 {
-            color: #2c3e50;
+        
+        .header {
+            text-align: center;
+            padding: 3em 0 2em;
+            border-bottom: 2px solid #00ff00;
+            margin-bottom: 2em;
         }
+        
         h1 {
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            font-size: 3em;
+            margin: 0;
+            color: #00ff00;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
+        
         h2 {
-            margin-top: 2rem;
-            border-bottom: 1px solid #bdc3c7;
-            padding-bottom: 5px;
+            color: #00ff00;
+            font-size: 2em;
+            margin-top: 2em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
         }
-        .last-updated {
-            font-style: italic;
-            color: #7f8c8d;
-            margin-bottom: 2rem;
+        
+        h3 {
+            color: #00ff00;
+            font-size: 1.5em;
+            margin-top: 1.5em;
         }
-        a {
-            color: #3498db;
+        
+        p {
+            margin: 1em 0;
+            font-size: 1.1em;
+        }
+        
+        .effective-date {
+            color: #00ff00;
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 1em;
+        }
+        
+        .highlight-box {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            padding: 1.5em;
+            margin: 2em 0;
+            border-radius: 4px;
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin: 3em 0 2em;
+        }
+        
+        .nav-links a {
+            color: #00ff00;
             text-decoration: none;
+            margin: 0 1em;
+            padding: 0.5em 1.5em;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: inline-block;
         }
-        a:hover {
+        
+        .nav-links a:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        ul, ol {
+            margin: 1em 0;
+            padding-left: 2em;
+        }
+        
+        ul li, ol li {
+            margin: 0.5em 0;
+        }
+        
+        strong {
+            color: #00ff00;
+        }
+        
+        a {
+            color: #00ff00;
             text-decoration: underline;
         }
-        .highlight {
-            background-color: #ecf0f1;
-            padding: 1rem;
-            border-left: 4px solid #3498db;
-            margin: 1rem 0;
+        
+        a:hover {
+            color: #00ff00;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div>
-        <h1>Privacy Policy</h1>
-        <p class="last-updated">Last Updated: 2025-07-24</p>
+    <div class="container">
+        <div class="header">
+            <h1>Privacy Policy</h1>
+            <p class="effective-date">Last Updated: January 2026</p>
+        </div>
         
-        <p>This Privacy Policy describes how this website ("we," "us," or "our") collects, uses, and shares information when you use our JSON data visualization services.</p>
-        
-        <div class="highlight">
-            <strong>Quick Summary:</strong> We don't collect or store your personal data or JSON files. However, we use Ezoic for advertising and website optimization, which may collect information through cookies and similar technologies.
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
         </div>
 
-        <h2>Information We Collect</h2>
-        
-        <h3>Information You Provide</h3>
-        <p>When you use our JSON visualization tool, the data you input is processed entirely in your browser and is <strong>not transmitted to or stored on our servers</strong>. We do not have access to, collect, or retain any JSON data you visualize.</p>
-        
-        <h3>Information Collected by Third Parties</h3>
-        <p>We use Ezoic to display advertisements and optimize user experience on our website. Ezoic may collect information about you, including but not limited to:</p>
-        <ul>
-            <li>Your IP address</li>
-            <li>Browser type and version</li>
-            <li>Operating system</li>
-            <li>Pages visited and time spent on our site</li>
-            <li>Referring website</li>
-            <li>General location information (city/region level)</li>
-            <li>Device type and screen resolution</li>
-        </ul>
+        <div class="highlight-box">
+            <h3>Your Privacy Matters</h3>
+            <p>Array Visualizer is committed to protecting your privacy. All data visualization occurs entirely within your browser. We do not collect, store, or transmit any of your data to our servers or any third parties. This privacy policy explains our practices in detail.</p>
+        </div>
 
-        <h2>Cookies and Similar Technologies</h2>
-        <p>Our website itself does not use cookies. However, Ezoic uses cookies and similar technologies to:</p>
-        <ul>
-            <li>Serve personalized and non-personalized ads</li>
-            <li>Analyze site performance and visitor behavior</li>
-            <li>Conduct A/B testing and content optimization</li>
-            <li>Remember user preferences and settings</li>
-        </ul>
+        <section>
+            <h2>Information Collection and Use</h2>
+            
+            <h3>Data You Provide</h3>
+            <p>When you use Array Visualizer, you may paste or input numerical arrays and matrices for visualization purposes. This data is processed entirely within your web browser using client-side JavaScript. We want to be absolutely clear: <strong>your data never leaves your device</strong>. No arrays, matrices, or visualization data are uploaded to any server, stored in any database, or transmitted over the internet.</p>
+            
+            <h3>How Your Data is Processed</h3>
+            <p>All data processing occurs locally in your browser through the following steps:</p>
+            <ol>
+                <li>You paste or input your array data into the text field</li>
+                <li>Your browser's JavaScript engine parses this data</li>
+                <li>The Three.js library renders the visualization directly on your device</li>
+                <li>All calculations and rendering occur using your device's resources</li>
+                <li>When you close the browser or refresh the page, all data is cleared from memory</li>
+            </ol>
+            <p>At no point in this process is your data sent to any external server or stored anywhere except temporarily in your browser's memory.</p>
+        </section>
 
-        <p>For a detailed explanation of how Ezoic uses cookies and manages data, please visit:</p>
-        <ul>
-            <li><a href="https://g.ezoic.net/privacy/arrayviz.com" target="_blank">Ezoic Privacy Policy</a></li>
-            <li><a href="https://www.ezoic.com/privacy-policy/" target="_blank">Ezoic General Privacy Policy</a></li>
-        </ul>
+        <section>
+            <h2>Cookies and Local Storage</h2>
+            
+            <h3>Essential Cookies</h3>
+            <p>Array Visualizer uses minimal cookies solely for essential functionality. We may use cookies to remember your cookie consent preferences. These cookies contain no personal information and are strictly necessary for the website to function properly.</p>
+            
+            <h3>Local Storage</h3>
+            <p>We do not use browser local storage or session storage to retain your data or visualization history. Each session is independent, and no visualization data persists after you close your browser tab.</p>
+            
+            <h3>Third-Party Cookies</h3>
+            <p>Array Visualizer does not use third-party cookies for tracking or advertising purposes. However, we do use the following third-party services that may set their own cookies:</p>
+            <ul>
+                <li><strong>Google AdSense:</strong> If you see advertisements on our site, Google may use cookies to serve ads based on your prior visits to this or other websites. You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank">Google's Ads Settings</a>.</li>
+            </ul>
+        </section>
 
-        <h2>How We Use Information</h2>
-        <p>We use our website to provide JSON data visualization services. Since we don't collect personal information directly, we don't use your information for any purpose other than providing our visualization tool.</p>
-        
-        <p>Ezoic may use the information it collects to:</p>
-        <ul>
-            <li>Display relevant advertisements</li>
-            <li>Optimize content layout and performance</li>
-            <li>Measure ad and site performance</li>
-            <li>Detect and prevent fraudulent activity</li>
-        </ul>
+        <section>
+            <h2>Analytics and Website Usage</h2>
+            
+            <h3>Traffic Analytics</h3>
+            <p>We may use analytics services to understand how visitors use our website. These services may collect information such as:</p>
+            <ul>
+                <li>Pages visited and time spent on pages</li>
+                <li>Browser type and version</li>
+                <li>Operating system</li>
+                <li>Referring website</li>
+                <li>General geographic location (country/city level)</li>
+                <li>Device type (desktop, mobile, tablet)</li>
+            </ul>
+            <p>This information is collected in aggregate and anonymized form. It helps us understand usage patterns and improve the website. Importantly, this data does not include any information about the arrays or data you visualize.</p>
+            
+            <h3>Server Logs</h3>
+            <p>Like most websites, our web servers automatically collect certain technical information when you visit, including your IP address, browser type, referring pages, and access times. This information is used solely for maintaining website security and performance. We do not use this information to track individual users or build user profiles.</p>
+        </section>
 
-        <h2>Your Choices and Rights</h2>
-        
-        <h3>Managing Your Data and Preferences</h3>
-        <p>You may manage your consent for data collection or opt-out of personalized advertising through Ezoic's consent management tools (CMP), which may appear as a banner on our website.</p>
+        <section>
+            <h2>Third-Party Services</h2>
+            
+            <h3>Content Delivery Networks (CDNs)</h3>
+            <p>Array Visualizer uses CDNs to deliver JavaScript libraries efficiently (jQuery, Plotly.js, Three.js). These services may log basic access information such as IP addresses and access times. We have no control over how these third parties use such information, but we choose reputable providers who respect user privacy.</p>
+            
+            <h3>GitHub Integration</h3>
+            <p>Our website includes a link to our GitHub repository. If you click this link, you will be directed to GitHub.com, which has its own privacy policy. We are not responsible for GitHub's privacy practices.</p>
+            
+            <h3>Buy Me a Coffee</h3>
+            <p>We include a donation link to Buy Me a Coffee. If you choose to support us through this platform, you will be subject to their privacy policy. We do not receive any personal information about donors beyond what Buy Me a Coffee provides (typically just a username and donation amount).</p>
+        </section>
 
-        <h3>Opting Out of Personalized Advertising</h3>
-        <p>You can also opt out of interest-based advertising through:</p>
-        <ul>
-            <li><a href="https://www.aboutads.info/choices/" target="_blank">About Ads Choice</a></li>
-            <li>Browser extensions or privacy settings</li>
-            <li>Using "Do Not Track" or similar browser features</li>
-        </ul>
+        <section>
+            <h2>Advertising</h2>
+            
+            <h3>Google AdSense</h3>
+            <p>Array Visualizer may display advertisements served by Google AdSense. Google uses cookies to serve ads based on your prior visits to our website or other websites. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to our site and/or other sites on the Internet.</p>
+            
+            <p>You may opt out of personalized advertising by visiting the following links:</p>
+            <ul>
+                <li><a href="https://www.google.com/settings/ads" target="_blank">Google Ads Settings</a></li>
+                <li><a href="http://www.aboutads.info/choices/" target="_blank">Digital Advertising Alliance Opt-Out Page</a></li>
+                <li><a href="http://www.networkadvertising.org/choices/" target="_blank">Network Advertising Initiative Opt-Out Page</a></li>
+            </ul>
+            
+            <p>Please note that opting out of personalized advertising does not mean you will see fewer ads; it means the ads you see will not be tailored to your interests.</p>
+        </section>
 
-        <h3>Managing Cookies</h3>
-        <p>You can control or delete cookies through your browser settings. Disabling cookies may affect how ads and features appear on our site.</p>
+        <section>
+            <h2>Data Security</h2>
+            
+            <h3>Client-Side Processing</h3>
+            <p>Since all data processing occurs in your browser, the security of your data depends primarily on your device's security and your browser's security features. We recommend:</p>
+            <ul>
+                <li>Keeping your browser updated to the latest version</li>
+                <li>Using strong device passwords or biometric authentication</li>
+                <li>Being cautious when using public or shared computers</li>
+                <li>Avoiding pasting sensitive data in untrusted environments</li>
+            </ul>
+            
+            <h3>HTTPS Encryption</h3>
+            <p>Our website is served over HTTPS, which means all communication between your browser and our servers is encrypted. This protects against eavesdropping and man-in-the-middle attacks during the loading of the website.</p>
+            
+            <h3>No Data Retention</h3>
+            <p>Because we don't collect or store your visualization data, there is no database to secure, no data to encrypt at rest, and no risk of your arrays being exposed in a data breach. Your data exists only in your browser's temporary memory and is cleared when you close the tab or navigate away from the page.</p>
+        </section>
 
-        <h2>Data Retention</h2>
-        <p>We do not retain any personal data as we do not collect it directly. Ezoic retains data according to their own retention policies, available in their privacy documentation.</p>
+        <section>
+            <h2>Children's Privacy</h2>
+            <p>Array Visualizer does not knowingly collect personal information from children under the age of 13 (or equivalent minimum age in your jurisdiction). The service is designed to process only numerical data for visualization purposes and does not require or request personal information from users of any age. If you are a parent or guardian and believe your child has provided personal information to us, please contact us so we can take appropriate action.</p>
+            
+            <p>Our website may be used in educational settings by students of various ages. We remind educators and parents that no personal information should be included in the data arrays that students visualize using our tool.</p>
+        </section>
 
-        <h2>International Users</h2>
-        <p>Our website is hosted and operated in Washington, USA. If you access our site from outside this region, please be aware that your information may be processed in countries with different privacy laws.</p>
+        <section>
+            <h2>International Users and Data Transfers</h2>
+            <p>Array Visualizer can be accessed from anywhere in the world. Since we do not collect or store your visualization data, there are no international data transfers of your arrays or matrices. The website itself is hosted on servers that may be located in various jurisdictions, but these servers only serve the website code, not your data.</p>
+            
+            <p>If you are accessing Array Visualizer from the European Union or other jurisdiction with data protection laws, please be aware that your use of our website and any analytics data collected may be transferred to and processed in countries that may not have the same data protection laws as your jurisdiction. By using our website, you consent to such transfers to the extent permitted by law.</p>
+        </section>
 
-        <h2>Security</h2>
-        <p>Since we don't collect or store personal data, there are no security risks related to data breaches from our end. However, we recommend that you do not input sensitive or confidential information into any web-based tools.</p>
+        <section>
+            <h2>Your Privacy Rights</h2>
+            
+            <h3>Right to Information</h3>
+            <p>You have the right to understand what information we collect and how we use it. This privacy policy aims to provide full transparency about our practices.</p>
+            
+            <h3>Right to Access and Deletion</h3>
+            <p>Because we do not store your visualization data, there is no data for you to access or delete. If you have concerns about analytics data that may have been collected, please contact us and we will work with our analytics providers to address your request.</p>
+            
+            <h3>European Union Users (GDPR)</h3>
+            <p>If you are located in the European Union, you have additional rights under the General Data Protection Regulation (GDPR), including:</p>
+            <ul>
+                <li>Right to access your personal data</li>
+                <li>Right to rectification of inaccurate data</li>
+                <li>Right to erasure ("right to be forgotten")</li>
+                <li>Right to restrict processing</li>
+                <li>Right to data portability</li>
+                <li>Right to object to processing</li>
+                <li>Right to withdraw consent</li>
+            </ul>
+            <p>Given that we do not collect or store your visualization data, most of these rights are not applicable to Array Visualizer's core functionality. However, they may apply to any analytics data collected. To exercise these rights, please contact us using the information provided below.</p>
+            
+            <h3>California Users (CCPA)</h3>
+            <p>If you are a California resident, the California Consumer Privacy Act (CCPA) provides you with specific rights regarding your personal information. Since we do not sell personal information and do not collect visualization data, many CCPA provisions do not apply to our service. However, you have the right to opt out of any data collection by our analytics providers.</p>
+        </section>
 
-        <h2>Third-Party Links</h2>
-        <p>Our website may contain links to other websites. We are not responsible for the privacy practices of other websites. We encourage you to read the privacy policies of any linked websites.</p>
+        <section>
+            <h2>Changes to This Privacy Policy</h2>
+            <p>We may update this privacy policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make changes, we will update the "Last Updated" date at the top of this policy. Significant changes will be prominently announced on our website.</p>
+            
+            <p>We encourage you to review this privacy policy periodically to stay informed about how we protect your privacy. Your continued use of Array Visualizer after any changes to this policy constitutes your acceptance of the revised policy.</p>
+        </section>
 
-        <h2>Changes to This Policy</h2>
-        <p>We may update this privacy policy from time to time to reflect changes in our practices or for legal requirements. We will notify you of any material changes by posting the updated policy on this page with a new "Last Updated" date.</p>
+        <section>
+            <h2>Do Not Track Signals</h2>
+            <p>Some web browsers incorporate a "Do Not Track" (DNT) feature that signals to websites you visit that you do not want to have your online activity tracked. Because there is not yet a common understanding of how to interpret DNT signals, Array Visualizer does not currently respond to DNT browser signals. However, given our minimal data collection practices, this has limited practical impact on your privacy when using our service.</p>
+        </section>
 
-        <h2>Legal Compliance</h2>
-        <p>This privacy policy is designed to comply with applicable privacy laws, including the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA). If you have specific rights under these laws, please contact us.</p>
+        <section>
+            <h2>External Links</h2>
+            <p>Array Visualizer may contain links to external websites, including our GitHub repository and donation platform. This privacy policy applies only to Array Visualizer. We are not responsible for the privacy practices of external websites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
+        </section>
 
-        <h2>Contact Us</h2>
-        <p>If you have any questions about this Privacy Policy, your data, or your rights, please contact us.</p>
-        <!-- <p>
-            <strong>Email:</strong> [Your Email]<br>
-            <strong>Website:</strong> [Your Website URL]
-        </p> -->
+        <section>
+            <h2>Contact Information</h2>
+            <p>If you have questions, concerns, or requests regarding this privacy policy or our privacy practices, please contact us through our GitHub repository at:</p>
+            <p><a href="https://github.com/tom-draper/array-3d-viz" target="_blank">https://github.com/tom-draper/array-3d-viz</a></p>
+            
+            <p>We take privacy concerns seriously and will respond to legitimate inquiries as quickly as possible, typically within 30 days.</p>
+        </section>
+
+        <section>
+            <h2>Legal Basis for Processing (GDPR)</h2>
+            <p>For users in the European Union, our legal basis for processing any personal information (limited to analytics data) is based on:</p>
+            <ul>
+                <li><strong>Legitimate Interests:</strong> We have a legitimate interest in understanding how our website is used to improve it and ensure it functions properly</li>
+                <li><strong>Consent:</strong> Where required, we obtain your consent through cookie consent mechanisms before using certain tracking technologies</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Data Protection Officer</h2>
+            <p>Given the minimal data processing involved in Array Visualizer's operation, we have not appointed a formal Data Protection Officer. However, privacy inquiries can be directed through our GitHub repository, and we will ensure they are handled appropriately.</p>
+        </section>
+
+        <div class="highlight-box" style="margin-top: 3em;">
+            <h3>Summary</h3>
+            <p>To summarize our privacy practices in plain language:</p>
+            <ul>
+                <li>Your visualization data never leaves your browser</li>
+                <li>We don't store, collect, or transmit your arrays or matrices</li>
+                <li>We may collect anonymous analytics data to improve the website</li>
+                <li>We may display advertisements through Google AdSense</li>
+                <li>You can opt out of personalized advertising</li>
+                <li>We use HTTPS encryption to protect your connection</li>
+                <li>You can contact us with any privacy concerns</li>
+            </ul>
+        </div>
+
+        <div class="nav-links" style="margin-top: 4em;">
+            <a href="index.html">Return to Array Visualizer</a>
+            <a href="terms.html">View Terms of Service</a>
+        </div>
     </div>
 </body>
 </html>

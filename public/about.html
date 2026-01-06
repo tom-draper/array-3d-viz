@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Interactive 3D Array Visualizer</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Geist+Mono:wght@100..900&display=swap');
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Funnel Sans', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2em;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 3em 0 2em;
+            border-bottom: 2px solid #00ff00;
+            margin-bottom: 2em;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            color: #00ff00;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        h2 {
+            color: #00ff00;
+            font-size: 2em;
+            margin-top: 2em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        h3 {
+            color: #00ff00;
+            font-size: 1.5em;
+            margin-top: 1.5em;
+        }
+        
+        p {
+            margin: 1em 0;
+            font-size: 1.1em;
+        }
+        
+        .highlight {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            font-family: 'Geist Mono', monospace;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2em;
+            margin: 2em 0;
+        }
+        
+        .feature-card {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5em;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin: 3em 0 2em;
+        }
+        
+        .nav-links a {
+            color: #00ff00;
+            text-decoration: none;
+            margin: 0 1em;
+            padding: 0.5em 1.5em;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .nav-links a:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li:before {
+            content: "▸ ";
+            color: #00ff00;
+            font-weight: bold;
+            margin-right: 0.5em;
+        }
+        
+        .code-example {
+            background: rgba(0, 255, 0, 0.05);
+            border-left: 3px solid #00ff00;
+            padding: 1em;
+            margin: 1em 0;
+            font-family: 'Geist Mono', monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>About Array Visualizer</h1>
+            <p style="color: #00ff00; margin-top: 1em;">Interactive 3D Data Visualization Made Simple</p>
+        </div>
+        
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+        </div>
+
+        <section>
+            <h2>What is Array Visualizer?</h2>
+            <p>Array Visualizer is a powerful, free-to-use web application that transforms complex multidimensional arrays and matrices into stunning interactive 3D visualizations. Built with Three.js, our tool helps developers, data scientists, students, and researchers understand their data structures through immersive visual representation.</p>
+            
+            <p>Whether you're debugging a complex algorithm, teaching data structures, analyzing scientific data, or simply exploring multidimensional datasets, Array Visualizer provides an intuitive interface that brings your numerical arrays to life in three-dimensional space.</p>
+        </section>
+
+        <section>
+            <h2>Why We Built This Tool</h2>
+            <p>Understanding multidimensional data structures can be challenging, especially when working with 3D arrays or higher-dimensional matrices. Traditional debugging tools and console outputs provide limited insight into the spatial relationships and patterns within your data.</p>
+            
+            <p>We created Array Visualizer to bridge this gap. By rendering your data in an interactive 3D environment, you can:</p>
+            <ul>
+                <li>Quickly identify patterns and anomalies in your datasets</li>
+                <li>Understand the spatial structure of multidimensional arrays</li>
+                <li>Debug complex data transformations with visual feedback</li>
+                <li>Present data structures in educational contexts</li>
+                <li>Explore scientific and mathematical datasets interactively</li>
+                <li>Validate algorithm outputs through visual inspection</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Multiple Format Support</h3>
+                    <p>Import data seamlessly using JSON or CSV formats. Our flexible parser handles various array structures and automatically adapts to your data format.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Interactive 3D Controls</h3>
+                    <p>Rotate, zoom, and pan through your data using intuitive mouse controls. Explore every angle of your dataset with smooth, responsive navigation.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Real-time Distribution</h3>
+                    <p>View statistical distributions of your data values with integrated plotting. Understand the spread and frequency of values at a glance.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Query Capabilities</h3>
+                    <p>Filter and highlight specific values or ranges within your dataset. Use equality and inequality queries to focus on data subsets.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Shape Information</h3>
+                    <p>Instantly see the dimensions of your array. Our tool displays shape information clearly, helping you verify data structure correctness.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>No Installation Required</h3>
+                    <p>Access the visualizer directly in your browser. No downloads, no setup—just paste your data and visualize immediately.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>How It Works</h2>
+            <p>Array Visualizer uses cutting-edge web technologies to render your data in real-time:</p>
+            
+            <h3>Three.js Rendering Engine</h3>
+            <p>At its core, Array Visualizer leverages Three.js, a powerful JavaScript 3D library that provides WebGL rendering capabilities. Each element in your array is represented as a cube in 3D space, with positioning determined by the element's indices and coloring based on its value.</p>
+            
+            <h3>Data Processing Pipeline</h3>
+            <p>When you paste your data, our parser validates the input format (JSON or CSV), converts it into a standardized multidimensional array structure, and calculates necessary metadata such as dimensions, value ranges, and statistical distributions. This processed data is then fed into the rendering engine for visualization.</p>
+            
+            <h3>Interactive Controls</h3>
+            <p>We implement orbit controls that allow natural interaction with the 3D scene. Users can rotate the view by dragging, zoom with the mouse wheel, and pan by right-clicking and dragging. These controls make exploring complex datasets intuitive and accessible.</p>
+            
+            <h3>Color Mapping</h3>
+            <p>Values in your array are mapped to colors using a gradient system. Our distinctive black and vibrant green color scheme provides excellent contrast and visual clarity, making it easy to distinguish between different value ranges in your dataset.</p>
+        </section>
+
+        <section>
+            <h2>Use Cases</h2>
+            
+            <h3>Software Development & Debugging</h3>
+            <p>Developers working with multidimensional arrays in computer graphics, game development, or scientific computing can visualize their data structures during development. This is particularly useful when implementing algorithms involving 3D grids, voxel data, or spatial data structures like octrees.</p>
+            
+            <h3>Education & Teaching</h3>
+            <p>Computer science educators can use Array Visualizer to demonstrate concepts related to multidimensional arrays, matrix operations, and data structures. Students benefit from seeing abstract concepts rendered in concrete, interactive visualizations.</p>
+            
+            <h3>Data Science & Analysis</h3>
+            <p>Data scientists working with volumetric data, image processing, or tensor analysis can quickly visualize slices and patterns in their datasets. The tool supports exploratory data analysis by making patterns and anomalies immediately visible.</p>
+            
+            <h3>Scientific Research</h3>
+            <p>Researchers in fields such as computational physics, chemistry, or biology often work with 3D data grids representing simulations, microscopy data, or molecular structures. Array Visualizer provides a quick way to inspect and validate this data.</p>
+            
+            <h3>Machine Learning</h3>
+            <p>Machine learning practitioners can visualize tensor structures, convolutional neural network kernels, or activation maps. Understanding the shape and distribution of these multidimensional structures is crucial for model development and debugging.</p>
+        </section>
+
+        <section>
+            <h2>Supported Data Formats</h2>
+            
+            <h3>JSON Arrays</h3>
+            <p>The tool accepts standard JSON array notation with arbitrary nesting levels. For example:</p>
+            <div class="code-example">
+[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+            </div>
+            <p>This represents a 2×2×2 array that will be rendered as eight cubes in 3D space.</p>
+            
+            <h3>CSV Format</h3>
+            <p>CSV data is automatically parsed and converted into appropriate array structures. Headers are supported and will be used for labeling when present. Multi-row CSV data can represent 2D matrices or, when structured appropriately, higher-dimensional arrays.</p>
+        </section>
+
+        <section>
+            <h2>Technical Specifications</h2>
+            <p>Array Visualizer is built with modern web technologies to ensure optimal performance and compatibility:</p>
+            <ul>
+                <li><span class="highlight">Three.js r128</span> for 3D rendering and WebGL abstraction</li>
+                <li><span class="highlight">Plotly.js</span> for distribution charts and statistical visualization</li>
+                <li><span class="highlight">jQuery</span> for DOM manipulation and event handling</li>
+                <li><span class="highlight">Pure JavaScript</span> for data parsing and processing</li>
+                <li>Responsive design supporting desktop and mobile browsers</li>
+                <li>WebGL-enabled rendering for hardware-accelerated graphics</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Performance Considerations</h2>
+            <p>While Array Visualizer can handle datasets of various sizes, performance is optimal with arrays containing up to several thousand elements. Extremely large datasets may experience slower rendering times depending on your hardware capabilities. For best results, we recommend:</p>
+            <ul>
+                <li>Using modern browsers with WebGL 2.0 support</li>
+                <li>Ensuring your graphics drivers are up to date</li>
+                <li>Sampling large datasets before visualization if performance issues occur</li>
+                <li>Closing unnecessary browser tabs to free up system resources</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Privacy & Security</h2>
+            <p>Your data privacy is our priority. All data processing occurs entirely within your browser—nothing is uploaded to any server. Your arrays and visualizations remain completely private and under your control. We do not collect, store, or transmit any of your data. For complete details, please review our <a href="privacy.html" style="color: #00ff00;">Privacy Policy</a>.</p>
+        </section>
+
+        <section>
+            <h2>Open Source</h2>
+            <p>Array Visualizer is open source and available on GitHub. We welcome contributions, bug reports, and feature requests from the community. Whether you're interested in adding new visualization modes, improving performance, or enhancing the user interface, we encourage you to get involved in the project's development.</p>
+        </section>
+
+        <section>
+            <h2>Future Development</h2>
+            <p>We're continuously working to improve Array Visualizer. Planned features include:</p>
+            <ul>
+                <li>Additional color schemes and customization options</li>
+                <li>Support for larger datasets with optimized rendering</li>
+                <li>Export capabilities for rendered visualizations</li>
+                <li>Animation support for time-series data</li>
+                <li>Enhanced statistical analysis tools</li>
+                <li>Collaborative features for sharing visualizations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Support the Project</h2>
+            <p>Array Visualizer is provided free of charge with no advertisements or premium tiers. If you find this tool useful and would like to support its continued development, consider buying us a coffee. Your support helps cover hosting costs and motivates us to add new features and improvements.</p>
+        </section>
+
+        <section>
+            <h2>Contact & Feedback</h2>
+            <p>We value feedback from our users. Whether you've encountered a bug, have a feature suggestion, or simply want to share how you're using Array Visualizer, please reach out through our GitHub repository. Your input directly shapes the future of this tool.</p>
+        </section>
+
+        <div class="nav-links" style="margin-top: 4em;">
+            <a href="index.html">Try Array Visualizer Now</a>
+            <a href="https://github.com/tom-draper/array-3d-viz" target="_blank">View on GitHub</a>
+        </div>
+    </div>
+</body>
+</html>
