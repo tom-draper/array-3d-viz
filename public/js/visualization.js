@@ -8,6 +8,8 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/exampl
 import { arrayShape, minMax } from './types.js';
 import { isIntegerArray } from "./array-utils.js";
 
+let xGraph = [];
+
 export class Vis {
     constructor() {
         this.camera = null;
@@ -430,6 +432,61 @@ export class Vis {
     }
 
     highlightValue(value) {
+        // First restore the full graph before highlighting
+        const graphDiv = document.getElementById('graph');
+        
+        if (graphDiv && graphDiv.layout) {
+            const values = this.cubeData.map(cube => cube.value);
+            const isInteger = isIntegerArray(values);
+            
+            if (isInteger) {
+                // Rebuild the full distribution
+                let min = Math.min(...xGraph);
+                let max = Math.max(...xGraph);
+                const data = {};
+                
+                values.forEach(val => {
+                    data[val] ||= 0;
+                    data[val] += 1;
+                });
+                
+                // Fill in any zeros
+                for (let i = min; i <= max; i++) {
+                    data[i] ||= 0;
+                }
+                
+                const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
+                    (obj, key) => {
+                        obj[key] = data[key];
+                        return obj;
+                    },
+                    {}
+                );
+                
+                // Update xGraph to full range
+                xGraph = Object.keys(sorted).map(Number);
+                
+                // Now highlight the specific value
+                const index = xGraph.indexOf(value);
+                const colors = Array(xGraph.length).fill('rgb(0,255,0)');
+                if (index !== -1) {
+                    colors[index] = 'rgb(255,0,0)';
+                }
+                
+                Plotly.react("graph", [{
+                    x: xGraph,
+                    y: Object.values(sorted),
+                    type: 'bar',
+                    marker: {
+                        color: colors,
+                        opacity: 0.9,
+                    }
+                }], graphDiv.layout);
+            }
+        }
+        
+        console.log('highlighting')
+
         // Handle individual cubes
         this.cubeData.forEach(data => {
             if (data.mesh) {
@@ -450,6 +507,38 @@ export class Vis {
     }
 
     highlightInequality(low, high) {
+        // Filter xGraph and corresponding y values to only show bars in range
+        const filteredIndices = [];
+        const filteredX = [];
+        const filteredY = [];
+        
+        // Get the original graph data
+        const graphDiv = document.getElementById('graph');
+        if (graphDiv && graphDiv.data && graphDiv.data[0]) {
+            const originalY = graphDiv.data[0].y;
+            
+            xGraph.forEach((value, index) => {
+                if (low < value && value < high) {
+                    filteredIndices.push(index);
+                    filteredX.push(value);
+                    filteredY.push(originalY[index]);
+                }
+            });
+            
+            // Update the graph with filtered data
+            if (filteredX.length > 0) {
+                Plotly.react("graph", [{
+                    x: filteredX,
+                    y: filteredY,
+                    type: 'bar',
+                    marker: {
+                        color: 'rgb(0,255,0)',
+                        opacity: 0.9,
+                    }
+                }], graphDiv.layout);
+            }
+        }
+
         // Handle individual cubes
         this.cubeData.forEach(data => {
             if (data.mesh) {
@@ -471,6 +560,50 @@ export class Vis {
     }
 
     resetScale() {
+        // Get the original graph div to access layout
+        const graphDiv = document.getElementById('graph');
+        
+        // Restore full graph with all bars
+        if (graphDiv && graphDiv.layout) {
+            const values = this.cubeData.map(cube => cube.value);
+            const isInteger = isIntegerArray(values);
+            
+            if (isInteger) {
+                // Rebuild the full distribution
+                let min = Math.min(...xGraph);
+                let max = Math.max(...xGraph);
+                const data = {};
+                
+                values.forEach(value => {
+                    data[value] ||= 0;
+                    data[value] += 1;
+                });
+                
+                // Fill in any zeros
+                for (let i = min; i <= max; i++) {
+                    data[i] ||= 0;
+                }
+                
+                const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
+                    (obj, key) => {
+                        obj[key] = data[key];
+                        return obj;
+                    },
+                    {}
+                );
+                
+                Plotly.react("graph", [{
+                    x: Object.keys(sorted).map(Number),
+                    y: Object.values(sorted),
+                    type: 'bar',
+                    marker: {
+                        color: 'rgb(0,255,0)',
+                        opacity: 0.9,
+                    }
+                }], graphDiv.layout);
+            }
+        }
+        
         const [min, max] = minMax(this.cubeData.map(cube => cube.value));
 
         // Handle individual cubes
@@ -531,9 +664,10 @@ export function graphDistribution(arr) {
             {}
         );
 
+        xGraph = Object.keys(sorted).map(Number);
         const graphData = [
             {
-                x: Object.keys(sorted).map(Number),
+                x: xGraph,
                 y: Object.values(sorted),
                 type: 'bar',
                 marker: {
