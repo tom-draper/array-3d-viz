@@ -58,6 +58,7 @@ canvas {
     border: 1px solid rgba(0, 255, 0, 0.3);
     border-radius: 4px;
     padding: 10px 20px;
+    font-size: 14px;
 }
 
 .distribution {
@@ -120,11 +121,11 @@ canvas {
 
 #xSliceQuery,
 #ySliceQuery {
-    margin: 5px 4px;
+    margin: 5px 5px;
 }
 
 #zSliceQuery {
-    margin: 5px 0 5px 4px;
+    margin: 5px 0 5px 5px;
 }
 
 .equality-container label,
