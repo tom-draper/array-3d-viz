@@ -79,9 +79,11 @@ canvas {
     padding: 10px 20px;
     color: white;
     font-family: 'Geist Mono', monospace;
+    font-size: 14px;
     pointer-events: auto;
 }
 
+.slice-container,
 .equality-container {
     display: flex;
     font-weight: 400;
@@ -89,11 +91,11 @@ canvas {
 
 .x-equals {
     margin: auto;
-    letter-spacing: 6px;
+    white-space: nowrap;
 }
 
 #equalityQuery {
-    margin: 5px 0 5px 0;
+    margin: 5px 0 5px 4px;
     width: 100%;
 }
 
@@ -108,9 +110,32 @@ canvas {
     flex: 1;
 }
 
+#xSliceQuery,
+#ySliceQuery,
+#zSliceQuery {
+    width: 100%;
+    margin: 5px 0;
+    flex: 2;
+}
+
+#xSliceQuery,
+#ySliceQuery {
+    margin: 5px 4px;
+}
+
+#zSliceQuery {
+    margin: 5px 0 5px 4px;
+}
+
+.equality-container label,
+.inequality-container label,
+.slice-container label {
+    word-spacing: -0.3em;
+}
+
 .x-inequality {
     margin: auto 5px auto 7px;
-    letter-spacing: 3px;
+    white-space: nowrap;
 }
 
 input {
