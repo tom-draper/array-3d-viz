@@ -44,6 +44,17 @@ export class GUI {
         this.vis.highlightInequality(low, high);
     }
 
+    highlightSlice(xSlice, ySlice, zSlice) {
+        this.vis.applySlice(xSlice, ySlice, zSlice);
+    }
+
+    clearAllSlices() {
+        $("#xSliceQuery").val("");
+        $("#ySliceQuery").val("");
+        $("#zSliceQuery").val("");
+        this.vis.clearAllSlices();
+    }
+
     resetScale() {
         this.vis.resetScale();
     }

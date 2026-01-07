@@ -1,5 +1,5 @@
 /**
- * @fileoverview 3D visualization functions using Three.js
+ * @fileoverview 3D visualization functions using Three.js with axis slicing
  * Optimized for large arrays using instanced rendering and minimal object creation
  */
 
@@ -26,6 +26,7 @@ export class Vis {
             transparent: true,
         });
         this.sharedWireframeMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        this.activeSlices = { x: null, y: null, z: null };
     }
 
     init(arr) {
@@ -40,9 +41,9 @@ export class Vis {
                     antialias: true,
                     powerPreference: "high-performance"
                 });
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setClearColor(0x000000, 1); // Set black background
+                this.renderer.setClearColor(0x000000, 1);
                 this.renderer.autoClear = false;
                 document.getElementById("dataViz").appendChild(this.renderer.domElement);
             }
@@ -63,7 +64,6 @@ export class Vis {
 
         let shape = arrayShape(arr);
         let nDim = shape.length;
-        // Shape padded to 3D with 0s for non-existent dimensions.
         let shape3D = shape.concat(Array(3 - nDim).fill(0));
         shape3D[2] = Math.max(Math.max(...shape3D), 3);
         this.camera.position.set(shape3D[0], shape3D[1], shape3D[2]);
@@ -74,7 +74,6 @@ export class Vis {
 
         switch (nDim) {
             case 3:
-                // Negative z-index as array is build behind the x-axis line (negative z coords)
                 this.camera.lookAt(new THREE.Vector3(center[2], center[1], -center[0]));
                 this.controls.target.set(center[2], center[1], -center[0]);
                 break;
@@ -102,7 +101,6 @@ export class Vis {
                 break;
         }
 
-        // Add directional lighting to scene.
         let directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
         directionalLight.position.set(10, 10, 0);
         directionalLight.intensity = 1.5;
@@ -111,7 +109,6 @@ export class Vis {
         ambientLight.intensity = 0.2;
         this.scene.add(ambientLight);
 
-        // Handle resizing of the browser window.
         window.addEventListener("resize", () => this.handleResize(), false);
     }
 
@@ -126,7 +123,6 @@ export class Vis {
         if (!this.scene) {
             return;
         }
-        // Clear individual cubes
         this.cubeData.forEach(data => {
             if (data.mesh) {
                 this.scene.remove(data.mesh);
@@ -135,7 +131,6 @@ export class Vis {
             }
         });
 
-        // Clear instanced cubes
         if (this.instancedCubes) {
             this.scene.remove(this.instancedCubes);
             this.instancedCubes.dispose();
@@ -150,7 +145,6 @@ export class Vis {
 
         this.cubeData = [];
 
-        // Remove text labels and wireframes
         const objectsToRemove = this.scene.children.filter(child =>
             (child instanceof THREE.Mesh && child.geometry instanceof THREE.ShapeBufferGeometry) ||
             (child instanceof THREE.LineSegments && child.geometry instanceof THREE.EdgesGeometry)
@@ -212,7 +206,6 @@ export class Vis {
         try {
             const font = await this.loadFont();
 
-            // Sample elements for labeling (take every nth element)
             const step = Math.max(1, Math.floor(elements.length / maxLabels));
             const sampledElements = elements.filter((_, index) => index % step === 0);
 
@@ -227,21 +220,19 @@ export class Vis {
                 const textGeometry = new THREE.ShapeBufferGeometry(textShapes);
                 const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-                // Front-facing text - aligned to cube face
                 const text = new THREE.Mesh(textGeometry, textMaterial);
                 text.position.set(
-                    position.x - 0.45, // Adjust to align with cube surface
+                    position.x - 0.45,
                     position.y - 0.45,
-                    position.z + 0.51  // Just in front of cube face
+                    position.z + 0.51
                 );
                 this.scene.add(text);
 
-                // Back-facing text - aligned to opposite cube face
                 const textReverse = new THREE.Mesh(textGeometry, textMaterial.clone());
                 textReverse.position.set(
-                    position.x + 0.45, // Align with back face
+                    position.x + 0.45,
                     position.y - 0.45,
-                    position.z - 0.51  // Just behind cube face
+                    position.z - 0.51
                 );
                 textReverse.rotateY(Math.PI);
                 this.scene.add(textReverse);
@@ -254,12 +245,10 @@ export class Vis {
     createOptimizedCubes(elements) {
         const count = elements.length;
 
-        // For smaller arrays, use individual cubes for proper transparency
         if (count <= 27_000) {
             elements.forEach((element, i) => {
                 const { position, opacity, value } = element;
 
-                // Create cube with proper transparency
                 const geometry = this.sharedGeometry.clone();
                 const material = new THREE.MeshBasicMaterial({
                     color: 0x00ff00,
@@ -271,10 +260,8 @@ export class Vis {
                 cube.value = value;
                 this.scene.add(cube);
 
-                // Store reference for later manipulation
                 this.cubeData[i].mesh = cube;
 
-                // Create wireframe
                 const wireframe = new THREE.LineSegments(
                     new THREE.EdgesGeometry(geometry),
                     new THREE.LineBasicMaterial({ color: 0x00ff00 })
@@ -283,7 +270,6 @@ export class Vis {
                 this.scene.add(wireframe);
             });
         } else {
-            // For larger arrays, use instanced rendering but sacrifice some transparency precision
             this.instancedCubes = new THREE.InstancedMesh(this.sharedGeometry, this.sharedMaterial, count);
 
             const wireframeGeometry = new THREE.EdgesGeometry(this.sharedGeometry);
@@ -299,7 +285,6 @@ export class Vis {
                 this.instancedCubes.setMatrixAt(i, matrix);
                 this.instancedWireframes.setMatrixAt(i, matrix);
 
-                // Simulate transparency with brightness
                 color.setRGB(0, opacity, 0);
                 this.instancedCubes.setColorAt(i, color);
                 this.instancedWireframes.setColorAt(i, color);
@@ -341,13 +326,13 @@ export class Vis {
             this.cubeData.push({
                 value: arr[i],
                 index: i,
-                position
+                position,
+                coords: { x: x + i, y: y, z: z }
             });
         }
 
         this.createOptimizedCubes(elements);
 
-        // Create labels for smaller arrays only
         if (arr.length <= 2000) {
             this.createOptimizedLabels(elements, arr.length);
         }
@@ -377,14 +362,14 @@ export class Vis {
                 this.cubeData.push({
                     value: arr[i][j],
                     index: i * arr[0].length + j,
-                    position
+                    position,
+                    coords: { x: x + j, y: y + arr.length - 1 - i, z: z }
                 });
             }
         }
 
         this.createOptimizedCubes(elements);
 
-        // Create labels for smaller arrays only
         const totalElements = arr.length * arr[0].length;
         if (totalElements <= 1000) {
             this.createOptimizedLabels(elements, totalElements);
@@ -416,7 +401,8 @@ export class Vis {
                     this.cubeData.push({
                         value: arr[i][j][k],
                         index: i * arr[0].length * arr[0][0].length + j * arr[0][0].length + k,
-                        position
+                        position,
+                        coords: { x: x + k, y: y + arr[0].length - 1 - j, z: z - i }
                     });
                 }
             }
@@ -424,15 +410,113 @@ export class Vis {
 
         this.createOptimizedCubes(elements);
 
-        // Only create labels for very small 3D arrays
         const totalElements = arr.length * arr[0].length * arr[0][0].length;
         if (totalElements <= 1000) {
             this.createOptimizedLabels(elements, totalElements);
         }
     }
 
+    /**
+     * Apply axis slicing to show only cubes matching the specified coordinates
+     * @param {number|null} xSlice - X-axis index to slice on (null for no slice)
+     * @param {number|null} ySlice - Y-axis index to slice on (null for no slice)
+     * @param {number|null} zSlice - Z-axis index to slice on (null for no slice)
+     */
+    applySlice(xSlice, ySlice, zSlice) {
+        this.activeSlices = { x: xSlice, y: ySlice, z: zSlice };
+        
+        // Get values only from cubes that match the slice
+        const slicedValues = this.cubeData
+            .filter(data => data.coords && this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice))
+            .map(data => data.value);
+        
+        // Calculate min/max from only the visible slice
+        const [min, max] = slicedValues.length > 0 ? minMax(slicedValues) : [0, 1];
+
+        // Update bar chart to show only sliced values
+        const graphDiv = document.getElementById('graph');
+        if (graphDiv && graphDiv.layout && isIntegerArray(slicedValues)) {
+            const data = {};
+            slicedValues.forEach(value => {
+                data[value] ||= 0;
+                data[value] += 1;
+            });
+
+            const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
+                (obj, key) => {
+                    obj[key] = data[key];
+                    return obj;
+                },
+                {}
+            );
+
+            Plotly.react("graph", [{
+                x: Object.keys(sorted).map(Number),
+                y: Object.values(sorted),
+                type: 'bar',
+                marker: {
+                    color: 'rgb(0,255,0)',
+                    opacity: 0.9,
+                }
+            }], graphDiv.layout);
+        }
+
+        // Handle individual cubes
+        this.cubeData.forEach(data => {
+            if (data.mesh && data.coords) {
+                const matchesSlice = this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice);
+                
+                if (matchesSlice) {
+                    // Show cube with opacity scaled to slice min/max
+                    const opacity = ((data.value - min) / (max - min)) * 0.8;
+                    data.mesh.material.opacity = opacity;
+                } else {
+                    // Hide cube
+                    data.mesh.material.opacity = 0.05;
+                }
+            }
+        });
+
+        // Handle instanced cubes (for larger arrays)
+        if (this.instancedCubes) {
+            const color = new THREE.Color();
+            for (let i = 0; i < this.cubeData.length; i++) {
+                const data = this.cubeData[i];
+                if (data.coords) {
+                    const matchesSlice = this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice);
+                    
+                    if (matchesSlice) {
+                        // Scale opacity relative to slice min/max
+                        const opacity = ((data.value - min) / (max - min)) * 0.8;
+                        color.setRGB(0, opacity + 0.2, 0);
+                    } else {
+                        color.setRGB(0, 0.05, 0);
+                    }
+                    
+                    this.instancedCubes.setColorAt(i, color);
+                }
+            }
+            this.instancedCubes.instanceColor.needsUpdate = true;
+        }
+    }
+
+    /**
+     * Check if a cube's coordinates match the active slice criteria
+     * @param {Object} coords - Cube coordinates {x, y, z}
+     * @param {number|null} xSlice - X-axis slice value
+     * @param {number|null} ySlice - Y-axis slice value
+     * @param {number|null} zSlice - Z-axis slice value
+     * @returns {boolean} True if cube matches all non-null slice criteria
+     */
+    cubeMatchesSlice(coords, xSlice, ySlice, zSlice) {
+        const xMatch = xSlice === null || coords.x === xSlice;
+        const yMatch = ySlice === null || coords.y === ySlice;
+        const zMatch = zSlice === null || coords.z === zSlice;
+        
+        return xMatch && yMatch && zMatch;
+    }
+
     highlightValue(value) {
-        // First restore the full graph before highlighting
         const graphDiv = document.getElementById('graph');
         
         if (graphDiv && graphDiv.layout) {
@@ -440,7 +524,6 @@ export class Vis {
             const isInteger = isIntegerArray(values);
             
             if (isInteger) {
-                // Rebuild the full distribution
                 let min = Math.min(...xGraph);
                 let max = Math.max(...xGraph);
                 const data = {};
@@ -450,7 +533,6 @@ export class Vis {
                     data[val] += 1;
                 });
                 
-                // Fill in any zeros
                 for (let i = min; i <= max; i++) {
                     data[i] ||= 0;
                 }
@@ -463,10 +545,8 @@ export class Vis {
                     {}
                 );
                 
-                // Update xGraph to full range
                 xGraph = Object.keys(sorted).map(Number);
                 
-                // Now highlight the specific value
                 const index = xGraph.indexOf(value);
                 const colors = Array(xGraph.length).fill('rgb(0,255,0)');
                 if (index !== -1) {
@@ -484,17 +564,13 @@ export class Vis {
                 }], graphDiv.layout);
             }
         }
-        
-        console.log('highlighting')
 
-        // Handle individual cubes
         this.cubeData.forEach(data => {
             if (data.mesh) {
                 data.mesh.material.opacity = data.value === value ? 0.8 : 0.1;
             }
         });
 
-        // Handle instanced cubes (for larger arrays)
         if (this.instancedCubes) {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
@@ -507,12 +583,10 @@ export class Vis {
     }
 
     highlightInequality(low, high) {
-        // Filter xGraph and corresponding y values to only show bars in range
         const filteredIndices = [];
         const filteredX = [];
         const filteredY = [];
         
-        // Get the original graph data
         const graphDiv = document.getElementById('graph');
         if (graphDiv && graphDiv.data && graphDiv.data[0]) {
             const originalY = graphDiv.data[0].y;
@@ -525,7 +599,6 @@ export class Vis {
                 }
             });
             
-            // Update the graph with filtered data
             if (filteredX.length > 0) {
                 Plotly.react("graph", [{
                     x: filteredX,
@@ -539,7 +612,6 @@ export class Vis {
             }
         }
 
-        // Handle individual cubes
         this.cubeData.forEach(data => {
             if (data.mesh) {
                 const inRange = low < data.value && data.value < high;
@@ -547,7 +619,6 @@ export class Vis {
             }
         });
 
-        // Handle instanced cubes (for larger arrays)
         if (this.instancedCubes) {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
@@ -560,16 +631,13 @@ export class Vis {
     }
 
     resetScale() {
-        // Get the original graph div to access layout
         const graphDiv = document.getElementById('graph');
         
-        // Restore full graph with all bars
         if (graphDiv && graphDiv.layout) {
             const values = this.cubeData.map(cube => cube.value);
             const isInteger = isIntegerArray(values);
             
             if (isInteger) {
-                // Rebuild the full distribution
                 let min = Math.min(...xGraph);
                 let max = Math.max(...xGraph);
                 const data = {};
@@ -579,7 +647,6 @@ export class Vis {
                     data[value] += 1;
                 });
                 
-                // Fill in any zeros
                 for (let i = min; i <= max; i++) {
                     data[i] ||= 0;
                 }
@@ -606,7 +673,6 @@ export class Vis {
         
         const [min, max] = minMax(this.cubeData.map(cube => cube.value));
 
-        // Handle individual cubes
         this.cubeData.forEach(data => {
             if (data.mesh) {
                 const opacity = ((data.value - min) / (max - min)) * 0.8;
@@ -614,7 +680,6 @@ export class Vis {
             }
         });
 
-        // Handle instanced cubes (for larger arrays)
         if (this.instancedCubes) {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
@@ -627,16 +692,9 @@ export class Vis {
     }
 }
 
-
-/**
- * Creates and displays a distribution graph for array values using Plotly
- * For integer arrays, generates a bar chart showing frequency distribution of values
- * @param {import('./types.js').Array1D|import('./types.js').Array2D|import('./types.js').Array3D} arr - Array to analyze and graph
- */
 export function graphDistribution(arr) {
     const values = arr.flat().flat();
     if (isIntegerArray(values)) {
-        // Count frequency of each value.
         let min = Number.POSITIVE_INFINITY;
         let max = Number.NEGATIVE_INFINITY;
         const data = {};
@@ -651,7 +709,6 @@ export function graphDistribution(arr) {
             }
         }
 
-        // Fill in any zeros
         for (let i = min; i <= max; i++) {
             data[i] ||= 0;
         }
@@ -707,11 +764,6 @@ export function graphDistribution(arr) {
     }
 }
 
-/**
- * Updates the DOM element displaying array dimensions with color-coded shape information
- * Shows array shape with color coding: red for 1D, green×red for 2D, blue×green×red for 3D
- * @param {import('./types.js').Array1D|import('./types.js').Array2D|import('./types.js').Array3D} arr - Array whose dimensions to display
- */
 export function setArrayDimensions(arr) {
     const shape = arrayShape(arr);
     switch (shape.length) {

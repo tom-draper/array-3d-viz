@@ -3,9 +3,14 @@
  * Handles initial setup, GUI interaction, and orchestrates the visualization.
  */
 
-import { GUI } from './gui.js';
-import { validJSONArray, validCSVArray, parseCSVArray, arrayShape } from './array-utils.js';
-import { isNumeric } from './types.js'
+import { GUI } from "./gui.js";
+import {
+    arrayShape,
+    parseCSVArray,
+    validCSVArray,
+    validJSONArray,
+} from "./array-utils.js";
+import { isNumeric } from "./types.js";
 
 class App {
     constructor() {
@@ -15,13 +20,13 @@ class App {
 
     init() {
         // Check whether using GUI.
-        $.get("/gui", gui => {
+        $.get("/gui", (gui) => {
             if (gui) {
                 this.gui.enableGUI(); // Setup gui and wait for button click to fetch array input.
             } else {
                 this.gui.enableViz();
                 // Fetch array from saved file from server.
-                $.get("/data", data => {
+                $.get("/data", (data) => {
                     $(".result").html(data);
                     this.array = JSON.parse(data);
                     this.gui.startGUI(this.array);
@@ -29,9 +34,9 @@ class App {
             }
         });
 
-        const canvas = document.getElementById('title-underline-canvas');
-        const ctx = canvas.getContext('2d');
-        const mainTitle = document.querySelector('.main-title');
+        const canvas = document.getElementById("title-underline-canvas");
+        const ctx = canvas.getContext("2d");
+        const mainTitle = document.querySelector(".main-title");
 
         canvas.width = mainTitle.offsetWidth;
         canvas.height = 8;
@@ -44,7 +49,7 @@ class App {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < numSquares; i++) {
                 ctx.globalAlpha = Math.random();
-                ctx.fillStyle = '#00ff00';
+                ctx.fillStyle = "#00ff00";
                 ctx.fillRect(i * (squareSize + gap), 0, squareSize, squareSize);
             }
             requestAnimationFrame(drawUnderline);
@@ -54,7 +59,10 @@ class App {
     }
 
     runInput() {
-        const input = $("#arrayInput").val()?.toString().replace(/[ \t]+/g, "");
+        const input = $("#arrayInput")
+            .val()
+            ?.toString()
+            .replace(/[ \t]+/g, "");
         if (input) {
             let parsedArray;
             if (validJSONArray(input)) {
@@ -117,7 +125,7 @@ class App {
             // If just erased less than input, but greater than input available.
             this.gui.highlightInequality(
                 Number.NEGATIVE_INFINITY,
-                parseFloat(greaterThanInputValue)
+                parseFloat(greaterThanInputValue),
             );
         } else if (greaterThanInputValue === "") {
             this.gui.resetScale();
@@ -139,12 +147,15 @@ class App {
             if (isNumeric(lessThanInputValue)) {
                 low = parseFloat(lessThanInputValue);
             }
-            this.gui.highlightInequality(low, parseFloat(greaterThanInputValue));
+            this.gui.highlightInequality(
+                low,
+                parseFloat(greaterThanInputValue),
+            );
         } else if (isNumeric(lessThanInputValue)) {
             // If just erased greater than input, but less than input still available.
             this.gui.highlightInequality(
                 parseFloat(lessThanInputValue),
-                Number.POSITIVE_INFINITY
+                Number.POSITIVE_INFINITY,
             );
         } else if (lessThanInputValue === "") {
             this.gui.resetScale();
@@ -152,6 +163,79 @@ class App {
 
         if (equalityInput) equalityInput.value = ""; // Erase any equality input.
     }
+
+    /**
+     * Handle X-axis slice input
+     */
+    handleXSliceInput() {
+        const input = document.getElementById("xSliceQuery");
+        const value = input.value.trim();
+
+        // Parse the input - null if empty, otherwise convert to number
+        const xSlice = value === "" ? null : parseInt(value, 10);
+
+        // Get current Y and Z slice values
+        const yInput = document.getElementById("ySliceQuery").value.trim();
+        const zInput = document.getElementById("zSliceQuery").value.trim();
+        const ySlice = yInput === "" ? null : parseInt(yInput, 10);
+        const zSlice = zInput === "" ? null : parseInt(zInput, 10);
+
+        // Validate the input
+        if (value !== "" && (isNaN(xSlice) || xSlice < 0)) {
+            console.warn("Invalid X slice value");
+            return;
+        }
+
+        // Apply the slice to the visualization
+        this.gui.highlightSlice(xSlice, ySlice, zSlice);
+    }
+
+    /**
+     * Handle Y-axis slice input
+     */
+    handleYSliceInput() {
+        const input = document.getElementById("ySliceQuery");
+        const value = input.value.trim();
+
+        const ySlice = value === "" ? null : parseInt(value, 10);
+
+        const xInput = document.getElementById("xSliceQuery").value.trim();
+        const zInput = document.getElementById("zSliceQuery").value.trim();
+        const xSlice = xInput === "" ? null : parseInt(xInput, 10);
+        const zSlice = zInput === "" ? null : parseInt(zInput, 10);
+
+        if (value !== "" && (isNaN(ySlice) || ySlice < 0)) {
+            console.warn("Invalid Y slice value");
+            return;
+        }
+
+        // Apply the slice to the visualization
+        this.gui.highlightSlice(xSlice, ySlice, zSlice);
+    }
+
+    /**
+     * Handle Z-axis slice input
+     */
+    handleZSliceInput() {
+        const input = document.getElementById("zSliceQuery");
+        const value = input.value.trim();
+
+        const zSlice = value === "" ? null : parseInt(value, 10);
+
+        const xInput = document.getElementById("xSliceQuery").value.trim();
+        const yInput = document.getElementById("ySliceQuery").value.trim();
+        const xSlice = xInput === "" ? null : parseInt(xInput, 10);
+        const ySlice = yInput === "" ? null : parseInt(yInput, 10);
+
+        if (value !== "" && (isNaN(zSlice) || zSlice < 0)) {
+            console.warn("Invalid Z slice value");
+            return;
+        }
+
+        // Apply the slice to the visualization
+        this.gui.highlightSlice(xSlice, ySlice, zSlice);
+    }
+
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -162,16 +246,20 @@ document.addEventListener("DOMContentLoaded", function () {
     window.handleEqualityInput = () => app.handleEqualityInput();
     window.handleLessThanInput = () => app.handleLessThanInput();
     window.handleGreaterThanInput = () => app.handleGreaterThanInput();
+    window.handleXSliceInput = () => app.handleXSliceInput();
+    window.handleYSliceInput = () => app.handleYSliceInput();
+    window.handleZSliceInput = () => app.handleZSliceInput();
+    window.clearAllSlices = () => app.clearAllSlices();
 
-    const cookieBanner = document.getElementById("cookieConsentBanner");
-    const acceptButton = document.getElementById("acceptCookies");
+    // const cookieBanner = document.getElementById("cookieConsentBanner");
+    // const acceptButton = document.getElementById("acceptCookies");
 
-    if (!localStorage.getItem("cookiesAccepted")) {
-        cookieBanner.style.display = "block";
-    }
+    // if (!localStorage.getItem("cookiesAccepted")) {
+    //     cookieBanner.style.display = "block";
+    // }
 
-    acceptButton.addEventListener("click", function () {
-        localStorage.setItem("cookiesAccepted", "true");
-        cookieBanner.style.display = "none";
-    });
+    // acceptButton.addEventListener("click", function () {
+    //     localStorage.setItem("cookiesAccepted", "true");
+    //     cookieBanner.style.display = "none";
+    // });
 });
