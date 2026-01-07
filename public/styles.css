@@ -191,6 +191,19 @@ input {
     z-index: 1; /* Ensure it's above other elements if needed */
 }
 
+
+#border {
+    width: 100%;
+    margin: 2em 0;
+}
+
+#borderCanvas {
+    display: block;
+    width: 100%;
+    height: 8px;
+}
+
+
 /* Input Section */
 .input-section {
     margin-bottom: 3em;
@@ -464,7 +477,7 @@ input {
     margin-top: 4em;
     padding-top: 2em;
     padding-bottom: 2em;
-    border-top: 2px solid rgba(0, 255, 0, 0.3);
+    /* border-top: 2px solid rgba(0, 255, 0, 0.3); */
     display: flex;
     justify-content: space-between;
     align-items: center;

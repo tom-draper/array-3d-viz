@@ -11,6 +11,7 @@ import {
     validJSONArray,
 } from "./array-utils.js";
 import { isNumeric } from "./types.js";
+import { renderBorder } from "./border.js";
 
 class App {
     constructor() {
@@ -235,7 +236,6 @@ class App {
         // Apply the slice to the visualization
         this.gui.highlightSlice(xSlice, ySlice, zSlice);
     }
-
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -262,4 +262,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //     localStorage.setItem("cookiesAccepted", "true");
     //     cookieBanner.style.display = "none";
     // });
+
+    requestAnimationFrame(renderBorder);
 });
