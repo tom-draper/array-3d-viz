@@ -665,6 +665,12 @@ input {
     }
 }
 
+@media only screen and (max-width: 519px) {
+    .min-donate-link-container {
+        display: none;
+    }
+}
+
 @media only screen and (max-width: 480px) {
     .main-title {
         font-size: 2.5em;
