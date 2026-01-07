@@ -412,12 +412,16 @@ function createServer(guiEnabled) {
 		res.sendFile(path.join(__dirname, "public", "index.html"));
 	});
 
+	app.get("/about", (req, res) => {
+		res.sendFile(path.join(__dirname, "public", "about.html"));
+	});
+
 	app.get("/privacy", (req, res) => {
 		res.sendFile(path.join(__dirname, "public", "privacy.html"));
 	});
 
-	app.get('/ads.txt', (req, res) => {
-		res.redirect(301, 'https://srv.adstxtmanager.com/19390/arrayviz.com');
+	app.get("/terms", (req, res) => {
+		res.sendFile(path.join(__dirname, "public", "terms.html"));
 	});
 
 	app.get("/gui", (req, res) => {

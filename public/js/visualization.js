@@ -395,14 +395,14 @@ export class Vis {
                         position,
                         value: arr[i][j][k],
                         opacity,
-                        coords: [x + k, y + arr[0].length - 1 - j, z - i]
+                        coords: [x + k, y + arr[0].length - 1 - j, i]
                     });
 
                     this.cubeData.push({
                         value: arr[i][j][k],
                         index: i * arr[0].length * arr[0][0].length + j * arr[0][0].length + k,
                         position,
-                        coords: { x: x + k, y: y + arr[0].length - 1 - j, z: z - i }
+                        coords: { x: x + k, y: y + arr[0].length - 1 - j, z: i }
                     });
                 }
             }
@@ -425,10 +425,16 @@ export class Vis {
     applySlice(xSlice, ySlice, zSlice) {
         this.activeSlices = { x: xSlice, y: ySlice, z: zSlice };
         
+        // Debug logging
+        console.log('Applying slice:', { xSlice, ySlice, zSlice });
+        console.log('Sample cube coords:', this.cubeData.slice(0, 5).map(d => d.coords));
+        
         // Get values only from cubes that match the slice
         const slicedValues = this.cubeData
             .filter(data => data.coords && this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice))
             .map(data => data.value);
+        
+        console.log('Matched cubes:', slicedValues.length);
         
         // Calculate min/max from only the visible slice
         const [min, max] = slicedValues.length > 0 ? minMax(slicedValues) : [0, 1];
@@ -567,7 +573,7 @@ export class Vis {
 
         this.cubeData.forEach(data => {
             if (data.mesh) {
-                data.mesh.material.opacity = data.value === value ? 0.8 : 0.1;
+                data.mesh.material.opacity = data.value === value ? 0.8 : 0.05;
             }
         });
 
@@ -575,7 +581,7 @@ export class Vis {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
                 const isMatch = this.cubeData[i].value === value;
-                color.setRGB(0, isMatch ? 0.8 : 0.1, 0);
+                color.setRGB(0, isMatch ? 0.8 : 0.05, 0);
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
@@ -615,7 +621,7 @@ export class Vis {
         this.cubeData.forEach(data => {
             if (data.mesh) {
                 const inRange = low < data.value && data.value < high;
-                data.mesh.material.opacity = inRange ? 0.8 : 0.1;
+                data.mesh.material.opacity = inRange ? 0.8 : 0.05;
             }
         });
 
@@ -623,7 +629,7 @@ export class Vis {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
                 const inRange = low < this.cubeData[i].value && this.cubeData[i].value < high;
-                color.setRGB(0, inRange ? 0.8 : 0.1, 0);
+                color.setRGB(0, inRange ? 0.8 : 0.05, 0);
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
@@ -771,10 +777,10 @@ export function setArrayDimensions(arr) {
             document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`
             break;
         case 2:
-            document.getElementById("arrayShape").innerHTML = `<span class="green">${shape[0]}</span><span class="multiply">×</span><span class="red">${shape[1]}</span>`
+            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[1]}</span><span class="multiply">×</span><span class="green">${shape[0]}</span>`
             break;
         case 3:
-            document.getElementById("arrayShape").innerHTML = `<span class="blue">${shape[0]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="red">${shape[2]}</span>`
+            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[2]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="blue">${shape[0]}</span>`
             break;
     }
 }
