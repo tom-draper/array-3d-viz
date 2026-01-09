@@ -44,12 +44,12 @@ node server.js path/to/filename.ext
 
 Then open <code>localhost:8080</code> in a browser to view the visualization.
 
-##### Compatibility 
-- [x] JSON (.json) 
+##### Compatibility
+- [x] JSON (.json)
 - [X] CSV (.csv)
 - [x] NumPy (.npy, .npz)
 - [X] HDF (.hdf, .h5, .hdf5)
-- [ ] Pickle (.pickle)
+- [X] Pickle (.pickle, .pkl)
 
 #### Option 2: Paste JSON array from clipboard
 
