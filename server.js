@@ -8,6 +8,8 @@ import * as hdf5 from 'jsfive';
 import { parse } from "csv-parse/sync";
 import { readFileSync } from "fs";
 import pickleparser from "pickleparser";
+import parquet from "parquetjs";
+import { read as readMat } from "mat-for-js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -386,6 +388,59 @@ async function loadPickle(filePath) {
 }
 
 /**
+ * Loads a Parquet file and converts it to JSON format
+ * @param {string} filePath - Path to the Parquet file
+ * @throws {Error} If loading or parsing the Parquet file fails
+ */
+async function loadParquet(filePath) {
+	try {
+		const reader = await parquet.ParquetReader.openFile(filePath);
+		const cursor = reader.getCursor();
+		const rows = [];
+		let record = null;
+
+		// Read all rows
+		while (record = await cursor.next()) {
+			rows.push(record);
+		}
+
+		await reader.close();
+
+		// Convert rows to JSON
+		const jsonData = JSON.stringify(rows);
+		await storeWorkingJSON(jsonData);
+
+		console.log(`Successfully loaded Parquet file: ${filePath}`);
+		console.log(`File contains ${rows.length} rows`);
+	} catch (error) {
+		console.error(`Error loading Parquet file: ${error.message}`);
+		throw error;
+	}
+}
+
+/**
+ * Loads a MATLAB .mat file and converts it to JSON format
+ * @param {string} filePath - Path to the MATLAB file
+ * @throws {Error} If loading or parsing the MATLAB file fails
+ */
+async function loadMatlab(filePath) {
+	try {
+		const buffer = await fs.promises.readFile(filePath);
+		const matData = readMat(buffer);
+
+		// Convert the MATLAB data to JSON
+		const jsonData = JSON.stringify(matData);
+		await storeWorkingJSON(jsonData);
+
+		console.log(`Successfully loaded MATLAB file: ${filePath}`);
+		console.log(`File contains ${Object.keys(matData).length} variables`);
+	} catch (error) {
+		console.error(`Error loading MATLAB file: ${error.message}`);
+		throw error;
+	}
+}
+
+/**
  * Converts various file formats to JSON and stores as working data
  * @param {string} filePath - Path to the file to convert
  * @throws {Error} If file path is missing, file type is unsupported, or conversion fails
@@ -417,8 +472,14 @@ async function convertToJSON(filePath) {
 		case "pkl":
 			await loadPickle(filePath);
 			break;
+		case "parquet":
+			await loadParquet(filePath);
+			break;
+		case "mat":
+			await loadMatlab(filePath);
+			break;
 		default:
-			throw new Error(`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf, pickle, pkl`);
+			throw new Error(`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf, pickle, pkl, parquet, mat`);
 	}
 }
 

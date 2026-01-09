@@ -23,9 +23,11 @@
     "csv-parse": "^5.6.0",
     "express": "^4.18.1",
     "jsfive": "^0.4.0",
+    "mat-for-js": "^1.1.0",
     "ndarray": "^1.0.19",
     "node-fetch": "^3.2.8",
     "npyjs": "^0.5.0",
+    "parquetjs": "^0.11.2",
     "pickleparser": "^0.2.1",
     "python-shell": "^3.0.1"
   }

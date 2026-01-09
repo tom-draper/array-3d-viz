@@ -50,6 +50,8 @@ Then open <code>localhost:8080</code> in a browser to view the visualization.
 - [x] NumPy (.npy, .npz)
 - [X] HDF (.hdf, .h5, .hdf5)
 - [X] Pickle (.pickle, .pkl)
+- [X] Parquet (.parquet)
+- [X] MATLAB (.mat)
 
 #### Option 2: Paste JSON array from clipboard
 
