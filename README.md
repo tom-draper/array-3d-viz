@@ -5,6 +5,7 @@ A tool for visualizing arrays and matrices in 3D space using Three.js.
 Hosted at: https://arrayviz.com
 
 ### Features
+
 - Works with 1D, 2D or 3D arrays
 - Paste array data from clipboard or read from file
 - Cell color scaled by relative value
