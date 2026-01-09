@@ -1,0 +1,9 @@
+# Deployment-specific files - always keep deploy-2 version when merging
+public/index.html merge=ours
+public/about.html merge=ours
+public/privacy.html merge=ours
+public/terms.html merge=ours
+public/ads.txt merge=ours
+public/robots.txt merge=ours
+public/sitemap.xml merge=ours
+vercel.json merge=ours
