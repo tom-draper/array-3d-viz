@@ -101,7 +101,7 @@ async function loadJSON(filePath) {
 async function loadCSV(filePath) {
 	try {
 		const data = await fs.promises.readFile(filePath, "utf8");
-		
+
 		// Parse CSV with headers detection
 		const records = parse(data, {
 			columns: true, // Use first row as headers
@@ -112,12 +112,12 @@ async function loadCSV(filePath) {
 				if (value === '' || value === null || value === undefined) {
 					return null;
 				}
-				
+
 				const num = Number(value);
 				if (!isNaN(num) && isFinite(num)) {
 					return num;
 				}
-				
+
 				return value;
 			}
 		});
@@ -132,16 +132,16 @@ async function loadCSV(filePath) {
 					if (value === '' || value === null || value === undefined) {
 						return null;
 					}
-					
+
 					const num = Number(value);
 					if (!isNaN(num) && isFinite(num)) {
 						return num;
 					}
-					
+
 					return value;
 				}
 			});
-			
+
 			const jsonData = JSON.stringify(recordsNoHeaders);
 			await storeWorkingJSON(jsonData);
 		} else {
@@ -237,18 +237,18 @@ function convertNdArrayToArray(ndArray) {
 function processHDF5Item(item, path = '') {
 	if (item.type === 'group') {
 		const groupData = {};
-		
+
 		// Add metadata if available
 		if (item.attrs && Object.keys(item.attrs).length > 0) {
 			groupData._attrs = item.attrs;
 		}
-		
+
 		// Process all children
 		for (const [name, child] of Object.entries(item.children || {})) {
 			const childPath = path ? `${path}/${name}` : name;
 			groupData[name] = processHDF5Item(child, childPath);
 		}
-		
+
 		return groupData;
 	} else if (item.type === 'dataset') {
 		const result = {
@@ -256,16 +256,16 @@ function processHDF5Item(item, path = '') {
 			dtype: item.dtype,
 			data: null
 		};
-		
+
 		// Add attributes if available
 		if (item.attrs && Object.keys(item.attrs).length > 0) {
 			result.attrs = item.attrs;
 		}
-		
+
 		try {
 			// Get the actual data
 			const data = item.value;
-			
+
 			if (data !== null && data !== undefined) {
 				// Handle different data types
 				if (Array.isArray(data)) {
@@ -281,10 +281,10 @@ function processHDF5Item(item, path = '') {
 			console.warn(`Warning: Could not read data for dataset at ${path}: ${error.message}`);
 			result.data = null;
 		}
-		
+
 		return result;
 	}
-	
+
 	return item;
 }
 
@@ -298,23 +298,23 @@ async function loadHDF5(filePath) {
 		// Read the HDF5 file
 		const buffer = readFileSync(filePath);
 		const f = new hdf5.File(buffer.buffer, filePath);
-		
+
 		// Process the root group
 		const rootData = processHDF5Item(f, '');
-		
+
 		// Create a structured output
 		const output = {
 			filename: path.basename(filePath),
 			filesize: buffer.length,
 			root: rootData
 		};
-		
+
 		const jsonData = JSON.stringify(output, null, 2);
 		await storeWorkingJSON(jsonData);
-		
+
 		console.log(`Successfully loaded HDF5 file: ${filePath}`);
 		console.log(`File contains ${Object.keys(rootData).length} root-level items`);
-		
+
 	} catch (error) {
 		console.error(`Error loading HDF5 file: ${error}`);
 		throw error;
@@ -412,6 +412,18 @@ function createServer(guiEnabled) {
 		res.sendFile(path.join(__dirname, "public", "index.html"));
 	});
 
+	app.get("/about", (req, res) => {
+		res.sendFile(path.join(__dirname, "public", "about.html"));
+	});
+
+	app.get("/privacy", (req, res) => {
+		res.sendFile(path.join(__dirname, "public", "privacy.html"));
+	});
+
+	app.get("/terms", (req, res) => {
+		res.sendFile(path.join(__dirname, "public", "terms.html"));
+	});
+
 	app.get("/gui", (req, res) => {
 		res.json(guiEnabled);
 	});
@@ -440,7 +452,7 @@ function startServer(guiEnabled) {
 	const { app, port } = createServer(guiEnabled);
 
 	app.listen(port, () => {
-		console.log(`Server started at: http://localhost:${port}`);
+		console.log(`Server listening at: http://localhost:${port}`);
 	});
 }
 
