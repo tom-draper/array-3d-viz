@@ -2,7 +2,7 @@
 
 A tool for visualizing arrays and matrices in 3D space using Three.js.
 
-Hosted at: https://array-3d-viz.vercel.app
+Hosted at: https://arrayviz.com
 
 ### Features
 - Works with 1D, 2D or 3D arrays
@@ -11,6 +11,7 @@ Hosted at: https://array-3d-viz.vercel.app
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
+- Slice query functionality to isolate specific dimensions
 - Array value histogram (bottom right)
 
 <br>
