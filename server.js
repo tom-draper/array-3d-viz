@@ -7,6 +7,7 @@ import ndarray from "ndarray";
 import * as hdf5 from 'jsfive';
 import { parse } from "csv-parse/sync";
 import { readFileSync } from "fs";
+import pickleparser from "pickleparser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -363,6 +364,28 @@ function loadNumPyWithPython(filePath) {
 }
 
 /**
+ * Loads a Python pickle file and converts it to JSON format
+ * @param {string} filePath - Path to the pickle file
+ * @throws {Error} If loading or parsing the pickle file fails
+ */
+async function loadPickle(filePath) {
+	try {
+		const buffer = await fs.promises.readFile(filePath);
+		const parser = new pickleparser.Parser();
+		const pickleData = parser.parse(buffer);
+
+		// Convert the parsed pickle data to JSON
+		const jsonData = JSON.stringify(pickleData);
+		await storeWorkingJSON(jsonData);
+
+		console.log(`Successfully loaded pickle file: ${filePath}`);
+	} catch (error) {
+		console.error(`Error loading pickle file: ${error.message}`);
+		throw error;
+	}
+}
+
+/**
  * Converts various file formats to JSON and stores as working data
  * @param {string} filePath - Path to the file to convert
  * @throws {Error} If file path is missing, file type is unsupported, or conversion fails
@@ -390,8 +413,12 @@ async function convertToJSON(filePath) {
 		case "hdf":
 			await loadHDF5(filePath);
 			break;
+		case "pickle":
+		case "pkl":
+			await loadPickle(filePath);
+			break;
 		default:
-			throw new Error(`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf`);
+			throw new Error(`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf, pickle, pkl`);
 	}
 }
 
