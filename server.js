@@ -4,12 +4,15 @@ import npyjs from "npyjs";
 import path from "path";
 import { fileURLToPath } from "url";
 import ndarray from "ndarray";
-import * as hdf5 from 'jsfive';
+import * as hdf5 from "jsfive";
 import { parse } from "csv-parse/sync";
 import { readFileSync } from "fs";
 import pickleparser from "pickleparser";
 import parquet from "parquetjs";
-import { read as readMat } from "mat-for-js";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -112,7 +115,7 @@ async function loadCSV(filePath) {
 			trim: true,
 			cast: (value, context) => {
 				// Try to convert to number if possible, otherwise keep as string
-				if (value === '' || value === null || value === undefined) {
+				if (value === "" || value === null || value === undefined) {
 					return null;
 				}
 
@@ -122,7 +125,7 @@ async function loadCSV(filePath) {
 				}
 
 				return value;
-			}
+			},
 		});
 
 		// If parsing with headers fails or produces empty result, try without headers
@@ -132,7 +135,7 @@ async function loadCSV(filePath) {
 				skip_empty_lines: true,
 				trim: true,
 				cast: (value, context) => {
-					if (value === '' || value === null || value === undefined) {
+					if (value === "" || value === null || value === undefined) {
 						return null;
 					}
 
@@ -142,7 +145,7 @@ async function loadCSV(filePath) {
 					}
 
 					return value;
-				}
+				},
 			});
 
 			const jsonData = JSON.stringify(recordsNoHeaders);
@@ -227,7 +230,9 @@ function convertNdArrayToArray(ndArray) {
 		case 3:
 			return convertNdArray3D(ndArray);
 		default:
-			throw new Error(`Unsupported ndarray dimensions: ${shape.length}. Only 1D, 2D, and 3D arrays are supported.`);
+			throw new Error(
+				`Unsupported ndarray dimensions: ${shape.length}. Only 1D, 2D, and 3D arrays are supported.`
+			);
 	}
 }
 
@@ -237,8 +242,8 @@ function convertNdArrayToArray(ndArray) {
  * @param {string} path - Current path in the HDF5 hierarchy
  * @returns {Object} Processed data structure
  */
-function processHDF5Item(item, path = '') {
-	if (item.type === 'group') {
+function processHDF5Item(item, path = "") {
+	if (item.type === "group") {
 		const groupData = {};
 
 		// Add metadata if available
@@ -253,11 +258,11 @@ function processHDF5Item(item, path = '') {
 		}
 
 		return groupData;
-	} else if (item.type === 'dataset') {
+	} else if (item.type === "dataset") {
 		const result = {
 			shape: item.shape,
 			dtype: item.dtype,
-			data: null
+			data: null,
 		};
 
 		// Add attributes if available
@@ -273,7 +278,10 @@ function processHDF5Item(item, path = '') {
 				// Handle different data types
 				if (Array.isArray(data)) {
 					result.data = data;
-				} else if (data.constructor && data.constructor.name.includes('Array')) {
+				} else if (
+					data.constructor &&
+					data.constructor.name.includes("Array")
+				) {
 					// Handle typed arrays (Float32Array, Int32Array, etc.)
 					result.data = Array.from(data);
 				} else {
@@ -281,7 +289,9 @@ function processHDF5Item(item, path = '') {
 				}
 			}
 		} catch (error) {
-			console.warn(`Warning: Could not read data for dataset at ${path}: ${error.message}`);
+			console.warn(
+				`Warning: Could not read data for dataset at ${path}: ${error.message}`
+			);
 			result.data = null;
 		}
 
@@ -303,21 +313,22 @@ async function loadHDF5(filePath) {
 		const f = new hdf5.File(buffer.buffer, filePath);
 
 		// Process the root group
-		const rootData = processHDF5Item(f, '');
+		const rootData = processHDF5Item(f, "");
 
 		// Create a structured output
 		const output = {
 			filename: path.basename(filePath),
 			filesize: buffer.length,
-			root: rootData
+			root: rootData,
 		};
 
 		const jsonData = JSON.stringify(output, null, 2);
 		await storeWorkingJSON(jsonData);
 
 		console.log(`Successfully loaded HDF5 file: ${filePath}`);
-		console.log(`File contains ${Object.keys(rootData).length} root-level items`);
-
+		console.log(
+			`File contains ${Object.keys(rootData).length} root-level items`
+		);
 	} catch (error) {
 		console.error(`Error loading HDF5 file: ${error}`);
 		throw error;
@@ -334,7 +345,9 @@ async function loadNumPy(filePath) {
 	try {
 		const buffer = await fs.promises.readFile(filePath);
 		const npyLoader = new npyjs();
-		const npyData = npyLoader.parse(buffer.buffer.slice(0, buffer.buffer.length));
+		const npyData = npyLoader.parse(
+			buffer.buffer.slice(0, buffer.buffer.length)
+		);
 
 		const npyArray = ndarray(npyData.data, npyData.shape);
 		const arrayData = convertNdArrayToArray(npyArray);
@@ -400,7 +413,7 @@ async function loadParquet(filePath) {
 		let record = null;
 
 		// Read all rows
-		while (record = await cursor.next()) {
+		while ((record = await cursor.next())) {
 			rows.push(record);
 		}
 
@@ -419,21 +432,61 @@ async function loadParquet(filePath) {
 }
 
 /**
- * Loads a MATLAB .mat file and converts it to JSON format
+ * Recursively converts BigInt values to Numbers in an object
+ * @param {any} obj - The object to convert
+ * @returns {any} The converted object
+ */
+function convertBigIntsToNumbers(obj) {
+	if (typeof obj === "bigint") {
+		return Number(obj);
+	} else if (Array.isArray(obj)) {
+		return obj.map(convertBigIntsToNumbers);
+	} else if (obj !== null && typeof obj === "object") {
+		const converted = {};
+		for (const [key, value] of Object.entries(obj)) {
+			converted[key] = convertBigIntsToNumbers(value);
+		}
+		return converted;
+	}
+	return obj;
+}
+
+/**
+ * Loads a MATLAB .mat file and converts it to JSON format using Python
  * @param {string} filePath - Path to the MATLAB file
  * @throws {Error} If loading or parsing the MATLAB file fails
  */
 async function loadMatlab(filePath) {
 	try {
-		const buffer = await fs.promises.readFile(filePath);
-		const matData = readMat(buffer);
+		// Use Python's scipy.io to read the MATLAB file since JavaScript libraries have bugs
+		const scriptPath = path.join(__dirname, "scripts", "load_matlab.py");
+		const { stdout, stderr } = await execAsync(
+			`python3 "${scriptPath}" "${filePath}"`
+		);
 
-		// Convert the MATLAB data to JSON
-		const jsonData = JSON.stringify(matData);
-		await storeWorkingJSON(jsonData);
+		if (stderr && stderr.trim()) {
+			console.warn(`Python warning: ${stderr}`);
+		}
+
+		const output = stdout.trim();
+
+		// Check if the output contains an error
+		try {
+			const parsed = JSON.parse(output);
+			if (parsed.error) {
+				throw new Error(parsed.error);
+			}
+		} catch (parseError) {
+			// If it's not valid JSON, that's also an error
+			if (output.includes("error")) {
+				throw new Error(`Failed to parse MATLAB file: ${output}`);
+			}
+		}
+
+		// Store the JSON output
+		await storeWorkingJSON(output);
 
 		console.log(`Successfully loaded MATLAB file: ${filePath}`);
-		console.log(`File contains ${Object.keys(matData).length} variables`);
 	} catch (error) {
 		console.error(`Error loading MATLAB file: ${error.message}`);
 		throw error;
@@ -479,7 +532,9 @@ async function convertToJSON(filePath) {
 			await loadMatlab(filePath);
 			break;
 		default:
-			throw new Error(`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf, pickle, pkl, parquet, mat`);
+			throw new Error(
+				`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf, pickle, pkl, parquet, mat`
+			);
 	}
 }
 
@@ -567,7 +622,9 @@ async function main() {
 			const exists = await fileExists(filePath);
 
 			if (!exists) {
-				console.error(`Data file path ${filePath} is invalid or file does not exist.`);
+				console.error(
+					`Data file path ${filePath} is invalid or file does not exist.`
+				);
 				process.exit(1);
 			}
 
@@ -584,7 +641,7 @@ async function main() {
 }
 
 // Start the application
-main().catch(error => {
+main().catch((error) => {
 	console.error("Fatal error:", error);
 	process.exit(1);
 });
