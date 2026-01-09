@@ -11,6 +11,7 @@ Hosted at: https://arrayviz.com
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
+- Slice query functionality to isolate specific dimensions
 - Array value histogram (bottom right)
 
 <br>
