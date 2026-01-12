@@ -451,6 +451,10 @@ function createServer(guiEnabled) {
 		res.sendFile(path.join(__dirname, "public", "terms.html"));
 	});
 
+	app.get("/ads.txt", (req, res) => {
+		res.redirect(301, "https://srv.adstxtmanager.com/19390/arrayviz.com");
+	});
+
 	app.get("/gui", (req, res) => {
 		res.json(guiEnabled);
 	});
