@@ -2,7 +2,7 @@
 
 A tool for visualizing arrays and matrices in 3D space using Three.js.
 
-Hosted at: https://array-3d-viz.vercel.app
+Hosted at: https://arrayviz.com
 
 ### Features
 - Works with 1D, 2D or 3D arrays
@@ -11,6 +11,7 @@ Hosted at: https://array-3d-viz.vercel.app
 - Full camera movement: rotation (mouse), zoom (scroll wheel), translation (arrow keys)
 - Array dimension display (bottom left)
 - Query input for highlighting values or value ranges (bottom right)
+- Slice query functionality to isolate specific dimensions
 - Array value histogram (bottom right)
 
 <br>
@@ -43,12 +44,14 @@ node server.js path/to/filename.ext
 
 Then open <code>localhost:8080</code> in a browser to view the visualization.
 
-##### Compatibility 
-- [x] JSON (.json) 
+##### Compatibility
+- [x] JSON (.json)
 - [X] CSV (.csv)
 - [x] NumPy (.npy, .npz)
 - [X] HDF (.hdf, .h5, .hdf5)
-- [ ] Pickle (.pickle)
+- [X] Pickle (.pickle, .pkl)
+- [X] Parquet (.parquet)
+- [X] MATLAB (.mat)
 
 #### Option 2: Paste JSON array from clipboard
 
