@@ -556,6 +556,8 @@ input {
     height: fit-content;
     margin-top: auto;
     pointer-events: none;
+    display: flex;
+    gap: 1.25em;
 }
 
 .min-donate-link-container a {
