@@ -19,6 +19,153 @@ const __dirname = path.dirname(__filename);
 
 const TEMP_DATA_PATH = "data/temp/temp.json";
 
+function isPlainObject(value) {
+	return (
+		value !== null &&
+		typeof value === "object" &&
+		!Array.isArray(value)
+	);
+}
+
+function shapesEqual(a, b) {
+	return (
+		a.length === b.length && a.every((dimension, index) => dimension === b[index])
+	);
+}
+
+function getNumericArrayShape(value, path = "root") {
+	if (!Array.isArray(value)) {
+		if (typeof value === "number" && Number.isFinite(value)) {
+			return [];
+		}
+
+		throw new Error(
+			`${path} contains a non-numeric value; only finite numbers are supported`
+		);
+	}
+
+	if (value.length === 0) {
+		throw new Error(`${path} is empty; empty arrays cannot be visualized`);
+	}
+
+	const firstShape = getNumericArrayShape(value[0], `${path}[0]`);
+
+	for (let i = 1; i < value.length; i++) {
+		const shape = getNumericArrayShape(value[i], `${path}[${i}]`);
+		if (!shapesEqual(firstShape, shape)) {
+			throw new Error(`${path} has inconsistent nested dimensions`);
+		}
+	}
+
+	const fullShape = [value.length, ...firstShape];
+	if (fullShape.length > 3) {
+		throw new Error(
+			`${path} has ${fullShape.length} dimensions; only 1D, 2D, and 3D arrays are supported`
+		);
+	}
+
+	return fullShape;
+}
+
+function rowsOfNumericObjectsToMatrix(value) {
+	if (
+		!Array.isArray(value) ||
+		value.length === 0 ||
+		!value.every(isPlainObject)
+	) {
+		return null;
+	}
+
+	const keys = Object.keys(value[0]);
+	if (keys.length === 0) {
+		return null;
+	}
+
+	for (const row of value) {
+		const rowKeys = Object.keys(row);
+		if (!shapesEqual(keys, rowKeys)) {
+			return null;
+		}
+
+		for (const key of keys) {
+			if (typeof row[key] !== "number" || !Number.isFinite(row[key])) {
+				return null;
+			}
+		}
+	}
+
+	return value.map(row => keys.map(key => row[key]));
+}
+
+function collectVisualizationCandidates(value, candidates, path = "root") {
+	if (candidates.length > 1) {
+		return;
+	}
+
+	try {
+		getNumericArrayShape(value, path);
+		candidates.push(value);
+		return;
+	} catch {}
+
+	const rowMatrix = rowsOfNumericObjectsToMatrix(value);
+	if (rowMatrix) {
+		candidates.push(rowMatrix);
+		return;
+	}
+
+	if (Array.isArray(value)) {
+		for (let i = 0; i < value.length; i++) {
+			collectVisualizationCandidates(value[i], candidates, `${path}[${i}]`);
+			if (candidates.length > 1) {
+				return;
+			}
+		}
+		return;
+	}
+
+	if (!isPlainObject(value)) {
+		return;
+	}
+
+	for (const [key, child] of Object.entries(value)) {
+		collectVisualizationCandidates(child, candidates, `${path}.${key}`);
+		if (candidates.length > 1) {
+			return;
+		}
+	}
+}
+
+function normalizeVisualizationData(data, sourceDescription) {
+	try {
+		getNumericArrayShape(data);
+		return data;
+	} catch {}
+
+	const rowMatrix = rowsOfNumericObjectsToMatrix(data);
+	if (rowMatrix) {
+		return rowMatrix;
+	}
+
+	const candidates = [];
+	collectVisualizationCandidates(data, candidates);
+
+	if (candidates.length === 1) {
+		getNumericArrayShape(candidates[0]);
+		return candidates[0];
+	}
+
+	if (candidates.length > 1) {
+		throw new Error(
+			`${sourceDescription} contains multiple numeric arrays. Please provide a file with a single numeric 1D, 2D, or 3D array.`
+		);
+	}
+
+	throw new Error(
+		`${sourceDescription} does not contain a numeric 1D, 2D, or 3D array that can be visualized.`
+	);
+}
+
 /**
  * Gets the file path from command line arguments and ensures it has the correct extension
  * @returns {string|undefined} The file path with extension, or undefined if no path provided
@@ -84,6 +231,11 @@ async function storeWorkingJSON(data) {
 	}
 }
 
+async function storeVisualizationData(data, sourceDescription) {
+	const normalizedData = normalizeVisualizationData(data, sourceDescription);
+	await storeWorkingJSON(JSON.stringify(normalizedData));
+}
+
 /**
  * Loads a JSON file and stores it as working data
  * @param {string} filePath - Path to the JSON file
@@ -92,7 +244,10 @@ async function storeWorkingJSON(data) {
 async function loadJSON(filePath) {
 	try {
 		const data = await fs.promises.readFile(filePath, "utf8");
-		await storeWorkingJSON(data);
+		await storeVisualizationData(
+			JSON.parse(data),
+			`JSON file "${path.basename(filePath)}"`
+		);
 	} catch (error) {
 		console.error(`Error reading JSON file: ${error.message}`);
 		throw error;
@@ -108,13 +263,11 @@ async function loadCSV(filePath) {
 	try {
 		const data = await fs.promises.readFile(filePath, "utf8");
 
-		// Parse CSV with headers detection
 		const records = parse(data, {
-			columns: true, // Use first row as headers
+			columns: false,
 			skip_empty_lines: true,
 			trim: true,
-			cast: (value, context) => {
-				// Try to convert to number if possible, otherwise keep as string
+			cast: value => {
 				if (value === "" || value === null || value === undefined) {
 					return null;
 				}
@@ -128,32 +281,12 @@ async function loadCSV(filePath) {
 			},
 		});
 
-		// If parsing with headers fails or produces empty result, try without headers
-		if (!records || records.length === 0) {
-			const recordsNoHeaders = parse(data, {
-				columns: false, // Don't use headers
-				skip_empty_lines: true,
-				trim: true,
-				cast: (value, context) => {
-					if (value === "" || value === null || value === undefined) {
-						return null;
-					}
-
-					const num = Number(value);
-					if (!isNaN(num) && isFinite(num)) {
-						return num;
-					}
-
-					return value;
-				},
-			});
-
-			const jsonData = JSON.stringify(recordsNoHeaders);
-			await storeWorkingJSON(jsonData);
-		} else {
-			const jsonData = JSON.stringify(records);
-			await storeWorkingJSON(jsonData);
-		}
+		const normalizedRecords =
+			records.length === 1 ? records[0] : records;
+		await storeVisualizationData(
+			normalizedRecords,
+			`CSV file "${path.basename(filePath)}"`
+		);
 	} catch (error) {
 		console.error(`Error reading CSV file: ${error.message}`);
 		throw error;
@@ -322,8 +455,10 @@ async function loadHDF5(filePath) {
 			root: rootData,
 		};
 
-		const jsonData = JSON.stringify(output, null, 2);
-		await storeWorkingJSON(jsonData);
+		await storeVisualizationData(
+			output,
+			`HDF5 file "${path.basename(filePath)}"`
+		);
 
 		console.log(`Successfully loaded HDF5 file: ${filePath}`);
 		console.log(
@@ -351,9 +486,10 @@ async function loadNumPy(filePath) {
 
 		const npyArray = ndarray(npyData.data, npyData.shape);
 		const arrayData = convertNdArrayToArray(npyArray);
-		const jsonData = JSON.stringify(arrayData);
-
-		await storeWorkingJSON(jsonData);
+		await storeVisualizationData(
+			arrayData,
+			`NumPy file "${path.basename(filePath)}"`
+		);
 	} catch (error) {
 		console.error(`Error loading NumPy file: ${error.message}`);
 		throw error;
@@ -389,9 +525,10 @@ async function loadPickle(filePath) {
 		const parser = new pickleparser.Parser();
 		const pickleData = parser.parse(buffer);
 
-		// Convert the parsed pickle data to JSON
-		const jsonData = JSON.stringify(pickleData);
-		await storeWorkingJSON(jsonData);
+		await storeVisualizationData(
+			pickleData,
+			`pickle file "${path.basename(filePath)}"`
+		);
 
 		console.log(`Successfully loaded pickle file: ${filePath}`);
 	} catch (error) {
@@ -420,8 +557,10 @@ async function loadParquet(filePath) {
 		await reader.close();
 
 		// Convert rows to JSON
-		const jsonData = JSON.stringify(rows);
-		await storeWorkingJSON(jsonData);
+		await storeVisualizationData(
+			rows,
+			`Parquet file "${path.basename(filePath)}"`
+		);
 
 		console.log(`Successfully loaded Parquet file: ${filePath}`);
 		console.log(`File contains ${rows.length} rows`);
@@ -470,21 +609,21 @@ async function loadMatlab(filePath) {
 
 		const output = stdout.trim();
 
-		// Check if the output contains an error
+		let matlabData;
 		try {
-			const parsed = JSON.parse(output);
-			if (parsed.error) {
-				throw new Error(parsed.error);
-			}
+			matlabData = JSON.parse(output);
 		} catch (parseError) {
-			// If it's not valid JSON, that's also an error
-			if (output.includes("error")) {
-				throw new Error(`Failed to parse MATLAB file: ${output}`);
-			}
+			throw new Error(`Failed to parse MATLAB file: ${output}`);
 		}
 
-		// Store the JSON output
-		await storeWorkingJSON(output);
+		if (matlabData.error) {
+			throw new Error(matlabData.error);
+		}
+
+		await storeVisualizationData(
+			matlabData,
+			`MATLAB file "${path.basename(filePath)}"`
+		);
 
 		console.log(`Successfully loaded MATLAB file: ${filePath}`);
 	} catch (error) {
