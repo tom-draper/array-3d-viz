@@ -471,7 +471,7 @@ async function loadHDF5(filePath) {
 }
 
 /**
- * Loads a NumPy file (.npy or .npz) and converts it to JSON format
+ * Loads a NumPy file (.npy) and converts it to JSON format
  * @param {string} filePath - Path to the NumPy file
  * @throws {Error} If loading or parsing the NumPy file fails
  */
@@ -652,7 +652,6 @@ async function convertToJSON(filePath) {
 			await loadCSV(filePath);
 			break;
 		case "npy":
-		case "npz":
 			await loadNumPy(filePath);
 			break;
 		case "hdf5":
@@ -672,7 +671,7 @@ async function convertToJSON(filePath) {
 			break;
 		default:
 			throw new Error(
-				`Unsupported file type: .${extension}. Supported formats: json, csv, npy, npz, hdf5, h5, hdf, pickle, pkl, parquet, mat`
+				`Unsupported file type: .${extension}. Supported formats: json, csv, npy, hdf5, h5, hdf, pickle, pkl, parquet, mat`
 			);
 	}
 }

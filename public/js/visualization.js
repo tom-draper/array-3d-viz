@@ -27,6 +27,7 @@ export class Vis {
         });
         this.sharedWireframeMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
         this.activeSlices = { x: null, y: null, z: null };
+        this.handleResizeBound = this.handleResize.bind(this);
     }
 
     init(arr) {
@@ -109,7 +110,8 @@ export class Vis {
         ambientLight.intensity = 0.2;
         this.scene.add(ambientLight);
 
-        window.addEventListener("resize", () => this.handleResize(), false);
+        window.removeEventListener("resize", this.handleResizeBound, false);
+        window.addEventListener("resize", this.handleResizeBound, false);
     }
 
     animate() {
@@ -313,7 +315,7 @@ export class Vis {
         const elements = [];
 
         for (let i = 0; i < arr.length; i++) {
-            const opacity = ((arr[i] - min) / (max - min)) * 0.8;
+            const opacity = getOpacity(arr[i], min, max);
             const position = new THREE.Vector3(x + i + 0.5, y + 0.5, z - 0.5);
 
             elements.push({
@@ -345,7 +347,7 @@ export class Vis {
 
         for (let i = 0; i < arr.length; i++) {
             for (let j = 0; j < arr[0].length; j++) {
-                const opacity = ((arr[i][j] - min) / (max - min)) * 0.8;
+                const opacity = getOpacity(arr[i][j], min, max);
                 const position = new THREE.Vector3(
                     x + j + 0.5,
                     y + arr.length - 1 - i + 0.5,
@@ -384,7 +386,7 @@ export class Vis {
         for (let i = 0; i < arr.length; i++) {
             for (let j = 0; j < arr[0].length; j++) {
                 for (let k = 0; k < arr[0][0].length; k++) {
-                    let opacity = ((arr[i][j][k] - min) / (max - min)) * 0.8;
+                    const opacity = getOpacity(arr[i][j][k], min, max);
                     const position = new THREE.Vector3(
                         x + k + 0.5,
                         y + arr[0].length - 1 - j + 0.5,
@@ -425,17 +427,11 @@ export class Vis {
     applySlice(xSlice, ySlice, zSlice) {
         this.activeSlices = { x: xSlice, y: ySlice, z: zSlice };
         
-        // Debug logging
-        console.log('Applying slice:', { xSlice, ySlice, zSlice });
-        console.log('Sample cube coords:', this.cubeData.slice(0, 5).map(d => d.coords));
-        
         // Get values only from cubes that match the slice
         const slicedValues = this.cubeData
             .filter(data => data.coords && this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice))
             .map(data => data.value);
-        
-        console.log('Matched cubes:', slicedValues.length);
-        
+
         // Calculate min/max from only the visible slice
         const [min, max] = slicedValues.length > 0 ? minMax(slicedValues) : [0, 1];
 
@@ -474,7 +470,7 @@ export class Vis {
                 
                 if (matchesSlice) {
                     // Show cube with opacity scaled to slice min/max
-                    const opacity = ((data.value - min) / (max - min)) * 0.8;
+                    const opacity = getOpacity(data.value, min, max);
                     data.mesh.material.opacity = opacity;
                 } else {
                     // Hide cube
@@ -493,7 +489,7 @@ export class Vis {
                     
                     if (matchesSlice) {
                         // Scale opacity relative to slice min/max
-                        const opacity = ((data.value - min) / (max - min)) * 0.8;
+                        const opacity = getOpacity(data.value, min, max);
                         color.setRGB(0, opacity + 0.2, 0);
                     } else {
                         color.setRGB(0, 0.05, 0);
@@ -681,7 +677,7 @@ export class Vis {
 
         this.cubeData.forEach(data => {
             if (data.mesh) {
-                const opacity = ((data.value - min) / (max - min)) * 0.8;
+                const opacity = getOpacity(data.value, min, max);
                 data.mesh.material.opacity = opacity;
             }
         });
@@ -689,13 +685,30 @@ export class Vis {
         if (this.instancedCubes) {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
-                const opacity = ((this.cubeData[i].value - min) / (max - min)) * 0.8;
+                const opacity = getOpacity(this.cubeData[i].value, min, max);
                 color.setRGB(0, opacity + 0.2, 0);
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
         }
     }
+
+    clearAllSlices() {
+        this.activeSlices = { x: null, y: null, z: null };
+        this.resetScale();
+    }
+}
+
+function getOpacity(value, min, max) {
+    if (!Number.isFinite(value)) {
+        return 0.2;
+    }
+
+    if (!Number.isFinite(min) || !Number.isFinite(max) || min === max) {
+        return 0.8;
+    }
+
+    return ((value - min) / (max - min)) * 0.8;
 }
 
 export function graphDistribution(arr) {

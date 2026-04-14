@@ -236,6 +236,10 @@ class App {
         // Apply the slice to the visualization
         this.gui.highlightSlice(xSlice, ySlice, zSlice);
     }
+
+    clearAllSlices() {
+        this.gui.clearAllSlices();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function () {

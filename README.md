@@ -47,7 +47,7 @@ Then open <code>localhost:8080</code> in a browser to view the visualization.
 ##### Compatibility
 - [x] JSON (.json)
 - [X] CSV (.csv)
-- [x] NumPy (.npy, .npz)
+- [x] NumPy (.npy)
 - [X] HDF (.hdf, .h5, .hdf5)
 - [X] Pickle (.pickle, .pkl)
 - [X] Parquet (.parquet)
