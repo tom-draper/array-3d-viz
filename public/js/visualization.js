@@ -6,12 +6,16 @@ import { isIntegerArray } from "./array-utils.js";
 
 let xGraph = [];
 
+const OPTIMIZED_THRESHOLD = 25 * 25 * 25;
+
 export class Vis {
     constructor() {
         this.camera = null;
         this.scene = null;
         this.renderer = null;
         this.instancedCubes = null;
+        this.individualCubes = [];
+        this.individualEdges = [];
         this.controls = null;
         this.cubeData = [];
         this.cachedFont = null;
@@ -120,6 +124,23 @@ export class Vis {
             this.instancedCubes.dispose();
             this.instancedCubes = null;
         }
+
+        if (this.individualEdges.length > 0) {
+            const sharedEdgesGeometry = this.individualEdges[0].geometry;
+            const sharedEdgesMaterial = this.individualEdges[0].material;
+            for (const edges of this.individualEdges) {
+                this.scene.remove(edges);
+            }
+            sharedEdgesGeometry.dispose();
+            sharedEdgesMaterial.dispose();
+            this.individualEdges = [];
+        }
+
+        for (const mesh of this.individualCubes) {
+            this.scene.remove(mesh);
+            mesh.material.dispose();
+        }
+        this.individualCubes = [];
 
         this.cubeData = [];
 
@@ -285,6 +306,35 @@ export class Vis {
         this.scene.add(this.instancedCubes);
     }
 
+    createIndividualCubes(elements) {
+        this.individualCubes = [];
+        this.individualEdges = [];
+
+        const edgesGeometry = new THREE.EdgesGeometry(this.sharedGeometry);
+        const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x66ff66 });
+
+        for (let i = 0; i < elements.length; i++) {
+            const { position, opacity } = elements[i];
+            const g = opacity + 0.2;
+
+            const material = new THREE.MeshPhongMaterial({
+                color: new THREE.Color(0, g, 0),
+                transparent: true,
+                opacity: g,
+                depthWrite: false,
+            });
+            const mesh = new THREE.Mesh(this.sharedGeometry, material);
+            mesh.position.copy(position);
+            this.scene.add(mesh);
+            this.individualCubes.push(mesh);
+
+            const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+            edges.position.copy(position);
+            this.scene.add(edges);
+            this.individualEdges.push(edges);
+        }
+    }
+
     graph1DArray(loc, arr) {
         const [x, y, z] = loc;
         const [min, max] = minMax(arr);
@@ -309,7 +359,11 @@ export class Vis {
             });
         }
 
-        this.createOptimizedCubes(elements);
+        if (arr.length > OPTIMIZED_THRESHOLD) {
+            this.createOptimizedCubes(elements);
+        } else {
+            this.createIndividualCubes(elements);
+        }
 
         if (arr.length <= 2000) {
             this.createOptimizedLabels(elements, arr.length);
@@ -346,9 +400,14 @@ export class Vis {
             }
         }
 
-        this.createOptimizedCubes(elements);
-
         const totalElements = arr.length * arr[0].length;
+
+        if (totalElements > OPTIMIZED_THRESHOLD) {
+            this.createOptimizedCubes(elements);
+        } else {
+            this.createIndividualCubes(elements);
+        }
+
         if (totalElements <= 1000) {
             this.createOptimizedLabels(elements, totalElements);
         }
@@ -386,9 +445,14 @@ export class Vis {
             }
         }
 
-        this.createOptimizedCubes(elements);
-
         const totalElements = arr.length * arr[0].length * arr[0][0].length;
+
+        if (totalElements > OPTIMIZED_THRESHOLD) {
+            this.createOptimizedCubes(elements);
+        } else {
+            this.createIndividualCubes(elements);
+        }
+
         if (totalElements <= 1000) {
             this.createOptimizedLabels(elements, totalElements);
         }
@@ -448,6 +512,14 @@ export class Vis {
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
+        } else if (this.individualCubes.length > 0) {
+            for (let i = 0; i < this.cubeData.length; i++) {
+                const data = this.cubeData[i];
+                const matchesSlice = this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice);
+                const g = matchesSlice ? getOpacity(data.value, min, max) + 0.2 : 0.05;
+                this.individualCubes[i].material.color.setRGB(0, g, 0);
+                this.individualCubes[i].material.opacity = g;
+            }
         }
     }
 
@@ -512,6 +584,12 @@ export class Vis {
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
+        } else if (this.individualCubes.length > 0) {
+            for (let i = 0; i < this.cubeData.length; i++) {
+                const g = this.cubeData[i].value === value ? 0.8 : 0.05;
+                this.individualCubes[i].material.color.setRGB(0, g, 0);
+                this.individualCubes[i].material.opacity = g;
+            }
         }
     }
 
@@ -548,6 +626,13 @@ export class Vis {
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
+        } else if (this.individualCubes.length > 0) {
+            for (let i = 0; i < this.cubeData.length; i++) {
+                const inRange = low < this.cubeData[i].value && this.cubeData[i].value < high;
+                const g = inRange ? 0.8 : 0.05;
+                this.individualCubes[i].material.color.setRGB(0, g, 0);
+                this.individualCubes[i].material.opacity = g;
+            }
         }
     }
 
@@ -605,6 +690,12 @@ export class Vis {
                 this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
+        } else if (this.individualCubes.length > 0) {
+            for (let i = 0; i < this.cubeData.length; i++) {
+                const g = getOpacity(this.cubeData[i].value, min, max) + 0.2;
+                this.individualCubes[i].material.color.setRGB(0, g, 0);
+                this.individualCubes[i].material.opacity = g;
+            }
         }
     }
 
