@@ -250,18 +250,19 @@ export class Vis {
                 varying float vOpacity;
 
                 void main() {
-                    float edgeWidth = 0.05;
+                    float edgeWidth = 0.01;
                     bool onEdge = vUv.x < edgeWidth || vUv.x > 1.0 - edgeWidth ||
                                   vUv.y < edgeWidth || vUv.y > 1.0 - edgeWidth;
 
                     if (onEdge) {
-                        gl_FragColor = vec4(0.0, vOpacity * 0.4, 0.0, vOpacity * 0.8 + 0.1);
+                        gl_FragColor = vec4(0.4, 1.0, 0.4, 1.0);
                     } else {
                         gl_FragColor = vec4(0.0, vOpacity, 0.0, vOpacity);
                     }
                 }
             `,
             transparent: true,
+            depthWrite: false,
         });
 
         this.instancedCubes = new THREE.InstancedMesh(this.sharedGeometry, material, count);
