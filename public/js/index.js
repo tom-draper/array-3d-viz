@@ -20,52 +20,65 @@ class App {
     }
 
     init() {
-        // Check whether using GUI.
-        $.get("/gui", (gui) => {
-            if (gui) {
-                this.gui.enableGUI(); // Setup gui and wait for button click to fetch array input.
-            } else {
-                this.gui.disableGUI();
-                this.gui.enableViz();
-                // Fetch array from saved file from server.
-                $.get("/data", (data) => {
-                    $(".result").html(data);
-                    this.array = JSON.parse(data);
-                    this.gui.startGUI(this.array);
-                });
-            }
-        });
+        fetch("/gui")
+            .then(r => r.json())
+            .then(gui => {
+                if (gui) {
+                    this.gui.enableGUI();
+                } else {
+                    this.gui.disableGUI();
+                    this.gui.enableViz();
+                    return fetch("/data")
+                        .then(r => r.text())
+                        .then(data => {
+                            this.array = JSON.parse(data);
+                            this.gui.startGUI(this.array);
+                        });
+                }
+            });
+    }
+
+    showError(message) {
+        const el = document.getElementById("inputError");
+        if (el) {
+            el.textContent = message;
+            el.hidden = false;
+        }
+    }
+
+    clearError() {
+        const el = document.getElementById("inputError");
+        if (el) el.hidden = true;
     }
 
     runInput() {
-        const input = $("#arrayInput")
-            .val()
-            ?.toString()
-            .replace(/[ \t]+/g, "");
+        const input = document.getElementById("arrayInput")
+            ?.value
+            ?.replace(/[ \t]+/g, "");
         if (input) {
             let parsedArray;
             if (validJSONArray(input)) {
                 parsedArray = JSON.parse(input);
                 if (arrayShape(parsedArray).length > 3) {
-                    alert("Maximum of 3 dimensions allowed for JSON array.");
+                    this.showError("Maximum of 3 dimensions allowed for JSON array.");
                     return;
                 }
             } else if (validCSVArray(input)) {
                 parsedArray = parseCSVArray(input);
             } else {
-                alert("JSON or CSV format required.");
+                this.showError("JSON or CSV format required.");
                 return;
             }
 
             if (parsedArray) {
-                console.log(parsedArray);
+                this.clearError();
                 this.gui.disableGUI();
                 this.gui.enableViz();
                 this.array = parsedArray;
                 this.gui.startGUI(this.array);
             }
         } else {
-            alert("JSON or CSV format required.");
+            this.showError("JSON or CSV format required.");
         }
     }
 

@@ -725,3 +725,9 @@ input {
         justify-content: center;
     }
 }
+
+.input-error {
+    color: #ff6b6b;
+    font-size: 0.875rem;
+    margin: 0 0 0.75rem;
+}

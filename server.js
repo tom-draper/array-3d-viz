@@ -9,10 +9,10 @@ import { parse } from "csv-parse/sync";
 import { readFileSync } from "fs";
 import pickleparser from "pickleparser";
 import parquet from "parquetjs";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -581,9 +581,7 @@ async function loadMatlab(filePath) {
 	try {
 		// Use Python's scipy.io to read the MATLAB file since JavaScript libraries have bugs
 		const scriptPath = path.join(__dirname, "scripts", "load_matlab.py");
-		const { stdout, stderr } = await execAsync(
-			`python3 "${scriptPath}" "${filePath}"`
-		);
+		const { stdout, stderr } = await execFileAsync("python3", [scriptPath, filePath]);
 
 		if (stderr && stderr.trim()) {
 			console.warn(`Python warning: ${stderr}`);
@@ -725,6 +723,8 @@ function startServer(guiEnabled) {
  */
 async function main() {
 	const guiEnabled = isGUIEnabled();
+
+	fs.mkdirSync(path.dirname(TEMP_DATA_PATH), { recursive: true });
 
 	try {
 		if (guiEnabled) {
