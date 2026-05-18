@@ -25,6 +25,7 @@ class App {
             if (gui) {
                 this.gui.enableGUI(); // Setup gui and wait for button click to fetch array input.
             } else {
+                this.gui.disableGUI();
                 this.gui.enableViz();
                 // Fetch array from saved file from server.
                 $.get("/data", (data) => {
@@ -34,29 +35,6 @@ class App {
                 });
             }
         });
-
-        const canvas = document.getElementById("title-underline-canvas");
-        const ctx = canvas.getContext("2d");
-        const mainTitle = document.querySelector(".main-title");
-
-        canvas.width = mainTitle.offsetWidth;
-        canvas.height = 8;
-
-        const squareSize = 8;
-        const gap = 4;
-        const numSquares = Math.floor(canvas.width / (squareSize + gap));
-
-        function drawUnderline() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < numSquares; i++) {
-                ctx.globalAlpha = Math.random();
-                ctx.fillStyle = "#00ff00";
-                ctx.fillRect(i * (squareSize + gap), 0, squareSize, squareSize);
-            }
-            requestAnimationFrame(drawUnderline);
-        }
-
-        drawUnderline();
     }
 
     runInput() {

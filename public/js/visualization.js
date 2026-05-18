@@ -3,8 +3,9 @@
  * Optimized for large arrays using instanced rendering and minimal object creation
  */
 
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { arrayShape, minMax } from './types.js';
 import { isIntegerArray } from "./array-utils.js";
 
@@ -148,7 +149,7 @@ export class Vis {
         this.cubeData = [];
 
         const objectsToRemove = this.scene.children.filter(child =>
-            (child instanceof THREE.Mesh && child.geometry instanceof THREE.ShapeBufferGeometry) ||
+            (child instanceof THREE.Mesh && child.geometry instanceof THREE.ShapeGeometry) ||
             (child instanceof THREE.LineSegments && child.geometry instanceof THREE.EdgesGeometry)
         );
         objectsToRemove.forEach(mesh => {
@@ -191,7 +192,7 @@ export class Vis {
                 return;
             }
 
-            const loader = new THREE.FontLoader();
+            const loader = new FontLoader();
             loader.load(
                 "fonts/helvetiker_regular.typeface.json",
                 (font) => {
@@ -219,7 +220,7 @@ export class Vis {
                     0.15
                 );
 
-                const textGeometry = new THREE.ShapeBufferGeometry(textShapes);
+                const textGeometry = new THREE.ShapeGeometry(textShapes);
                 const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
                 const text = new THREE.Mesh(textGeometry, textMaterial);
@@ -437,30 +438,38 @@ export class Vis {
 
         // Update bar chart to show only sliced values
         const graphDiv = document.getElementById('graph');
-        if (graphDiv && graphDiv.layout && isIntegerArray(slicedValues)) {
-            const data = {};
-            slicedValues.forEach(value => {
-                data[value] ||= 0;
-                data[value] += 1;
-            });
+        if (graphDiv && graphDiv.layout) {
+            if (isIntegerArray(slicedValues)) {
+                const data = {};
+                slicedValues.forEach(value => {
+                    data[value] ||= 0;
+                    data[value] += 1;
+                });
 
-            const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
-                (obj, key) => {
-                    obj[key] = data[key];
-                    return obj;
-                },
-                {}
-            );
+                const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
+                    (obj, key) => {
+                        obj[key] = data[key];
+                        return obj;
+                    },
+                    {}
+                );
 
-            Plotly.react("graph", [{
-                x: Object.keys(sorted).map(Number),
-                y: Object.values(sorted),
-                type: 'bar',
-                marker: {
-                    color: 'rgb(0,255,0)',
-                    opacity: 0.9,
-                }
-            }], graphDiv.layout);
+                Plotly.react("graph", [{
+                    x: Object.keys(sorted).map(Number),
+                    y: Object.values(sorted),
+                    type: 'bar',
+                    marker: {
+                        color: 'rgb(0,255,0)',
+                        opacity: 0.9,
+                    }
+                }], graphDiv.layout);
+            } else {
+                Plotly.react("graph", [{
+                    x: slicedValues,
+                    type: 'histogram',
+                    marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
+                }], graphDiv.layout);
+            }
         }
 
         // Handle individual cubes
@@ -643,16 +652,16 @@ export class Vis {
                 let min = Math.min(...xGraph);
                 let max = Math.max(...xGraph);
                 const data = {};
-                
+
                 values.forEach(value => {
                     data[value] ||= 0;
                     data[value] += 1;
                 });
-                
+
                 for (let i = min; i <= max; i++) {
                     data[i] ||= 0;
                 }
-                
+
                 const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
                     (obj, key) => {
                         obj[key] = data[key];
@@ -660,7 +669,7 @@ export class Vis {
                     },
                     {}
                 );
-                
+
                 Plotly.react("graph", [{
                     x: Object.keys(sorted).map(Number),
                     y: Object.values(sorted),
@@ -669,6 +678,12 @@ export class Vis {
                         color: 'rgb(0,255,0)',
                         opacity: 0.9,
                     }
+                }], graphDiv.layout);
+            } else {
+                Plotly.react("graph", [{
+                    x: values,
+                    type: 'histogram',
+                    marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
                 }], graphDiv.layout);
             }
         }
@@ -780,6 +795,35 @@ export function graphDistribution(arr) {
         }
 
         Plotly.newPlot("graph", graphData, layout, { staticPlot: true });
+    } else {
+        const [min, max] = minMax(values);
+        const layout = {
+            height: 180,
+            width: 270,
+            margin: { t: 0, b: 20, r: 20, l: 20 },
+            paper_bgcolor: "rgba(0,0,0,0)",
+            plot_bgcolor: "rgba(0,0,0,0)",
+            yaxis: {
+                color: 'white',
+                showgrid: false,
+                zeroline: false,
+                showticklabels: false
+            },
+            xaxis: {
+                color: 'white',
+                showgrid: false,
+                zeroline: false,
+                tickmode: "array",
+                tickvals: [min, max],
+                ticktext: [parseFloat(min.toPrecision(4)).toString(), parseFloat(max.toPrecision(4)).toString()],
+                tickfont: { size: 10 }
+            }
+        };
+        Plotly.newPlot("graph", [{
+            x: values,
+            type: 'histogram',
+            marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
+        }], layout, { staticPlot: true });
     }
 }
 

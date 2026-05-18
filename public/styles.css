@@ -647,7 +647,6 @@ input {
 }
 
 /* Visibility States */
-#gui,
 .inequality-container,
 .equality-container {
     display: none;

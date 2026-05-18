@@ -497,24 +497,6 @@ async function loadNumPy(filePath) {
 }
 
 /**
- * Alternative method to load NumPy files using Python (currently unused)
- * @param {string} filePath - Path to the NumPy file
- * @deprecated This function requires PythonShell which is not imported
- */
-function loadNumPyWithPython(filePath) {
-	// Run script to load target .npy file and save it in json format.
-	PythonShell.run(
-		"scripts/load.py",
-		{ args: [filePath] },
-		function (err, results) {
-			if (err) {
-				console.log(err, results);
-			}
-		}
-	);
-}
-
-/**
  * Loads a Python pickle file and converts it to JSON format
  * @param {string} filePath - Path to the pickle file
  * @throws {Error} If loading or parsing the pickle file fails
