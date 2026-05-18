@@ -1,8 +1,3 @@
-/**
- * @fileoverview 3D visualization functions using Three.js with axis slicing
- * Optimized for large arrays using instanced rendering and minimal object creation
- */
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
@@ -17,22 +12,15 @@ export class Vis {
         this.scene = null;
         this.renderer = null;
         this.instancedCubes = null;
-        this.instancedWireframes = null;
         this.controls = null;
         this.cubeData = [];
         this.cachedFont = null;
         this.sharedGeometry = new THREE.BoxGeometry();
-        this.sharedMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-            transparent: true,
-        });
-        this.sharedWireframeMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
         this.activeSlices = { x: null, y: null, z: null };
         this.handleResizeBound = this.handleResize.bind(this);
     }
 
     init(arr) {
-        // Clear existing scene
         if (this.scene) {
             this.clearScene();
         }
@@ -126,13 +114,6 @@ export class Vis {
         if (!this.scene) {
             return;
         }
-        this.cubeData.forEach(data => {
-            if (data.mesh) {
-                this.scene.remove(data.mesh);
-                data.mesh.geometry.dispose();
-                data.mesh.material.dispose();
-            }
-        });
 
         if (this.instancedCubes) {
             this.scene.remove(this.instancedCubes);
@@ -140,23 +121,17 @@ export class Vis {
             this.instancedCubes = null;
         }
 
-        if (this.instancedWireframes) {
-            this.scene.remove(this.instancedWireframes);
-            this.instancedWireframes.dispose();
-            this.instancedWireframes = null;
-        }
-
         this.cubeData = [];
 
         const objectsToRemove = this.scene.children.filter(child =>
-            (child instanceof THREE.Mesh && child.geometry instanceof THREE.ShapeGeometry) ||
-            (child instanceof THREE.LineSegments && child.geometry instanceof THREE.EdgesGeometry)
+            child instanceof THREE.Mesh && child.geometry instanceof THREE.ShapeGeometry
         );
         objectsToRemove.forEach(mesh => {
             this.scene.remove(mesh);
             mesh.geometry.dispose();
             mesh.material.dispose();
         });
+
         this.scene = null;
     }
 
@@ -248,66 +223,65 @@ export class Vis {
     createOptimizedCubes(elements) {
         const count = elements.length;
 
-        if (count <= 27_000) {
-            elements.forEach((element, i) => {
-                const { position, opacity, value } = element;
+        const material = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec2 vUv;
+                varying float vOpacity;
 
-                const geometry = this.sharedGeometry.clone();
-                const material = new THREE.MeshBasicMaterial({
-                    color: 0x00ff00,
-                    opacity: opacity,
-                    transparent: true,
-                });
-                const cube = new THREE.Mesh(geometry, material);
-                cube.position.copy(position);
-                cube.value = value;
-                this.scene.add(cube);
+                void main() {
+                    vUv = uv;
 
-                this.cubeData[i].mesh = cube;
+                    #ifdef USE_INSTANCING_COLOR
+                        vOpacity = instanceColor.g;
+                    #else
+                        vOpacity = 0.5;
+                    #endif
 
-                const wireframe = new THREE.LineSegments(
-                    new THREE.EdgesGeometry(geometry),
-                    new THREE.LineBasicMaterial({ color: 0x00ff00 })
-                );
-                wireframe.position.copy(position);
-                this.scene.add(wireframe);
-            });
-        } else {
-            this.instancedCubes = new THREE.InstancedMesh(this.sharedGeometry, this.sharedMaterial, count);
+                    #ifdef USE_INSTANCING
+                        vec4 worldPos = instanceMatrix * vec4(position, 1.0);
+                        gl_Position = projectionMatrix * modelViewMatrix * worldPos;
+                    #else
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    #endif
+                }
+            `,
+            fragmentShader: `
+                varying vec2 vUv;
+                varying float vOpacity;
 
-            const wireframeGeometry = new THREE.EdgesGeometry(this.sharedGeometry);
-            this.instancedWireframes = new THREE.InstancedMesh(wireframeGeometry, this.sharedWireframeMaterial, count);
+                void main() {
+                    float edgeWidth = 0.05;
+                    bool onEdge = vUv.x < edgeWidth || vUv.x > 1.0 - edgeWidth ||
+                                  vUv.y < edgeWidth || vUv.y > 1.0 - edgeWidth;
 
-            const matrix = new THREE.Matrix4();
-            const color = new THREE.Color();
+                    if (onEdge) {
+                        gl_FragColor = vec4(0.0, vOpacity * 0.4, 0.0, vOpacity * 0.8 + 0.1);
+                    } else {
+                        gl_FragColor = vec4(0.0, vOpacity, 0.0, vOpacity);
+                    }
+                }
+            `,
+            transparent: true,
+        });
 
-            for (let i = 0; i < count; i++) {
-                const { position, opacity } = elements[i];
+        this.instancedCubes = new THREE.InstancedMesh(this.sharedGeometry, material, count);
 
-                matrix.setPosition(position);
-                this.instancedCubes.setMatrixAt(i, matrix);
-                this.instancedWireframes.setMatrixAt(i, matrix);
+        const matrix = new THREE.Matrix4();
+        const color = new THREE.Color();
 
-                color.setRGB(0, opacity, 0);
-                this.instancedCubes.setColorAt(i, color);
-                this.instancedWireframes.setColorAt(i, color);
-
-                elements[i].instanceIndex = i;
-            }
-
-            this.instancedCubes.instanceMatrix.needsUpdate = true;
-            this.instancedWireframes.instanceMatrix.needsUpdate = true;
-
-            if (this.instancedCubes.instanceColor) {
-                this.instancedCubes.instanceColor.needsUpdate = true;
-            }
-            if (this.instancedWireframes.instanceColor) {
-                this.instancedWireframes.instanceColor.needsUpdate = true;
-            }
-
-            this.scene.add(this.instancedCubes);
-            this.scene.add(this.instancedWireframes);
+        for (let i = 0; i < count; i++) {
+            const { position, opacity } = elements[i];
+            matrix.setPosition(position);
+            this.instancedCubes.setMatrixAt(i, matrix);
+            color.setRGB(0, opacity + 0.2, 0);
+            this.instancedCubes.setColorAt(i, color);
+            elements[i].instanceIndex = i;
         }
+
+        this.instancedCubes.instanceMatrix.needsUpdate = true;
+        this.instancedCubes.instanceColor.needsUpdate = true;
+
+        this.scene.add(this.instancedCubes);
     }
 
     graph1DArray(loc, arr) {
@@ -419,24 +393,15 @@ export class Vis {
         }
     }
 
-    /**
-     * Apply axis slicing to show only cubes matching the specified coordinates
-     * @param {number|null} xSlice - X-axis index to slice on (null for no slice)
-     * @param {number|null} ySlice - Y-axis index to slice on (null for no slice)
-     * @param {number|null} zSlice - Z-axis index to slice on (null for no slice)
-     */
     applySlice(xSlice, ySlice, zSlice) {
         this.activeSlices = { x: xSlice, y: ySlice, z: zSlice };
-        
-        // Get values only from cubes that match the slice
+
         const slicedValues = this.cubeData
             .filter(data => data.coords && this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice))
             .map(data => data.value);
 
-        // Calculate min/max from only the visible slice
         const [min, max] = slicedValues.length > 0 ? minMax(slicedValues) : [0, 1];
 
-        // Update bar chart to show only sliced values
         const graphDiv = document.getElementById('graph');
         if (graphDiv && graphDiv.layout) {
             if (isIntegerArray(slicedValues)) {
@@ -458,10 +423,7 @@ export class Vis {
                     x: Object.keys(sorted).map(Number),
                     y: Object.values(sorted),
                     type: 'bar',
-                    marker: {
-                        color: 'rgb(0,255,0)',
-                        opacity: 0.9,
-                    }
+                    marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
                 }], graphDiv.layout);
             } else {
                 Plotly.react("graph", [{
@@ -472,82 +434,50 @@ export class Vis {
             }
         }
 
-        // Handle individual cubes
-        this.cubeData.forEach(data => {
-            if (data.mesh && data.coords) {
-                const matchesSlice = this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice);
-                
-                if (matchesSlice) {
-                    // Show cube with opacity scaled to slice min/max
-                    const opacity = getOpacity(data.value, min, max);
-                    data.mesh.material.opacity = opacity;
-                } else {
-                    // Hide cube
-                    data.mesh.material.opacity = 0.05;
-                }
-            }
-        });
-
-        // Handle instanced cubes (for larger arrays)
         if (this.instancedCubes) {
             const color = new THREE.Color();
             for (let i = 0; i < this.cubeData.length; i++) {
                 const data = this.cubeData[i];
-                if (data.coords) {
-                    const matchesSlice = this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice);
-                    
-                    if (matchesSlice) {
-                        // Scale opacity relative to slice min/max
-                        const opacity = getOpacity(data.value, min, max);
-                        color.setRGB(0, opacity + 0.2, 0);
-                    } else {
-                        color.setRGB(0, 0.05, 0);
-                    }
-                    
-                    this.instancedCubes.setColorAt(i, color);
+                const matchesSlice = this.cubeMatchesSlice(data.coords, xSlice, ySlice, zSlice);
+                if (matchesSlice) {
+                    color.setRGB(0, getOpacity(data.value, min, max) + 0.2, 0);
+                } else {
+                    color.setRGB(0, 0.05, 0);
                 }
+                this.instancedCubes.setColorAt(i, color);
             }
             this.instancedCubes.instanceColor.needsUpdate = true;
         }
     }
 
-    /**
-     * Check if a cube's coordinates match the active slice criteria
-     * @param {Object} coords - Cube coordinates {x, y, z}
-     * @param {number|null} xSlice - X-axis slice value
-     * @param {number|null} ySlice - Y-axis slice value
-     * @param {number|null} zSlice - Z-axis slice value
-     * @returns {boolean} True if cube matches all non-null slice criteria
-     */
     cubeMatchesSlice(coords, xSlice, ySlice, zSlice) {
         const xMatch = xSlice === null || coords.x === xSlice;
         const yMatch = ySlice === null || coords.y === ySlice;
         const zMatch = zSlice === null || coords.z === zSlice;
-        
         return xMatch && yMatch && zMatch;
     }
 
     highlightValue(value) {
         const graphDiv = document.getElementById('graph');
-        
+
         if (graphDiv && graphDiv.layout) {
             const values = this.cubeData.map(cube => cube.value);
             const isInteger = isIntegerArray(values);
-            
+
             if (isInteger) {
                 let min = Math.min(...xGraph);
                 let max = Math.max(...xGraph);
                 const data = {};
-                
+
                 values.forEach(val => {
                     data[val] ||= 0;
                     data[val] += 1;
                 });
-                
+
                 for (let i = min; i <= max; i++) {
                     data[i] ||= 0;
                 }
-                
+
                 const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
                     (obj, key) => {
                         obj[key] = data[key];
@@ -555,32 +485,23 @@ export class Vis {
                     },
                     {}
                 );
-                
+
                 xGraph = Object.keys(sorted).map(Number);
-                
+
                 const index = xGraph.indexOf(value);
                 const colors = Array(xGraph.length).fill('rgb(0,255,0)');
                 if (index !== -1) {
                     colors[index] = 'rgb(255,0,0)';
                 }
-                
+
                 Plotly.react("graph", [{
                     x: xGraph,
                     y: Object.values(sorted),
                     type: 'bar',
-                    marker: {
-                        color: colors,
-                        opacity: 0.9,
-                    }
+                    marker: { color: colors, opacity: 0.9 }
                 }], graphDiv.layout);
             }
         }
-
-        this.cubeData.forEach(data => {
-            if (data.mesh) {
-                data.mesh.material.opacity = data.value === value ? 0.8 : 0.05;
-            }
-        });
 
         if (this.instancedCubes) {
             const color = new THREE.Color();
@@ -594,41 +515,29 @@ export class Vis {
     }
 
     highlightInequality(low, high) {
-        const filteredIndices = [];
         const filteredX = [];
         const filteredY = [];
-        
+
         const graphDiv = document.getElementById('graph');
         if (graphDiv && graphDiv.data && graphDiv.data[0]) {
             const originalY = graphDiv.data[0].y;
-            
+
             xGraph.forEach((value, index) => {
                 if (low < value && value < high) {
-                    filteredIndices.push(index);
                     filteredX.push(value);
                     filteredY.push(originalY[index]);
                 }
             });
-            
+
             if (filteredX.length > 0) {
                 Plotly.react("graph", [{
                     x: filteredX,
                     y: filteredY,
                     type: 'bar',
-                    marker: {
-                        color: 'rgb(0,255,0)',
-                        opacity: 0.9,
-                    }
+                    marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
                 }], graphDiv.layout);
             }
         }
-
-        this.cubeData.forEach(data => {
-            if (data.mesh) {
-                const inRange = low < data.value && data.value < high;
-                data.mesh.material.opacity = inRange ? 0.8 : 0.05;
-            }
-        });
 
         if (this.instancedCubes) {
             const color = new THREE.Color();
@@ -643,11 +552,11 @@ export class Vis {
 
     resetScale() {
         const graphDiv = document.getElementById('graph');
-        
+
         if (graphDiv && graphDiv.layout) {
             const values = this.cubeData.map(cube => cube.value);
             const isInteger = isIntegerArray(values);
-            
+
             if (isInteger) {
                 let min = Math.min(...xGraph);
                 let max = Math.max(...xGraph);
@@ -674,10 +583,7 @@ export class Vis {
                     x: Object.keys(sorted).map(Number),
                     y: Object.values(sorted),
                     type: 'bar',
-                    marker: {
-                        color: 'rgb(0,255,0)',
-                        opacity: 0.9,
-                    }
+                    marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
                 }], graphDiv.layout);
             } else {
                 Plotly.react("graph", [{
@@ -687,15 +593,8 @@ export class Vis {
                 }], graphDiv.layout);
             }
         }
-        
-        const [min, max] = minMax(this.cubeData.map(cube => cube.value));
 
-        this.cubeData.forEach(data => {
-            if (data.mesh) {
-                const opacity = getOpacity(data.value, min, max);
-                data.mesh.material.opacity = opacity;
-            }
-        });
+        const [min, max] = minMax(this.cubeData.map(cube => cube.value));
 
         if (this.instancedCubes) {
             const color = new THREE.Color();
@@ -735,12 +634,8 @@ export function graphDistribution(arr) {
         for (const value of values) {
             data[value] ||= 0;
             data[value] += 1;
-            if (value < min) {
-                min = value;
-            }
-            if (value > max) {
-                max = value;
-            }
+            if (value < min) min = value;
+            if (value > max) max = value;
         }
 
         for (let i = min; i <= max; i++) {
@@ -748,25 +643,11 @@ export function graphDistribution(arr) {
         }
 
         const sorted = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reduce(
-            (obj, key) => {
-                obj[key] = data[key];
-                return obj;
-            },
+            (obj, key) => { obj[key] = data[key]; return obj; },
             {}
         );
 
         xGraph = Object.keys(sorted).map(Number);
-        const graphData = [
-            {
-                x: xGraph,
-                y: Object.values(sorted),
-                type: 'bar',
-                marker: {
-                    color: 'rgb(0,255,0)',
-                    opacity: 0.9,
-                }
-            }
-        ]
 
         const layout = {
             height: 180,
@@ -774,27 +655,19 @@ export function graphDistribution(arr) {
             margin: { t: 0, b: 20, r: 20, l: 20 },
             paper_bgcolor: "rgba(0,0,0,0)",
             plot_bgcolor: "rgba(0,0,0,0)",
-            yaxis: {
-                color: 'white',
-                showgrid: false,
-                zeroline: false,
-                autotick: false,
-                showticklabels: false
-            },
+            yaxis: { color: 'white', showgrid: false, zeroline: false, autotick: false, showticklabels: false },
             xaxis: {
-                color: 'white',
-                showgrid: false,
-                zeroline: false,
-                tickmode: "array",
-                tickvals: [min, max],
-                ticktext: [min, max],
-                tickfont: {
-                    size: 10
-                }
+                color: 'white', showgrid: false, zeroline: false,
+                tickmode: "array", tickvals: [min, max], ticktext: [min, max], tickfont: { size: 10 }
             }
-        }
+        };
 
-        Plotly.newPlot("graph", graphData, layout, { staticPlot: true });
+        Plotly.newPlot("graph", [{
+            x: xGraph,
+            y: Object.values(sorted),
+            type: 'bar',
+            marker: { color: 'rgb(0,255,0)', opacity: 0.9 }
+        }], layout, { staticPlot: true });
     } else {
         const [min, max] = minMax(values);
         const layout = {
@@ -803,16 +676,9 @@ export function graphDistribution(arr) {
             margin: { t: 0, b: 20, r: 20, l: 20 },
             paper_bgcolor: "rgba(0,0,0,0)",
             plot_bgcolor: "rgba(0,0,0,0)",
-            yaxis: {
-                color: 'white',
-                showgrid: false,
-                zeroline: false,
-                showticklabels: false
-            },
+            yaxis: { color: 'white', showgrid: false, zeroline: false, showticklabels: false },
             xaxis: {
-                color: 'white',
-                showgrid: false,
-                zeroline: false,
+                color: 'white', showgrid: false, zeroline: false,
                 tickmode: "array",
                 tickvals: [min, max],
                 ticktext: [parseFloat(min.toPrecision(4)).toString(), parseFloat(max.toPrecision(4)).toString()],
@@ -831,13 +697,13 @@ export function setArrayDimensions(arr) {
     const shape = arrayShape(arr);
     switch (shape.length) {
         case 1:
-            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`
+            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[0]}</span>`;
             break;
         case 2:
-            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[1]}</span><span class="multiply">×</span><span class="green">${shape[0]}</span>`
+            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[1]}</span><span class="multiply">×</span><span class="green">${shape[0]}</span>`;
             break;
         case 3:
-            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[2]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="blue">${shape[0]}</span>`
+            document.getElementById("arrayShape").innerHTML = `<span class="red">${shape[2]}</span><span class="multiply">×</span><span class="green">${shape[1]}</span><span class="multiply">×</span><span class="blue">${shape[0]}</span>`;
             break;
     }
 }
