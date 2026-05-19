@@ -13,6 +13,7 @@ import {
 import { isNumeric } from "./types.js";
 import { renderBorder } from "./border.js";
 import { readFile } from "./file-import.js";
+import { saveToURL, loadFromURL } from "./url-state.js";
 
 class App {
     constructor() {
@@ -24,6 +25,11 @@ class App {
         // Check whether using GUI.
         $.get("/gui", (gui) => {
             if (gui) {
+                const urlArray = loadFromURL();
+                if (urlArray) {
+                    this.visualizeArray(urlArray);
+                    return;
+                }
                 this.gui.enableGUI(); // Setup gui and wait for button click to fetch array input.
             } else {
                 this.gui.disableGUI();
@@ -43,6 +49,7 @@ class App {
         this.gui.enableViz();
         this.array = parsedArray;
         this.gui.startGUI(this.array);
+        saveToURL(parsedArray);
     }
 
     runInput() {
