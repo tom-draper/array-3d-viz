@@ -12,6 +12,7 @@ import {
 } from "./array-utils.js";
 import { isNumeric } from "./types.js";
 import { renderBorder } from "./border.js";
+import { readFile } from "./file-import.js";
 
 class App {
     constructor() {
@@ -37,6 +38,13 @@ class App {
         });
     }
 
+    visualizeArray(parsedArray) {
+        this.gui.disableGUI();
+        this.gui.enableViz();
+        this.array = parsedArray;
+        this.gui.startGUI(this.array);
+    }
+
     runInput() {
         const input = $("#arrayInput")
             .val()
@@ -59,10 +67,7 @@ class App {
 
             if (parsedArray) {
                 console.log(parsedArray);
-                this.gui.disableGUI();
-                this.gui.enableViz();
-                this.array = parsedArray;
-                this.gui.startGUI(this.array);
+                this.visualizeArray(parsedArray);
             }
         } else {
             alert("JSON or CSV format required.");
@@ -246,4 +251,34 @@ document.addEventListener("DOMContentLoaded", function () {
     // });
 
     requestAnimationFrame(renderBorder);
+
+    const inputSection = document.querySelector('.input-section');
+    if (inputSection) {
+        inputSection.addEventListener('dragover', e => {
+            e.preventDefault();
+            inputSection.classList.add('drag-over');
+        });
+        inputSection.addEventListener('dragleave', e => {
+            if (!inputSection.contains(e.relatedTarget)) {
+                inputSection.classList.remove('drag-over');
+            }
+        });
+        inputSection.addEventListener('drop', async e => {
+            e.preventDefault();
+            inputSection.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (!file) return;
+            try {
+                const result = await readFile(file);
+                if (result.type === 'array') {
+                    app.visualizeArray(result.data);
+                } else {
+                    document.getElementById('arrayInput').value = result.data;
+                    app.runInput();
+                }
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    }
 });

@@ -725,3 +725,9 @@ input {
         justify-content: center;
     }
 }
+
+.input-section.drag-over {
+    outline: 2px dashed #00ff00;
+    outline-offset: -4px;
+    background: rgba(0, 255, 0, 0.04);
+}

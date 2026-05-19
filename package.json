@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -29,5 +29,8 @@
     "parquetjs": "^0.11.2",
     "pickleparser": "^0.2.1",
     "python-shell": "^3.0.1"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.6"
   }
 }
